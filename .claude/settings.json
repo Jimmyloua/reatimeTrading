@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export JAVA_HOME=\"/d/Java/JDK21\")",
+      "Bash(node \"C:/Users/Administrator/.claude/get-shit-done/bin/gsd-tools.cjs\" state advance-plan)",
+      "Bash(node \"C:/Users/Administrator/.claude/get-shit-done/bin/gsd-tools.cjs\" state update-progress)",
+      "Bash(node \"C:/Users/Administrator/.claude/get-shit-done/bin/gsd-tools.cjs\" state record-metric --phase \"02\" --plan \"05\" --duration \"15min\" --tasks \"3\" --files \"4\")"
+    ]
+  }
+}

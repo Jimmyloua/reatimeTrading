@@ -15,6 +15,10 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import UserProfilePage from './pages/UserProfilePage'
+import CreateListingPage from './pages/CreateListingPage'
+import EditListingPage from './pages/EditListingPage'
+import BrowseListingsPage from './pages/BrowseListingsPage'
+import ListingDetailPage from './pages/ListingDetailPage'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 
 function App() {
@@ -29,43 +33,53 @@ function App() {
       {/* Navigation */}
       <nav className="border-b px-4 py-3">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Link to="/" className="text-xl font-semibold text-foreground">
-            Trading Platform
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link to="/" className="text-xl font-semibold text-foreground">
+              Trading Platform
+            </Link>
+            <Link to="/listings" className="text-sm text-muted-foreground hover:text-foreground">
+              Browse
+            </Link>
+          </div>
           <div className="flex items-center gap-4">
             {isAuthenticated && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 rounded-full p-1 hover:bg-accent outline-none">
-                  {user.avatarUrl ? (
-                    <Avatar size="sm">
-                      <AvatarImage src={user.avatarUrl} alt={user.displayName || 'User'} />
-                      <AvatarFallback>
+              <>
+                <Link to="/listings/create">
+                  <Button size="sm">Sell</Button>
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-2 rounded-full p-1 hover:bg-accent outline-none">
+                    {user.avatarUrl ? (
+                      <Avatar size="sm">
+                        <AvatarImage src={user.avatarUrl} alt={user.displayName || 'User'} />
+                        <AvatarFallback>
+                          {getInitials(user.displayName, user.email)}
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <div
+                        className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white"
+                        style={{ backgroundColor: getAvatarColor(user.id) }}
+                      >
                         {getInitials(user.displayName, user.email)}
-                      </AvatarFallback>
-                    </Avatar>
-                  ) : (
-                    <div
-                      className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white"
-                      style={{ backgroundColor: getAvatarColor(user.id) }}
-                    >
-                      {getInitials(user.displayName, user.email)}
+                      </div>
+                    )}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <div className="px-1.5 py-1 text-sm font-medium">
+                      {user.displayName || 'New User'}
                     </div>
-                  )}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <div className="px-1.5 py-1 text-sm font-medium">
-                    {user.displayName || 'New User'}
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link to="/profile">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link to="/profile">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               <>
                 <Link to="/login">
@@ -95,6 +109,24 @@ function App() {
             }
           />
           <Route path="/users/:id" element={<UserProfilePage />} />
+          <Route path="/listings" element={<BrowseListingsPage />} />
+          <Route path="/listings/:id" element={<ListingDetailPage />} />
+          <Route
+            path="/listings/create"
+            element={
+              <ProtectedRoute>
+                <CreateListingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/listings/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditListingPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

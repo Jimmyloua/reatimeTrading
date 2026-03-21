@@ -55,6 +55,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/{id:[0-9]+}").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/listings/{id:[0-9]+}").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/listings/user/{id:[0-9]+}").permitAll()
                         .requestMatchers("/api/users/me").authenticated()
                         .anyRequest().authenticated()
                 )
