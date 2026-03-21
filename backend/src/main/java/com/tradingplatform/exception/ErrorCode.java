@@ -11,7 +11,9 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
     REGISTRATION_FAILED(HttpStatus.BAD_REQUEST, "Registration failed"),
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "Invalid or expired token"),
-    PROFILE_INCOMPLETE(HttpStatus.FORBIDDEN, "Profile setup required");
+    PROFILE_INCOMPLETE(HttpStatus.FORBIDDEN, "Profile setup required"),
+    INVALID_AVATAR(HttpStatus.BAD_REQUEST, "Invalid avatar file"),
+    AVATAR_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload avatar");
 
     private final HttpStatus httpStatus;
     private final String message;

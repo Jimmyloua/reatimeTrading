@@ -37,3 +37,7 @@ jwt:
 logging:
   level:
     com.tradingplatform: INFO
+
+avatar:
+  upload-dir: ./uploads/avatars
+  max-size: 5242880  # 5 MB
