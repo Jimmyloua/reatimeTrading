@@ -17,9 +17,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### User Profiles
 
 - [x] **PROF-01**: User can create profile with display name
-- [ ] **PROF-02**: User can upload avatar image
-- [ ] **PROF-03**: User can view their own profile with listing count and join date
-- [ ] **PROF-04**: User can view other users' profiles
+- [x] **PROF-02**: User can upload avatar image
+- [x] **PROF-03**: User can view their own profile with listing count and join date
+- [x] **PROF-04**: User can view other users' profiles
 
 ### Item Listings
 
@@ -128,9 +128,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | PROF-01 | Phase 1 | Complete |
-| PROF-02 | Phase 1 | Pending |
-| PROF-03 | Phase 1 | Pending |
-| PROF-04 | Phase 1 | Pending |
+| PROF-02 | Phase 1 | Complete |
+| PROF-03 | Phase 1 | Complete |
+| PROF-04 | Phase 1 | Complete |
 | LIST-01 | Phase 2 | Pending |
 | LIST-02 | Phase 2 | Pending |
 | LIST-03 | Phase 2 | Pending |
