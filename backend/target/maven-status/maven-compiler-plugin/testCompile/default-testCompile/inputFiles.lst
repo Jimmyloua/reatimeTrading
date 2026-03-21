@@ -1,8 +1,0 @@
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\config\TestcontainersConfiguration.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\controller\AuthControllerTest.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\controller\AvatarControllerTest.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\controller\UserControllerTest.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\security\JwtAuthenticationFilterTest.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\security\JwtTokenProviderTest.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\service\AvatarServiceTest.java
-D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\user\UserServiceTest.java
