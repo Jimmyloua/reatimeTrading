@@ -99,7 +99,7 @@ Plans:
 - [x] 03-01-PLAN.md - Chat Entities and REST API (Wave 1) - Conversation, ChatMessage entities, ChatService, ChatController
 - [x] 03-02-PLAN.md - Notification Backend (Wave 1) - Notification entity, NotificationService, NotificationController
 - [x] 03-03-PLAN.md - WebSocket Real-Time Messaging (Wave 2) - WebSocket config, ChatWebSocketController, typing indicators
-- [ ] 03-04-PLAN.md - Frontend Chat UI (Wave 3) - MessagesPage, ConversationList, ChatView, WebSocket client
+- [x] 03-04-PLAN.md - Frontend Chat UI (Wave 3) - MessagesPage, ConversationList, ChatView, WebSocket client
 - [ ] 03-05-PLAN.md - Frontend Notification UI (Wave 3) - NotificationBell, NotificationDropdown, notification store
 - [ ] 03-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
 
