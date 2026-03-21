@@ -9,14 +9,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can register with email and password
+- [x] **AUTH-01**: User can register with email and password
 - [ ] **AUTH-02**: User can log in with email and password
 - [ ] **AUTH-03**: User session persists across browser refresh (JWT-based)
 - [ ] **AUTH-04**: User can log out from any page
 
 ### User Profiles
 
-- [ ] **PROF-01**: User can create profile with display name
+- [x] **PROF-01**: User can create profile with display name
 - [ ] **PROF-02**: User can upload avatar image
 - [ ] **PROF-03**: User can view their own profile with listing count and join date
 - [ ] **PROF-04**: User can view other users' profiles
@@ -123,11 +123,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
 | AUTH-02 | Phase 1 | Pending |
 | AUTH-03 | Phase 1 | Pending |
 | AUTH-04 | Phase 1 | Pending |
-| PROF-01 | Phase 1 | Pending |
+| PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Pending |
 | PROF-03 | Phase 1 | Pending |
 | PROF-04 | Phase 1 | Pending |
