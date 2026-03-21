@@ -19,6 +19,7 @@ import CreateListingPage from './pages/CreateListingPage'
 import EditListingPage from './pages/EditListingPage'
 import BrowseListingsPage from './pages/BrowseListingsPage'
 import ListingDetailPage from './pages/ListingDetailPage'
+import MessagesPage from './pages/MessagesPage'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 
 function App() {
@@ -124,6 +125,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditListingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <MessagesPage />
               </ProtectedRoute>
             }
           />
