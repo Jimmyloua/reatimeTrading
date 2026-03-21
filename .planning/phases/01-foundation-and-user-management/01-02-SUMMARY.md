@@ -181,3 +181,13 @@ None - no external service configuration required. JWT secret is configured in a
 ---
 *Phase: 01-foundation-and-user-management*
 *Completed: 2026-03-21*
+
+## Self-Check: PASSED
+
+- SUMMARY.md exists at `.planning/phases/01-foundation-and-user-management/01-02-SUMMARY.md`
+- All 4 task commits exist in git log:
+  - `3c31c19` feat(01-02): configure Spring Security and JWT infrastructure
+  - `5a20612` feat(01-02): create UserService and UserRepository
+  - `bf38ddd` feat(01-02): create AuthController with all endpoints
+  - `6fd03ea` docs(01-02): complete JWT authentication plan
+- All 22 tests pass
