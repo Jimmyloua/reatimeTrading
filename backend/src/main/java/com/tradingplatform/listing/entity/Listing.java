@@ -89,4 +89,12 @@ public class Listing {
     @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    /**
+     * Returns the user ID of the seller (alias for userId).
+     * Used for ownership checks.
+     */
+    public Long getSellerId() {
+        return this.userId;
+    }
 }

@@ -183,4 +183,86 @@ class ListingRepositoryTest {
         assertEquals(1, availableListings.size());
         assertEquals("Available Item", availableListings.get(0).getTitle());
     }
+
+    @Test
+    @DisplayName("findByIdAndDeletedFalse returns listing when not deleted")
+    void findByIdAndDeletedFalse_notDeleted_returnsListing() {
+        // Arrange
+        Listing listing = Listing.builder()
+                .title("Active Listing")
+                .description("Active listing description")
+                .price(new BigDecimal("100.00"))
+                .condition(Condition.GOOD)
+                .status(ListingStatus.AVAILABLE)
+                .category(testCategory)
+                .userId(testUserId)
+                .deleted(false)
+                .build();
+        Listing saved = listingRepository.save(listing);
+
+        // Act
+        Listing found = listingRepository.findByIdAndDeletedFalse(saved.getId()).orElse(null);
+
+        // Assert
+        assertNotNull(found);
+        assertEquals("Active Listing", found.getTitle());
+    }
+
+    @Test
+    @DisplayName("findByIdAndDeletedFalse returns empty when deleted")
+    void findByIdAndDeletedFalse_deleted_returnsEmpty() {
+        // Arrange
+        Listing listing = Listing.builder()
+                .title("Deleted Listing")
+                .description("Deleted listing description")
+                .price(new BigDecimal("100.00"))
+                .condition(Condition.GOOD)
+                .status(ListingStatus.AVAILABLE)
+                .category(testCategory)
+                .userId(testUserId)
+                .deleted(true)
+                .build();
+        Listing saved = listingRepository.save(listing);
+
+        // Act
+        var found = listingRepository.findByIdAndDeletedFalse(saved.getId());
+
+        // Assert
+        assertTrue(found.isEmpty());
+    }
+
+    @Test
+    @DisplayName("findByUserIdAndDeletedFalse returns non-deleted listings for user")
+    void findByUserIdAndDeletedFalse_userWithListings_returnsNonDeleted() {
+        // Arrange
+        Listing activeListing = Listing.builder()
+                .title("Active Listing")
+                .description("Active")
+                .price(new BigDecimal("100.00"))
+                .condition(Condition.GOOD)
+                .status(ListingStatus.AVAILABLE)
+                .category(testCategory)
+                .userId(testUserId)
+                .deleted(false)
+                .build();
+        Listing deletedListing = Listing.builder()
+                .title("Deleted Listing")
+                .description("Deleted")
+                .price(new BigDecimal("50.00"))
+                .condition(Condition.FAIR)
+                .status(ListingStatus.AVAILABLE)
+                .category(testCategory)
+                .userId(testUserId)
+                .deleted(true)
+                .build();
+        listingRepository.save(activeListing);
+        listingRepository.save(deletedListing);
+
+        // Act
+        var listings = listingRepository.findByUserIdAndDeletedFalse(testUserId, org.springframework.data.domain.PageRequest.of(0, 10));
+
+        // Assert
+        assertEquals(1, listings.getTotalElements());
+        assertEquals("Active Listing", listings.getContent().get(0).getTitle());
+    }
 }
