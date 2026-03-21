@@ -27,6 +27,11 @@ spring:
     virtual:
       enabled: true
 
+jwt:
+  secret: "VGhpcyBpcyBhIHZlcnkgc2VjdXJlIHNlY3JldCBrZXkgZm9yIEpXVCAyNTYgYml0cw=="
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+
 logging:
   level:
     com.tradingplatform: DEBUG
