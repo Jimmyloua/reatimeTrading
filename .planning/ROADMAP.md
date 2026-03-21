@@ -29,7 +29,7 @@
 4. User can set display name and upload avatar image visible on their profile
 5. User can view any user's profile showing display name, avatar, join date, and listing count
 
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans executed
 
 Plans:
 - [x] 01-01-PLAN.md - Backend Project Setup (Wave 1) - User entity, Liquibase, test infrastructure
@@ -37,7 +37,7 @@ Plans:
 - [x] 01-03-PLAN.md - Profile Backend (Wave 2) - Profile endpoints, avatar upload
 - [x] 01-04-PLAN.md - Frontend Auth UI (Wave 3) - React setup, login/register pages
 - [x] 01-05-PLAN.md - Profile UI (Wave 4) - Profile page, avatar upload UI
-- [ ] 01-06-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
+- [x] 01-06-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
 
 **Architecture:** User Service with Spring Security 7, JWT authentication, Spring Session with Redis, MySQL user database
 
@@ -61,7 +61,7 @@ Plans:
 5. User can search items by full-text search and filter by price range, condition, and location/distance
 6. User can view item detail page with all listing information and seller profile link
 
-**Plans:** 4/6 plans executed
+**Plans:** 6/6 plans executed
 
 Plans:
 - [x] 02-00-PLAN.md - Wave 0 Test Stubs - Test infrastructure for Nyquist compliance
@@ -69,7 +69,7 @@ Plans:
 - [x] 02-02-PLAN.md - Listing CRUD (Wave 2) - Listing entity, service, image upload
 - [x] 02-03-PLAN.md - Listing Discovery (Wave 3) - Search, filters, pagination
 - [x] 02-04-PLAN.md - Frontend Listing UI (Wave 4) - Create listing, browse, search pages
-- [ ] 02-05-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
+- [x] 02-05-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
 
 **Architecture:** Listing Service for CRUD operations, Search Service for discovery, file storage integration for photos, category taxonomy management
 
@@ -131,8 +131,8 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and User Management | 5/6 | In Progress|  |
-| 2. Core Marketplace (Listings and Discovery) | 4/6 | In Progress | 2026-03-21 |
+| 1. Foundation and User Management | 5/6 | Complete | 2026-03-21 |
+| 2. Core Marketplace (Listings and Discovery) | 6/6 | Complete | 2026-03-21 |
 | 3. Real-Time Communication | 0/0 | Not started | - |
 | 4. Transactions and Trust | 0/0 | Not started | - |
 
