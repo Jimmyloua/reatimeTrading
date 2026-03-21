@@ -18,7 +18,10 @@ public enum ErrorCode {
     LISTING_ACCESS_DENIED(HttpStatus.FORBIDDEN, "You can only modify your own listings"),
     IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "Maximum 10 images allowed per listing"),
     INVALID_IMAGE(HttpStatus.BAD_REQUEST, "Invalid image file"),
-    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not found");
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not found"),
+    CONVERSATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Conversation not found"),
+    NOT_CONVERSATION_PARTICIPANT(HttpStatus.FORBIDDEN, "Not a participant in this conversation"),
+    CANNOT_CHAT_WITH_SELF(HttpStatus.BAD_REQUEST, "Cannot start a conversation with yourself");
 
     private final HttpStatus httpStatus;
     private final String message;
