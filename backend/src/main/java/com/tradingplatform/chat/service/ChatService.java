@@ -241,6 +241,19 @@ public class ChatService {
     }
 
     /**
+     * Gets the ID of the other participant in a conversation.
+     *
+     * @param conversationId the conversation ID
+     * @param currentUserId the current user's ID
+     * @return the other participant's ID, or null if not found
+     */
+    public Long getOtherParticipantId(Long conversationId, Long currentUserId) {
+        return conversationRepository.findById(conversationId)
+            .map(c -> c.getOtherParticipantId(currentUserId))
+            .orElse(null);
+    }
+
+    /**
      * Truncates a string to a maximum length.
      */
     private String truncate(String s, int maxLen) {
