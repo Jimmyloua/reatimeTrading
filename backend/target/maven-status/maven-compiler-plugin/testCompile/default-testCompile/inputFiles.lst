@@ -2,6 +2,14 @@ D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\confi
 D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\controller\AuthControllerTest.java
 D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\controller\AvatarControllerTest.java
 D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\controller\UserControllerTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\controller\ListingControllerIT.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\dto\ListingDtoTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\repository\CategoryRepositoryTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\repository\ListingRepositoryTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\service\ListingImageServiceTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\service\ListingSearchServiceTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\service\ListingServiceTest.java
+D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\listing\service\ListingSpecificationTest.java
 D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\security\JwtAuthenticationFilterTest.java
 D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\security\JwtTokenProviderTest.java
 D:\Java\Projects\realTimeTrading\backend\src\test\java\com\tradingplatform\service\AvatarServiceTest.java
