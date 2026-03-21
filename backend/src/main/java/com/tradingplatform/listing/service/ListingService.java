@@ -5,6 +5,7 @@ import com.tradingplatform.exception.ErrorCode;
 import com.tradingplatform.listing.dto.CreateListingRequest;
 import com.tradingplatform.listing.dto.ListingDetailResponse;
 import com.tradingplatform.listing.dto.ListingResponse;
+import com.tradingplatform.listing.dto.ListingSearchRequest;
 import com.tradingplatform.listing.dto.UpdateListingRequest;
 import com.tradingplatform.listing.entity.Category;
 import com.tradingplatform.listing.entity.Listing;
@@ -13,12 +14,14 @@ import com.tradingplatform.listing.enums.ListingStatus;
 import com.tradingplatform.listing.repository.CategoryRepository;
 import com.tradingplatform.listing.repository.ListingImageRepository;
 import com.tradingplatform.listing.repository.ListingRepository;
+import com.tradingplatform.listing.specification.ListingSpecification;
 import com.tradingplatform.user.User;
 import com.tradingplatform.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -147,6 +150,70 @@ public class ListingService {
     @Transactional(readOnly = true)
     public Page<Listing> getUserListings(Long userId, Pageable pageable) {
         return listingRepository.findByUserIdAndDeletedFalse(userId, pageable);
+    }
+
+    /**
+     * Searches listings with full-text search and/or filters.
+     * If query is provided, uses full-text search.
+     * Otherwise, uses specification-based filtering.
+     *
+     * @param request  the search request containing filter criteria
+     * @param pageable pagination and sorting parameters
+     * @return paginated search results
+     */
+    @Transactional(readOnly = true)
+    public Page<Listing> searchListings(ListingSearchRequest request, Pageable pageable) {
+        // If query is provided, use full-text search
+        if (request.getQuery() != null && !request.getQuery().isBlank()) {
+            String sanitizedQuery = sanitizeSearchQuery(request.getQuery());
+            log.debug("Performing full-text search with query: {}", sanitizedQuery);
+            return listingRepository.searchByFullText(sanitizedQuery, pageable);
+        }
+
+        // Otherwise, use specification for filtered browsing
+        java.util.List<Long> categoryIds = null;
+        if (request.getCategoryId() != null) {
+            // Get category and all descendants
+            categoryIds = categoryRepository.findAllDescendantIds(request.getCategoryId());
+            log.debug("Searching in categories: {}", categoryIds);
+        }
+
+        Specification<Listing> spec = ListingSpecification.withFilters(request, categoryIds);
+        return listingRepository.findAll(spec, pageable);
+    }
+
+    /**
+     * Sanitizes a search query for MySQL BOOLEAN MODE full-text search.
+     * Removes special characters that could cause issues.
+     *
+     * @param query the raw search query
+     * @return sanitized query safe for full-text search
+     */
+    private String sanitizeSearchQuery(String query) {
+        // Escape special characters for BOOLEAN mode
+        // Remove dangerous characters, keep alphanumeric and spaces
+        return query.replaceAll("[+\\-~*\"()<>]", "").trim();
+    }
+
+    /**
+     * Gets the category tree (all root categories with their children).
+     *
+     * @return list of root categories
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<Category> getCategoryTree() {
+        return categoryRepository.findByParentIsNull();
+    }
+
+    /**
+     * Gets a category by ID.
+     *
+     * @param id the category ID
+     * @return the category if found
+     */
+    @Transactional(readOnly = true)
+    public java.util.Optional<Category> getCategoryById(Long id) {
+        return categoryRepository.findById(id);
     }
 
     /**

@@ -1,8 +1,10 @@
 package com.tradingplatform.listing.controller;
 
 import com.tradingplatform.listing.dto.*;
+import com.tradingplatform.listing.entity.Category;
 import com.tradingplatform.listing.entity.Listing;
 import com.tradingplatform.listing.entity.ListingImage;
+import com.tradingplatform.listing.enums.Condition;
 import com.tradingplatform.listing.service.ListingImageService;
 import com.tradingplatform.listing.service.ListingService;
 import com.tradingplatform.security.UserPrincipal;
@@ -19,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -131,6 +134,70 @@ public class ListingController {
             @AuthenticationPrincipal UserPrincipal principal) {
         listingImageService.setPrimaryImage(id, imageId, principal.getId());
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Search listings with optional filters and pagination.
+     * Supports full-text search, category filtering, price range, condition, and location.
+     */
+    @GetMapping
+    public ResponseEntity<Page<ListingResponse>> searchListings(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) List<Condition> conditions,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String region,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+
+        ListingSearchRequest request = ListingSearchRequest.builder()
+                .query(query)
+                .categoryId(categoryId)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .conditions(conditions)
+                .city(city)
+                .region(region)
+                .build();
+
+        Pageable pageable = PageRequest.of(page, size, parseSort(sort));
+        Page<Listing> results = listingService.searchListings(request, pageable);
+        return ResponseEntity.ok(results.map(listingService::toListingResponse));
+    }
+
+    /**
+     * Get all root categories (category tree).
+     */
+    @GetMapping("/categories")
+    public ResponseEntity<List<Category>> getCategoryTree() {
+        return ResponseEntity.ok(listingService.getCategoryTree());
+    }
+
+    /**
+     * Get a category by ID.
+     */
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+        return listingService.getCategoryById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Parse sort parameter from string format "field,direction".
+     */
+    private Sort parseSort(String sort) {
+        if (sort == null || sort.isBlank()) {
+            return Sort.by("createdAt").descending();
+        }
+        String[] parts = sort.split(",");
+        if (parts.length == 2) {
+            return Sort.by(Sort.Direction.fromString(parts[1]), parts[0]);
+        }
+        return Sort.by(sort).descending();
     }
 
     /**
