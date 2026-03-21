@@ -1,0 +1,8 @@
+com\tradingplatform\controller\UserControllerTest.class
+com\tradingplatform\security\JwtTokenProviderTest.class
+com\tradingplatform\config\TestcontainersConfiguration.class
+com\tradingplatform\controller\AvatarControllerTest.class
+com\tradingplatform\security\JwtAuthenticationFilterTest.class
+com\tradingplatform\service\AvatarServiceTest.class
+com\tradingplatform\user\UserServiceTest.class
+com\tradingplatform\controller\AuthControllerTest.class
