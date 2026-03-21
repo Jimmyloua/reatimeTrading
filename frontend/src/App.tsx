@@ -3,8 +3,19 @@ import { useAuthStore } from './stores/authStore'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Toaster } from './components/ui/sonner'
 import { Button } from './components/ui/button'
+import { Avatar, AvatarImage, AvatarFallback } from './components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './components/ui/dropdown-menu'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ProfilePage from './pages/ProfilePage'
+import UserProfilePage from './pages/UserProfilePage'
+import { getInitials, getAvatarColor } from './pages/ProfilePage'
 
 function App() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -22,15 +33,39 @@ function App() {
             Trading Platform
           </Link>
           <div className="flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                <span className="text-sm text-muted-foreground">
-                  {user?.displayName || user?.email || 'User'}
-                </span>
-                <Button variant="ghost" onClick={handleLogout}>
-                  Sign out
-                </Button>
-              </>
+            {isAuthenticated && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2 rounded-full p-1 hover:bg-accent outline-none">
+                  {user.avatarUrl ? (
+                    <Avatar size="sm">
+                      <AvatarImage src={user.avatarUrl} alt={user.displayName || 'User'} />
+                      <AvatarFallback>
+                        {getInitials(user.displayName, user.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <div
+                      className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white"
+                      style={{ backgroundColor: getAvatarColor(user.id) }}
+                    >
+                      {getInitials(user.displayName, user.email)}
+                    </div>
+                  )}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <div className="px-1.5 py-1 text-sm font-medium">
+                    {user.displayName || 'New User'}
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Link to="/login">
@@ -51,7 +86,15 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePlaceholder /></ProtectedRoute>} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/users/:id" element={<UserProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -92,15 +135,6 @@ function HomePage() {
       <p className="mt-4 text-muted-foreground">
         Welcome back! Browse listings or start selling your devices.
       </p>
-    </div>
-  )
-}
-
-function ProfilePlaceholder() {
-  return (
-    <div className="py-8">
-      <h1 className="text-2xl font-semibold text-foreground">Profile</h1>
-      <p className="mt-4 text-muted-foreground">Profile page coming soon...</p>
     </div>
   )
 }
