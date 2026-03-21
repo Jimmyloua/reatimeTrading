@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="005-seed-categories" author="system">
+
+        <!-- Root Level: Electronics -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Electronics"/>
+            <column name="slug" value="electronics"/>
+            <column name="description" value="All electronic devices and accessories"/>
+            <column name="parent_id"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 2: Main electronics categories -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Phones &amp; Tablets"/>
+            <column name="slug" value="phones-tablets"/>
+            <column name="description" value="Smartphones, tablets, and phone accessories"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="Computers &amp; Laptops"/>
+            <column name="slug" value="computers-laptops"/>
+            <column name="description" value="Laptops, desktops, and computer accessories"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="Cameras &amp; Photography"/>
+            <column name="slug" value="cameras-photography"/>
+            <column name="description" value="Digital cameras, lenses, and photography equipment"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="5"/>
+            <column name="name" value="Audio &amp; Video"/>
+            <column name="slug" value="audio-video"/>
+            <column name="description" value="Headphones, speakers, and audio/video equipment"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="4"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="6"/>
+            <column name="name" value="Gaming"/>
+            <column name="slug" value="gaming"/>
+            <column name="description" value="Gaming consoles, games, and accessories"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="5"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="7"/>
+            <column name="name" value="Networking"/>
+            <column name="slug" value="networking"/>
+            <column name="description" value="Routers, switches, and network equipment"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="6"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 3: Phones & Tablets children -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="8"/>
+            <column name="name" value="Smartphones"/>
+            <column name="slug" value="smartphones"/>
+            <column name="description" value="Smartphones and mobile phones"/>
+            <column name="parent_id" valueNumeric="2"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="9"/>
+            <column name="name" value="Tablets"/>
+            <column name="slug" value="tablets"/>
+            <column name="description" value="Tablets and e-readers"/>
+            <column name="parent_id" valueNumeric="2"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="10"/>
+            <column name="name" value="Phone Accessories"/>
+            <column name="slug" value="phone-accessories"/>
+            <column name="description" value="Cases, chargers, and phone accessories"/>
+            <column name="parent_id" valueNumeric="2"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 3: Computers & Laptops children -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="11"/>
+            <column name="name" value="Laptops"/>
+            <column name="slug" value="laptops"/>
+            <column name="description" value="Laptops and notebooks"/>
+            <column name="parent_id" valueNumeric="3"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="12"/>
+            <column name="name" value="Desktops"/>
+            <column name="slug" value="desktops"/>
+            <column name="description" value="Desktop computers and workstations"/>
+            <column name="parent_id" valueNumeric="3"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="13"/>
+            <column name="name" value="Monitors"/>
+            <column name="slug" value="monitors"/>
+            <column name="description" value="Computer monitors and displays"/>
+            <column name="parent_id" valueNumeric="3"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="14"/>
+            <column name="name" value="Computer Accessories"/>
+            <column name="slug" value="computer-accessories"/>
+            <column name="description" value="Keyboards, mice, and computer peripherals"/>
+            <column name="parent_id" valueNumeric="3"/>
+            <column name="display_order" valueNumeric="4"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 3: Cameras & Photography children -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="15"/>
+            <column name="name" value="Digital Cameras"/>
+            <column name="slug" value="digital-cameras"/>
+            <column name="description" value="Digital cameras and mirrorless cameras"/>
+            <column name="parent_id" valueNumeric="4"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="16"/>
+            <column name="name" value="Lenses"/>
+            <column name="slug" value="lenses"/>
+            <column name="description" value="Camera lenses and filters"/>
+            <column name="parent_id" valueNumeric="4"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="17"/>
+            <column name="name" value="Camera Accessories"/>
+            <column name="slug" value="camera-accessories"/>
+            <column name="description" value="Tripods, bags, and camera equipment"/>
+            <column name="parent_id" valueNumeric="4"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 3: Audio & Video children -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="18"/>
+            <column name="name" value="Headphones"/>
+            <column name="slug" value="headphones"/>
+            <column name="description" value="Headphones and earbuds"/>
+            <column name="parent_id" valueNumeric="5"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="19"/>
+            <column name="name" value="Speakers"/>
+            <column name="slug" value="speakers"/>
+            <column name="description" value="Bluetooth speakers and home audio"/>
+            <column name="parent_id" valueNumeric="5"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="20"/>
+            <column name="name" value="Microphones"/>
+            <column name="slug" value="microphones"/>
+            <column name="description" value="Microphones and audio recording equipment"/>
+            <column name="parent_id" valueNumeric="5"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 3: Gaming children -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="21"/>
+            <column name="name" value="Consoles"/>
+            <column name="slug" value="consoles"/>
+            <column name="description" value="Gaming consoles and hardware"/>
+            <column name="parent_id" valueNumeric="6"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="22"/>
+            <column name="name" value="Games"/>
+            <column name="slug" value="games"/>
+            <column name="description" value="Video games for all platforms"/>
+            <column name="parent_id" valueNumeric="6"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="23"/>
+            <column name="name" value="Gaming Accessories"/>
+            <column name="slug" value="gaming-accessories"/>
+            <column name="description" value="Controllers, headsets, and gaming gear"/>
+            <column name="parent_id" valueNumeric="6"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <!-- Level 3: Networking children -->
+        <insert tableName="categories">
+            <column name="id" valueNumeric="24"/>
+            <column name="name" value="Routers"/>
+            <column name="slug" value="routers"/>
+            <column name="description" value="WiFi routers and mesh systems"/>
+            <column name="parent_id" valueNumeric="7"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="25"/>
+            <column name="name" value="Switches"/>
+            <column name="slug" value="switches"/>
+            <column name="description" value="Network switches and hubs"/>
+            <column name="parent_id" valueNumeric="7"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="categories">
+            <column name="id" valueNumeric="26"/>
+            <column name="name" value="Network Storage"/>
+            <column name="slug" value="network-storage"/>
+            <column name="description" value="NAS devices and network storage"/>
+            <column name="parent_id" valueNumeric="7"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
