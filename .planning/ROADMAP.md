@@ -68,7 +68,7 @@ Plans:
 - [x] 02-01-PLAN.md - Category Management (Wave 1) - Category entity, repository, hierarchy
 - [x] 02-02-PLAN.md - Listing CRUD (Wave 2) - Listing entity, service, image upload
 - [x] 02-03-PLAN.md - Listing Discovery (Wave 3) - Search, filters, pagination
-- [ ] 02-04-PLAN.md - Frontend Listing UI (Wave 4) - Create listing, browse, search pages
+- [x] 02-04-PLAN.md - Frontend Listing UI (Wave 4) - Create listing, browse, search pages
 - [ ] 02-05-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
 
 **Architecture:** Listing Service for CRUD operations, Search Service for discovery, file storage integration for photos, category taxonomy management
