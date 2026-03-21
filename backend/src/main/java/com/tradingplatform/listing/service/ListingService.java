@@ -26,7 +26,7 @@ public class ListingService {
     }
 
     public List<Listing> findBySellerId(Long sellerId) {
-        return listingRepository.findBySellerId(sellerId);
+        return listingRepository.findByUserId(sellerId);
     }
 
     @Transactional
