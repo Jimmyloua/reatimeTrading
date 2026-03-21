@@ -34,7 +34,7 @@
 Plans:
 - [x] 01-01-PLAN.md - Backend Project Setup (Wave 1) - User entity, Liquibase, test infrastructure
 - [x] 01-02-PLAN.md - JWT Authentication (Wave 2) - Spring Security, auth endpoints
-- [ ] 01-03-PLAN.md - Profile Backend (Wave 2) - Profile endpoints, avatar upload
+- [x] 01-03-PLAN.md - Profile Backend (Wave 2) - Profile endpoints, avatar upload
 - [ ] 01-04-PLAN.md - Frontend Auth UI (Wave 3) - React setup, login/register pages
 - [ ] 01-05-PLAN.md - Profile UI (Wave 4) - Profile page, avatar upload UI
 - [ ] 01-06-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
@@ -123,7 +123,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and User Management | 0/6 | Planning complete | - |
+| 1. Foundation and User Management | 3/6 | Executing | 01-01, 01-02, 01-03 |
 | 2. Core Marketplace (Listings and Discovery) | 0/0 | Not started | - |
 | 3. Real-Time Communication | 0/0 | Not started | - |
 | 4. Transactions and Trust | 0/0 | Not started | - |
