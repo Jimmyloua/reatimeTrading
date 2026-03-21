@@ -34,13 +34,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery and Search
 
-- [ ] **DISC-01**: User can browse items by category
-- [ ] **DISC-02**: User can search items by full-text search (title, description)
-- [ ] **DISC-03**: User can filter items by price range
-- [ ] **DISC-04**: User can filter items by condition
-- [ ] **DISC-05**: User can filter items by location/distance
-- [ ] **DISC-06**: User can view item detail page with all listing information
-- [ ] **DISC-07**: User can view seller information on item detail page
+- [x] **DISC-01**: User can browse items by category
+- [x] **DISC-02**: User can search items by full-text search (title, description)
+- [x] **DISC-03**: User can filter items by price range
+- [x] **DISC-04**: User can filter items by condition
+- [x] **DISC-05**: User can filter items by location/distance
+- [x] **DISC-06**: User can view item detail page with all listing information
+- [x] **DISC-07**: User can view seller information on item detail page
 
 ### Real-Time Communication
 
@@ -139,13 +139,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIST-06 | Phase 2 | Complete |
 | LIST-07 | Phase 2 | Complete |
 | LIST-08 | Phase 2 | Complete |
-| DISC-01 | Phase 2 | Pending |
-| DISC-02 | Phase 2 | Pending |
-| DISC-03 | Phase 2 | Pending |
-| DISC-04 | Phase 2 | Pending |
-| DISC-05 | Phase 2 | Pending |
-| DISC-06 | Phase 2 | Pending |
-| DISC-07 | Phase 2 | Pending |
+| DISC-01 | Phase 2 | Complete |
+| DISC-02 | Phase 2 | Complete |
+| DISC-03 | Phase 2 | Complete |
+| DISC-04 | Phase 2 | Complete |
+| DISC-05 | Phase 2 | Complete |
+| DISC-06 | Phase 2 | Complete |
+| DISC-07 | Phase 2 | Complete |
 | CHAT-01 | Phase 3 | Pending |
 | CHAT-02 | Phase 3 | Pending |
 | CHAT-03 | Phase 3 | Pending |

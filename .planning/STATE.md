@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-21T14:31:48.294Z"
+last_updated: "2026-03-21T14:50:00.000Z"
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # State: Real-Time Trading Platform
@@ -26,7 +26,7 @@ progress:
 ## Current Position
 
 Phase: 02 (core-marketplace-listings-and-discovery) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 
 ### Phase Context
 
@@ -58,7 +58,8 @@ Plan: 4 of 6
 | Phase 01 P05 | 15 | 3 tasks | 8 files |
 | Phase 02 P00 | 15min | 3 tasks | 20 files |
 | Phase 02 P01 | 20 minutes | 3 tasks | 13 files |
-| Phase 02-core-marketplace-listings-and-discovery P02-02 | 30 minutes | 4 tasks | 21 files |
+| Phase 02 P02 | 30 minutes | 4 tasks | 21 files |
+| Phase 02 P03 | 15 minutes | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Plan: 4 of 6
 | shadcn base-nova style | Default style for shadcn v4, uses Base UI primitives | Plan 01-04 |
 | Vitest for frontend testing | Native Vite integration, jsdom support, fast test execution | Plan 02-00 |
 | Adjacency list for category hierarchy | Self-referencing parent_id for categories, simpler than nested sets | Plan 02-01 |
+| JPA Specification for dynamic filtering | Composable, type-safe filter predicates for listing search | Plan 02-03 |
+| MySQL FULLTEXT for text search | Native full-text search with BOOLEAN MODE for title/description | Plan 02-03 |
 
 ### Technical Decisions
 
@@ -107,10 +110,13 @@ Plan: 4 of 6
 | 2026-03-21 | Plan 01-03 completed | User profile management with avatar upload |
 | 2026-03-21 | Plan 01-04 completed | React frontend with authentication UI |
 | 2026-03-21 | Plan 02-00 completed | Wave 0 test stubs for Phase 2 |
+| 2026-03-21 | Plan 02-01 completed | Category management with hierarchy |
+| 2026-03-21 | Plan 02-02 completed | Listing CRUD with images |
+| 2026-03-21 | Plan 02-03 completed | Search and discovery with filtering |
 
 ### Next Actions
 
-1. Continue with Plan 02-01 (Category management)
+1. Continue with Plan 02-04 (Remaining Phase 2 plans)
 2. Continue implementing Phase 2 listing features
 
 ### Blockers
