@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.tradingplatform.listing.repository.CategoryRepositoryTest
--------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.216 s -- in com.tradingplatform.listing.repository.CategoryRepositoryTest
