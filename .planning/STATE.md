@@ -63,6 +63,7 @@ Plan: 3 of 7
 | Phase 02 P04 | 25 minutes | 5 tasks | 18 files |
 | Phase 02 P05 | 15min | 3 tasks | 4 files |
 | Phase 03 P00 | 5min | 3 tasks | 10 files |
+| Phase 03 P01 | 36min | 3 tasks | 15 files |
 | Phase 03 P02 | 19min | 2 tasks | 10 files |
 
 ## Accumulated Context
@@ -88,6 +89,7 @@ Plan: 3 of 7
 | Manual verification checkpoint for UI flows | UI interactions cannot be fully automated; human verification ensures UX quality | Plan 02-05 |
 | Polymorphic notification reference (referenceId + referenceType) | Links notifications to conversations, listings, transactions without explicit FKs | Plan 03-02 |
 | @Modifying(clearAutomatically = true) for bulk updates | Clears JPA persistence context after UPDATE/DELETE queries to avoid stale data | Plan 03-02 |
+| Persistence-first message saving | Messages written to DB before any WebSocket delivery to prevent data loss on server restart | Plan 03-01 |
 
 ### Technical Decisions
 
@@ -127,6 +129,7 @@ Plan: 3 of 7
 | 2026-03-21 | Plan 02-05 completed | Phase 2 verification - all 115 tests pass |
 | 2026-03-21 | Phase 2 COMPLETE | 15 requirements verified, phase summary created |
 | 2026-03-22 | Plan 03-00 completed | Wave 0 test stubs for Phase 3 |
+| 2026-03-22 | Plan 03-01 completed | Chat entities, repositories, service, controller |
 | 2026-03-22 | Plan 03-02 completed | Notification backend with REST API |
 
 ### Next Actions

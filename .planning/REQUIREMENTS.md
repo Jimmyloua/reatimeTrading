@@ -44,10 +44,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Real-Time Communication
 
-- [ ] **CHAT-01**: User can initiate chat with seller about an item
+- [x] **CHAT-01**: User can initiate chat with seller about an item
 - [ ] **CHAT-02**: User can send and receive real-time messages
-- [ ] **CHAT-03**: User can view chat history with other users
-- [ ] **CHAT-04**: User receives message persistence (messages stored in database)
+- [x] **CHAT-03**: User can view chat history with other users
+- [x] **CHAT-04**: User receives message persistence (messages stored in database)
 - [ ] **CHAT-05**: User can see when other party is typing (optional presence indicator)
 
 ### Notifications
@@ -146,10 +146,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISC-05 | Phase 2 | Complete |
 | DISC-06 | Phase 2 | Complete |
 | DISC-07 | Phase 2 | Complete |
-| CHAT-01 | Phase 3 | Pending |
+| CHAT-01 | Phase 3 | Complete |
 | CHAT-02 | Phase 3 | Pending |
-| CHAT-03 | Phase 3 | Pending |
-| CHAT-04 | Phase 3 | Pending |
+| CHAT-03 | Phase 3 | Complete |
+| CHAT-04 | Phase 3 | Complete |
 | CHAT-05 | Phase 3 | Pending |
 | NOTF-01 | Phase 3 | Pending |
 | NOTF-02 | Phase 3 | Pending |
