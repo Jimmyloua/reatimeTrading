@@ -7,8 +7,8 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation and User Management** - Users can create accounts, authenticate, and manage their identity on the platform
-- [ ] **Phase 2: Core Marketplace (Listings and Discovery)** - Users can list items for sale and discover items to buy through browsing and search
+- [x] **Phase 1: Foundation and User Management** - Users can create accounts, authenticate, and manage their identity on the platform
+- [x] **Phase 2: Core Marketplace (Listings and Discovery)** - Users can list items for sale and discover items to buy through browsing and search
 - [ ] **Phase 3: Real-Time Communication** - Users can communicate in real-time about items and receive timely notifications
 - [ ] **Phase 4: Transactions and Trust** - Users can complete transactions and build trust through ratings and reviews
 
@@ -92,7 +92,16 @@ Plans:
 4. User receives real-time notification when receiving a new message
 5. User receives notification when their item sells, and can view/mark notifications as read
 
-**Plans:** TBD
+**Plans:** 7 plans
+
+Plans:
+- [ ] 03-00-PLAN.md - Wave 0 Test Infrastructure - Test stubs, dependencies
+- [ ] 03-01-PLAN.md - Chat Entities and REST API (Wave 1) - Conversation, ChatMessage entities, ChatService, ChatController
+- [ ] 03-02-PLAN.md - Notification Backend (Wave 1) - Notification entity, NotificationService, NotificationController
+- [ ] 03-03-PLAN.md - WebSocket Real-Time Messaging (Wave 2) - WebSocket config, ChatWebSocketController, typing indicators
+- [ ] 03-04-PLAN.md - Frontend Chat UI (Wave 3) - MessagesPage, ConversationList, ChatView, WebSocket client
+- [ ] 03-05-PLAN.md - Frontend Notification UI (Wave 3) - NotificationBell, NotificationDropdown, notification store
+- [ ] 03-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
 
 **Architecture:** Messaging Service with WebSocket handlers, Kafka for message persistence and event streaming, Notification Service for push/email triggers
 
@@ -131,9 +140,9 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and User Management | 5/6 | Complete | 2026-03-21 |
+| 1. Foundation and User Management | 6/6 | Complete | 2026-03-21 |
 | 2. Core Marketplace (Listings and Discovery) | 6/6 | Complete | 2026-03-21 |
-| 3. Real-Time Communication | 0/0 | Not started | - |
+| 3. Real-Time Communication | 0/7 | Not started | - |
 | 4. Transactions and Trust | 0/0 | Not started | - |
 
 ## Coverage
@@ -187,3 +196,4 @@ These should be re-evaluated after v1 launch based on user feedback and usage pa
 
 *Roadmap created: 2026-03-21*
 *Phase 1 plans added: 2026-03-21*
+*Phase 3 plans added: 2026-03-22*
