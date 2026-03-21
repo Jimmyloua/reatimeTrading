@@ -61,7 +61,15 @@ Plans:
 5. User can search items by full-text search and filter by price range, condition, and location/distance
 6. User can view item detail page with all listing information and seller profile link
 
-**Plans:** TBD
+**Plans:** 1/6 plans executed
+
+Plans:
+- [x] 02-00-PLAN.md - Wave 0 Test Stubs - Test infrastructure for Nyquist compliance
+- [ ] 02-01-PLAN.md - Category Management (Wave 1) - Category entity, repository, hierarchy
+- [ ] 02-02-PLAN.md - Listing CRUD (Wave 2) - Listing entity, service, image upload
+- [ ] 02-03-PLAN.md - Listing Discovery (Wave 3) - Search, filters, pagination
+- [ ] 02-04-PLAN.md - Frontend Listing UI (Wave 4) - Create listing, browse, search pages
+- [ ] 02-05-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
 
 **Architecture:** Listing Service for CRUD operations, Search Service for discovery, file storage integration for photos, category taxonomy management
 
@@ -124,7 +132,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and User Management | 5/6 | In Progress|  |
-| 2. Core Marketplace (Listings and Discovery) | 0/0 | Not started | - |
+| 2. Core Marketplace (Listings and Discovery) | 1/6 | In Progress | 2026-03-21 |
 | 3. Real-Time Communication | 0/0 | Not started | - |
 | 4. Transactions and Trust | 0/0 | Not started | - |
 
