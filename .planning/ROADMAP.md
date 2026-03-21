@@ -95,7 +95,7 @@ Plans:
 **Plans:** 7 plans
 
 Plans:
-- [ ] 03-00-PLAN.md - Wave 0 Test Infrastructure - Test stubs, dependencies
+- [x] 03-00-PLAN.md - Wave 0 Test Infrastructure - Test stubs, dependencies
 - [ ] 03-01-PLAN.md - Chat Entities and REST API (Wave 1) - Conversation, ChatMessage entities, ChatService, ChatController
 - [ ] 03-02-PLAN.md - Notification Backend (Wave 1) - Notification entity, NotificationService, NotificationController
 - [ ] 03-03-PLAN.md - WebSocket Real-Time Messaging (Wave 2) - WebSocket config, ChatWebSocketController, typing indicators
