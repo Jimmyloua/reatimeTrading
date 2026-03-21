@@ -5,15 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 /**
- * ListingImage entity for item images.
- * Stub for Wave 0 - will be implemented in Plan 02-02.
+ * ListingImage entity for item images with primary selection support.
  */
 @Entity
-@Table(name = "listing_images")
+@Table(name = "listing_images", indexes = {
+    @Index(name = "idx_images_listing", columnList = "listing_id")
+})
+@EntityListeners(AuditingEntityListener.class)
 @Data
 @Builder
 @NoArgsConstructor
@@ -28,21 +32,18 @@ public class ListingImage {
     @JoinColumn(name = "listing_id", nullable = false)
     private Listing listing;
 
-    @Column(nullable = false)
-    private String imageUrl;
+    @Column(name = "image_path", nullable = false, length = 500)
+    private String imagePath;
 
-    @Column(nullable = false)
-    private Integer displayOrder;
-
-    @Column(nullable = false)
+    @Column(name = "is_primary", nullable = false)
     @Builder.Default
     private Boolean isPrimary = false;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "display_order", nullable = false)
+    @Builder.Default
+    private Integer displayOrder = 0;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    private LocalDateTime createdAt;
 }

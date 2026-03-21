@@ -1,10 +1,15 @@
 package com.tradingplatform.listing.entity;
 
+import com.tradingplatform.listing.enums.Condition;
+import com.tradingplatform.listing.enums.ListingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,10 +18,15 @@ import java.util.List;
 
 /**
  * Listing entity for marketplace items.
- * Stub for Wave 0 - will be implemented in Plan 02-01.
  */
 @Entity
-@Table(name = "listings")
+@Table(name = "listings", indexes = {
+    @Index(name = "idx_listings_user", columnList = "user_id"),
+    @Index(name = "idx_listings_category", columnList = "category_id"),
+    @Index(name = "idx_listings_status", columnList = "status"),
+    @Index(name = "idx_listings_price", columnList = "price")
+})
+@EntityListeners(AuditingEntityListener.class)
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,53 +37,56 @@ public class Listing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     @Builder.Default
-    private String condition = "GOOD";
+    private Condition condition = Condition.GOOD;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private ListingStatus status = ListingStatus.AVAILABLE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "seller_id", nullable = false)
-    private Long sellerId;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private String status = "ACTIVE";
+    @Column(length = 100)
+    private String city;
+
+    @Column(length = 100)
+    private String region;
 
     private Double latitude;
-    private Double longitude;
-    private String location;
 
-    @Column(columnDefinition = "JSON")
-    private String attributes;
+    private Double longitude;
+
+    @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
+    private Boolean deleted = false;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("isPrimary DESC, displayOrder ASC")
     @Builder.Default
     private List<ListingImage> images = new ArrayList<>();
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }
