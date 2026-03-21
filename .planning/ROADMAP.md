@@ -35,7 +35,7 @@ Plans:
 - [x] 01-01-PLAN.md - Backend Project Setup (Wave 1) - User entity, Liquibase, test infrastructure
 - [x] 01-02-PLAN.md - JWT Authentication (Wave 2) - Spring Security, auth endpoints
 - [x] 01-03-PLAN.md - Profile Backend (Wave 2) - Profile endpoints, avatar upload
-- [ ] 01-04-PLAN.md - Frontend Auth UI (Wave 3) - React setup, login/register pages
+- [x] 01-04-PLAN.md - Frontend Auth UI (Wave 3) - React setup, login/register pages
 - [ ] 01-05-PLAN.md - Profile UI (Wave 4) - Profile page, avatar upload UI
 - [ ] 01-06-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
 
