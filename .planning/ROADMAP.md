@@ -98,7 +98,7 @@ Plans:
 - [x] 03-00-PLAN.md - Wave 0 Test Infrastructure - Test stubs, dependencies
 - [x] 03-01-PLAN.md - Chat Entities and REST API (Wave 1) - Conversation, ChatMessage entities, ChatService, ChatController
 - [x] 03-02-PLAN.md - Notification Backend (Wave 1) - Notification entity, NotificationService, NotificationController
-- [ ] 03-03-PLAN.md - WebSocket Real-Time Messaging (Wave 2) - WebSocket config, ChatWebSocketController, typing indicators
+- [x] 03-03-PLAN.md - WebSocket Real-Time Messaging (Wave 2) - WebSocket config, ChatWebSocketController, typing indicators
 - [ ] 03-04-PLAN.md - Frontend Chat UI (Wave 3) - MessagesPage, ConversationList, ChatView, WebSocket client
 - [ ] 03-05-PLAN.md - Frontend Notification UI (Wave 3) - NotificationBell, NotificationDropdown, notification store
 - [ ] 03-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
@@ -142,7 +142,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation and User Management | 6/6 | Complete | 2026-03-21 |
 | 2. Core Marketplace (Listings and Discovery) | 6/6 | Complete | 2026-03-21 |
-| 3. Real-Time Communication | 3/7 | In progress | - |
+| 3. Real-Time Communication | 4/7 | In progress | - |
 | 4. Transactions and Trust | 0/0 | Not started | - |
 
 ## Coverage
