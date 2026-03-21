@@ -52,7 +52,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Notifications
 
-- [ ] **NOTF-01**: User receives real-time notification when receiving a message
+- [x] **NOTF-01**: User receives real-time notification when receiving a message
 - [ ] **NOTF-02**: User receives notification when item sells
 - [x] **NOTF-03**: User can view notification history
 - [x] **NOTF-04**: User can mark notifications as read
@@ -151,7 +151,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-03 | Phase 3 | Complete |
 | CHAT-04 | Phase 3 | Complete |
 | CHAT-05 | Phase 3 | Complete |
-| NOTF-01 | Phase 3 | Pending |
+| NOTF-01 | Phase 3 | Complete |
 | NOTF-02 | Phase 3 | Pending |
 | NOTF-03 | Phase 3 | Complete |
 | NOTF-04 | Phase 3 | Complete |

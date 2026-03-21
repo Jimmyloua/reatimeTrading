@@ -100,7 +100,7 @@ Plans:
 - [x] 03-02-PLAN.md - Notification Backend (Wave 1) - Notification entity, NotificationService, NotificationController
 - [x] 03-03-PLAN.md - WebSocket Real-Time Messaging (Wave 2) - WebSocket config, ChatWebSocketController, typing indicators
 - [x] 03-04-PLAN.md - Frontend Chat UI (Wave 3) - MessagesPage, ConversationList, ChatView, WebSocket client
-- [ ] 03-05-PLAN.md - Frontend Notification UI (Wave 3) - NotificationBell, NotificationDropdown, notification store
+- [x] 03-05-PLAN.md - Frontend Notification UI (Wave 3) - NotificationBell, NotificationDropdown, notification store
 - [ ] 03-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
 
 **Architecture:** Messaging Service with WebSocket handlers, Kafka for message persistence and event streaming, Notification Service for push/email triggers
