@@ -23,13 +23,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Item Listings
 
-- [ ] **LIST-01**: User can create item listing with title, description, and price
-- [ ] **LIST-02**: User can upload multiple photos for a listing with primary image selection
+- [x] **LIST-01**: User can create item listing with title, description, and price
+- [x] **LIST-02**: User can upload multiple photos for a listing with primary image selection
 - [x] **LIST-03**: User can select category for item (hierarchical electronics categories)
 - [x] **LIST-04**: User can specify item condition (new, like new, good, fair, poor)
 - [x] **LIST-05**: User can specify item location (city/region for local pickup)
-- [ ] **LIST-06**: User can edit their own listings
-- [ ] **LIST-07**: User can delete their own listings
+- [x] **LIST-06**: User can edit their own listings
+- [x] **LIST-07**: User can delete their own listings
 - [x] **LIST-08**: User can mark items as sold, available, or reserved
 
 ### Discovery and Search
@@ -131,13 +131,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROF-02 | Phase 1 | Complete |
 | PROF-03 | Phase 1 | Complete |
 | PROF-04 | Phase 1 | Complete |
-| LIST-01 | Phase 2 | Pending |
-| LIST-02 | Phase 2 | Pending |
+| LIST-01 | Phase 2 | Complete |
+| LIST-02 | Phase 2 | Complete |
 | LIST-03 | Phase 2 | Complete |
 | LIST-04 | Phase 2 | Complete |
 | LIST-05 | Phase 2 | Complete |
-| LIST-06 | Phase 2 | Pending |
-| LIST-07 | Phase 2 | Pending |
+| LIST-06 | Phase 2 | Complete |
+| LIST-07 | Phase 2 | Complete |
 | LIST-08 | Phase 2 | Complete |
 | DISC-01 | Phase 2 | Pending |
 | DISC-02 | Phase 2 | Pending |

@@ -66,7 +66,7 @@ Plans:
 Plans:
 - [x] 02-00-PLAN.md - Wave 0 Test Stubs - Test infrastructure for Nyquist compliance
 - [x] 02-01-PLAN.md - Category Management (Wave 1) - Category entity, repository, hierarchy
-- [ ] 02-02-PLAN.md - Listing CRUD (Wave 2) - Listing entity, service, image upload
+- [x] 02-02-PLAN.md - Listing CRUD (Wave 2) - Listing entity, service, image upload
 - [ ] 02-03-PLAN.md - Listing Discovery (Wave 3) - Search, filters, pagination
 - [ ] 02-04-PLAN.md - Frontend Listing UI (Wave 4) - Create listing, browse, search pages
 - [ ] 02-05-PLAN.md - Verification Checkpoint (Wave 5) - End-to-end verification
