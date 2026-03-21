@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,9 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Pencil } from 'lucide-react'
+import { AvatarUpload } from '@/components/AvatarUpload'
 
 // Curated color palette for default avatars (from UI-SPEC.md)
 const AVATAR_COLORS = [
@@ -56,6 +56,7 @@ function getInitials(displayName: string | null, email: string): string {
 
 /**
  * Default Avatar component with initials
+ * Note: This is exported for use in other components like UserProfilePage
  */
 function DefaultAvatar({
   displayName,
@@ -71,15 +72,19 @@ function DefaultAvatar({
   const initials = getInitials(displayName, email)
   const bgColor = getAvatarColor(identifier)
 
+  const sizeClasses = {
+    sm: 'h-6 w-6 text-xs',
+    default: 'h-8 w-8 text-sm',
+    lg: 'h-10 w-10 text-base',
+  }
+
   return (
-    <Avatar size={size} className="bg-muted">
-      <AvatarFallback
-        className="font-semibold text-white"
-        style={{ backgroundColor: bgColor }}
-      >
-        {initials}
-      </AvatarFallback>
-    </Avatar>
+    <div
+      className={`flex items-center justify-center rounded-full font-semibold text-white ${sizeClasses[size]}`}
+      style={{ backgroundColor: bgColor }}
+    >
+      {initials}
+    </div>
   )
 }
 
@@ -97,7 +102,8 @@ function formatDate(dateString: string): string {
 
 export default function ProfilePage() {
   const navigate = useNavigate()
-  const { profile, isLoading, error, updateProfile, isUpdating } = useUserProfile()
+  const { profile, isLoading, error, updateProfile, isUpdating, refetch } = useUserProfile()
+  const { setUser, user } = useAuthStore()
   const [displayName, setDisplayName] = useState('')
   const [validationError, setValidationError] = useState<string | null>(null)
 
@@ -117,6 +123,16 @@ export default function ProfilePage() {
     } else {
       setValidationError(null)
     }
+  }
+
+  // Handle avatar upload complete
+  const handleAvatarUploadComplete = (avatarUrl: string) => {
+    // Update auth store with new avatar
+    if (user) {
+      setUser({ ...user, avatarUrl })
+    }
+    // Refetch profile to get updated data
+    refetch()
   }
 
   // Handle form submission
@@ -181,8 +197,6 @@ export default function ProfilePage() {
     return null
   }
 
-  const displayDisplayName = profile.displayName || 'New User'
-
   return (
     <div className="mx-auto max-w-2xl py-8">
       <Card>
@@ -196,30 +210,14 @@ export default function ProfilePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Avatar Section */}
             <div className="flex justify-center">
-              <div className="relative group">
-                {profile.avatarUrl ? (
-                  <Avatar size="lg" className="h-32 w-32">
-                    <AvatarImage
-                      src={profile.avatarUrl}
-                      alt={displayDisplayName}
-                    />
-                    <AvatarFallback>
-                      {getInitials(profile.displayName, profile.email)}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <DefaultAvatar
-                    displayName={profile.displayName}
-                    email={profile.email}
-                    identifier={profile.id}
-                    size="lg"
-                  />
-                )}
-                {/* Edit overlay - will be connected to AvatarUpload in Task 2 */}
-                <div className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Pencil className="h-6 w-6 text-white" />
-                </div>
-              </div>
+              <AvatarUpload
+                currentAvatarUrl={profile.avatarUrl}
+                displayName={profile.displayName}
+                email={profile.email}
+                userId={profile.id}
+                onUploadComplete={handleAvatarUploadComplete}
+                size="lg"
+              />
             </div>
 
             {/* Display Name Field */}
