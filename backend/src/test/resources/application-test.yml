@@ -3,20 +3,20 @@ spring:
     name: trading-platform-test
 
   datasource:
-    url: jdbc:tc:mysql:8.0:///trading_platform_test
-    username: test
-    password: test
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     open-in-view: false
-    show-sql: true
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
 
   liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: false
 
   data:
     redis:
@@ -35,4 +35,3 @@ jwt:
 logging:
   level:
     com.tradingplatform: DEBUG
-    org.testcontainers: INFO
