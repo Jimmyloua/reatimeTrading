@@ -68,14 +68,16 @@ Inherited from Phase 1 UI-SPEC. 4 sizes, 2 weights.
 | Heading | 20px | 600 | 1.2 |
 | Display | 28px | 600 | 1.2 |
 
-**Phase 3 Additions:**
+**Phase 3 Typography Mapping:**
 
 | Element | Size | Weight | Line Height |
 |---------|------|--------|-------------|
 | Message text | 14px | 400 | 1.4 |
-| Timestamp | 12px | 400 | 1.3 |
+| Timestamp | 14px | 400 | 1.4 |
 | Typing indicator | 14px | 400 italic | 1.4 |
-| Unread badge | 12px | 600 | 1.0 |
+| Unread badge | 14px | 600 | 1.0 |
+
+**Note:** Timestamps and unread badges use 14px (Label size) rather than a smaller size to maintain consistency with the 4-size type scale and ensure readability on mobile devices.
 
 ---
 
