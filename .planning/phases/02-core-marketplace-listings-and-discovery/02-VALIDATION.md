@@ -2,8 +2,8 @@
 phase: 2
 slug: core-marketplace-listings-and-discovery
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-21
 ---
 
@@ -38,15 +38,15 @@ created: 2026-03-21
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 02-01-01 | 01 | 1 | LIST-03 | unit | `mvn test -Dtest=CategoryRepositoryTest` | ❌ W0 | ⬜ pending |
-| 02-01-02 | 01 | 1 | LIST-01,02,04,05 | unit | `mvn test -Dtest=ListingRepositoryTest` | ❌ W0 | ⬜ pending |
-| 02-02-01 | 02 | 2 | LIST-01,06,07,08 | unit | `mvn test -Dtest=ListingServiceTest` | ❌ W0 | ⬜ pending |
-| 02-02-02 | 02 | 2 | LIST-02 | unit | `mvn test -Dtest=ListingImageServiceTest` | ❌ W0 | ⬜ pending |
-| 02-02-03 | 02 | 2 | LIST-01 to 08 | integration | `mvn test -Dtest=ListingControllerIT` | ❌ W0 | ⬜ pending |
-| 02-03-01 | 03 | 3 | DISC-01,02 | unit | `mvn test -Dtest=ListingSearchServiceTest` | ❌ W0 | ⬜ pending |
-| 02-03-02 | 03 | 3 | DISC-03,04,05 | unit | `mvn test -Dtest=ListingSpecificationTest` | ❌ W0 | ⬜ pending |
-| 02-04-01 | 04 | 4 | LIST-01 to 08 | e2e | `npm test -- create-listing.test.ts` | ❌ W0 | ⬜ pending |
-| 02-04-02 | 04 | 4 | DISC-01 to 07 | e2e | `npm test -- browse-listings.test.ts` | ❌ W0 | ⬜ pending |
+| 02-01-01 | 01 | 1 | LIST-03 | unit | `mvn test -Dtest=CategoryRepositoryTest` | ✅ W0 | ⬜ pending |
+| 02-01-02 | 01 | 1 | LIST-01,02,04,05 | unit | `mvn test -Dtest=ListingRepositoryTest` | ✅ W0 | ⬜ pending |
+| 02-02-01 | 02 | 2 | LIST-01,06,07,08 | unit | `mvn test -Dtest=ListingServiceTest` | ✅ W0 | ⬜ pending |
+| 02-02-02 | 02 | 2 | LIST-02 | unit | `mvn test -Dtest=ListingImageServiceTest` | ✅ W0 | ⬜ pending |
+| 02-02-03 | 02 | 2 | LIST-01 to 08 | integration | `mvn test -Dtest=ListingControllerIT` | ✅ W0 | ⬜ pending |
+| 02-03-01 | 03 | 3 | DISC-01,02 | unit | `mvn test -Dtest=ListingSearchServiceTest` | ✅ W0 | ⬜ pending |
+| 02-03-02 | 03 | 3 | DISC-03,04,05 | unit | `mvn test -Dtest=ListingSpecificationTest` | ✅ W0 | ⬜ pending |
+| 02-04-01 | 04 | 4 | LIST-01 to 08 | e2e | `npm test -- create-listing.test.ts` | ✅ W0 | ⬜ pending |
+| 02-04-02 | 04 | 4 | DISC-01 to 07 | e2e | `npm test -- browse-listings.test.ts` | ✅ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -54,15 +54,17 @@ created: 2026-03-21
 
 ## Wave 0 Requirements
 
-- [ ] `src/test/java/.../repository/CategoryRepositoryTest.java` — stubs for LIST-03
-- [ ] `src/test/java/.../repository/ListingRepositoryTest.java` — stubs for LIST-01,02,04,05
-- [ ] `src/test/java/.../service/ListingServiceTest.java` — stubs for LIST-01,06,07,08
-- [ ] `src/test/java/.../service/ListingImageServiceTest.java` — stubs for LIST-02
-- [ ] `src/test/java/.../controller/ListingControllerIT.java` — integration stubs
-- [ ] `src/test/java/.../service/ListingSearchServiceTest.java` — stubs for DISC-01,02
-- [ ] `src/test/java/.../service/ListingSpecificationTest.java` — stubs for DISC-03,04,05
-- [ ] `frontend/src/tests/create-listing.test.ts` — e2e stubs
-- [ ] `frontend/src/tests/browse-listings.test.ts` — e2e stubs
+- [x] `src/test/java/.../repository/CategoryRepositoryTest.java` — stubs for LIST-03
+- [x] `src/test/java/.../repository/ListingRepositoryTest.java` — stubs for LIST-01,02,04,05
+- [x] `src/test/java/.../service/ListingServiceTest.java` — stubs for LIST-01,06,07,08
+- [x] `src/test/java/.../service/ListingImageServiceTest.java` — stubs for LIST-02
+- [x] `src/test/java/.../controller/ListingControllerIT.java` — integration stubs
+- [x] `src/test/java/.../service/ListingSearchServiceTest.java` — stubs for DISC-01,02
+- [x] `src/test/java/.../service/ListingSpecificationTest.java` — stubs for DISC-03,04,05
+- [x] `frontend/src/tests/create-listing.test.ts` — e2e stubs
+- [x] `frontend/src/tests/browse-listings.test.ts` — e2e stubs
+
+*Wave 0 plan created: 02-00-PLAN.md*
 
 ---
 
@@ -78,11 +80,11 @@ created: 2026-03-21
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 60s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 60s
+- [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
