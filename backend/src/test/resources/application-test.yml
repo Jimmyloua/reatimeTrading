@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: trading-platform-test
+
+  datasource:
+    url: jdbc:tc:mysql:8.0:///trading_platform_test
+    username: test
+    password: test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  threads:
+    virtual:
+      enabled: true
+
+logging:
+  level:
+    com.tradingplatform: DEBUG
+    org.testcontainers: INFO

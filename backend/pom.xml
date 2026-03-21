@@ -21,7 +21,7 @@
         <java.version>21</java.version>
         <jjwt.version>0.13.0</jjwt.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <testcontainers.version>2.0.0</testcontainers.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
         <spring.threads.virtual.enabled>true</spring.threads.virtual.enabled>
     </properties>
 
