@@ -20,6 +20,8 @@ import EditListingPage from './pages/EditListingPage'
 import BrowseListingsPage from './pages/BrowseListingsPage'
 import ListingDetailPage from './pages/ListingDetailPage'
 import MessagesPage from './pages/MessagesPage'
+import NotificationsPage from './pages/NotificationsPage'
+import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 
 function App() {
@@ -48,6 +50,7 @@ function App() {
                 <Link to="/listings/create">
                   <Button size="sm">Sell</Button>
                 </Link>
+                <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-2 rounded-full p-1 hover:bg-accent outline-none">
                     {user.avatarUrl ? (
@@ -133,6 +136,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <MessagesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             }
           />
