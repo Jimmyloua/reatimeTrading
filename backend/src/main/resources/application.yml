@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: trading-platform
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/trading_platform
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  threads:
+    virtual:
+      enabled: true
+
+logging:
+  level:
+    com.tradingplatform: INFO
