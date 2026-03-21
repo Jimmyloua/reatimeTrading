@@ -17,7 +17,8 @@ public enum ErrorCode {
     LISTING_NOT_FOUND(HttpStatus.NOT_FOUND, "Listing not found"),
     LISTING_ACCESS_DENIED(HttpStatus.FORBIDDEN, "You can only modify your own listings"),
     IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "Maximum 10 images allowed per listing"),
-    INVALID_IMAGE(HttpStatus.BAD_REQUEST, "Invalid image file");
+    INVALID_IMAGE(HttpStatus.BAD_REQUEST, "Invalid image file"),
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not found");
 
     private final HttpStatus httpStatus;
     private final String message;
