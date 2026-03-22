@@ -133,7 +133,7 @@ Plans:
 - [x] 04-01-PLAN.md - Transaction Backend (Wave 1) - TransactionStatus enum, Transaction/LedgerEntry entities, service, controller
 - [x] 04-02-PLAN.md - Rating Backend (Wave 1) - Rating entity, blind rating service, User entity extension
 - [x] 04-03-PLAN.md - Dispute Backend (Wave 2) - Dispute entity, service, controller for conflict resolution
-- [ ] 04-04-PLAN.md - Frontend Transaction UI (Wave 3) - Transaction pages, components, API client
+- [x] 04-04-PLAN.md - Frontend Transaction UI (Wave 3) - Transaction pages, components, API client
 - [x] 04-05-PLAN.md - Frontend Rating UI (Wave 3) - Star rating, review form, profile rating display
 - [ ] 04-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
 
