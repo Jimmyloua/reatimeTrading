@@ -23,6 +23,7 @@ import MessagesPage from './pages/MessagesPage'
 import NotificationsPage from './pages/NotificationsPage'
 import { TransactionsPage } from './pages/TransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
+import { RatingPage } from './pages/RatingPage'
 import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 
@@ -167,6 +168,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <TransactionDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactions/:transactionId/rate"
+            element={
+              <ProtectedRoute>
+                <RatingPage />
               </ProtectedRoute>
             }
           />
