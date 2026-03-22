@@ -47,7 +47,7 @@ public class Listing {
     private BigDecimal price;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "item_condition", nullable = false, length = 20)
     @Builder.Default
     private Condition condition = Condition.GOOD;
 

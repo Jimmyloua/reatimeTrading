@@ -68,4 +68,11 @@
     <changeSet id="003-add-fulltext-index" author="system" dbms="mysql">
         <sql>CREATE FULLTEXT INDEX idx_listings_fulltext ON listings(title, description)</sql>
     </changeSet>
+
+    <changeSet id="003-rename-condition-column" author="system">
+        <renameColumn tableName="listings"
+                      oldColumnName="condition"
+                      newColumnName="item_condition"
+                      columnDataType="VARCHAR(20)"/>
+    </changeSet>
 </databaseChangeLog>
