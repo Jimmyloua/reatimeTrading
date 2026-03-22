@@ -32,6 +32,7 @@ public enum ErrorCode {
     LISTING_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Listing is not available for transaction"),
     NOT_TRANSACTION_PARTICIPANT(HttpStatus.FORBIDDEN, "You are not a participant in this transaction"),
     DISPUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "Dispute not found"),
+    DISPUTE_ALREADY_EXISTS(HttpStatus.CONFLICT, "A dispute already exists for this transaction"),
     DISPUTE_ALREADY_RESOLVED(HttpStatus.BAD_REQUEST, "Dispute has already been resolved");
 
     private final HttpStatus httpStatus;
