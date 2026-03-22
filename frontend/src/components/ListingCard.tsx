@@ -106,13 +106,15 @@ export function ListingCard({
     <Card className={cn('group overflow-hidden border-white/60 bg-white/92 shadow-[0_16px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.14)]', className)}>
       <Link to={`/listings/${id}`} className="block">
         {/* Image */}
-        <div className="relative aspect-[1/0.9] bg-muted">
+        <div className="relative aspect-[1/0.9] overflow-hidden bg-[linear-gradient(180deg,#f3f8fc_0%,#e8f0f7_100%)]">
           {primaryImageUrl ? (
-            <img
-              src={primaryImageUrl}
-              alt={title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+            <div className="flex h-full w-full items-center justify-center p-4">
+              <img
+                src={primaryImageUrl}
+                alt={title}
+                className="h-full w-full object-contain drop-shadow-[0_18px_28px_rgba(15,23,42,0.14)] transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+            </div>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
               No image
