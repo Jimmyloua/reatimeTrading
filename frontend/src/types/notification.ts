@@ -9,3 +9,9 @@ export interface Notification {
   readAt: string | null
   createdAt: string
 }
+
+export interface NotificationPreferences {
+  newMessageEnabled: boolean
+  itemSoldEnabled: boolean
+  transactionUpdateEnabled: boolean
+}

@@ -1,8 +1,10 @@
 import { create } from 'zustand'
-import type { Notification } from '@/types/notification'
+import type { Notification, NotificationPreferences } from '@/types/notification'
 
 interface NotificationState {
   notifications: Notification[]
+  preferences: NotificationPreferences
+  preferencesLoaded: boolean
   unreadCount: number
   isLoading: boolean
   error: string | null
@@ -11,6 +13,8 @@ interface NotificationState {
   addNotification: (notification: Notification) => void
   markAsRead: (notificationId: number) => void
   markAllAsRead: () => void
+  setPreferences: (preferences: NotificationPreferences) => void
+  updatePreference: (key: keyof NotificationPreferences, value: boolean) => void
   setUnreadCount: (count: number) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
@@ -18,6 +22,12 @@ interface NotificationState {
 
 const initialState = {
   notifications: [],
+  preferences: {
+    newMessageEnabled: true,
+    itemSoldEnabled: true,
+    transactionUpdateEnabled: true,
+  },
+  preferencesLoaded: false,
   unreadCount: 0,
   isLoading: false,
   error: null
@@ -26,7 +36,10 @@ const initialState = {
 export const useNotificationStore = create<NotificationState>((set) => ({
   ...initialState,
 
-  setNotifications: (notifications) => set({ notifications }),
+  setNotifications: (notifications) => set({
+    notifications,
+    unreadCount: notifications.filter((notification) => !notification.read).length,
+  }),
 
   addNotification: (notification) => set((state) => {
     // Avoid duplicates
@@ -43,12 +56,28 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     notifications: state.notifications.map(n =>
       n.id === notificationId ? { ...n, read: true, readAt: new Date().toISOString() } : n
     ),
-    unreadCount: Math.max(0, state.unreadCount - 1)
+    unreadCount: Math.max(
+      0,
+      state.unreadCount - (state.notifications.some((n) => n.id === notificationId && !n.read) ? 1 : 0)
+    )
   })),
 
   markAllAsRead: () => set((state) => ({
     notifications: state.notifications.map(n => ({ ...n, read: true })),
     unreadCount: 0
+  })),
+
+  setPreferences: (preferences) => set({
+    preferences,
+    preferencesLoaded: true,
+  }),
+
+  updatePreference: (key, value) => set((state) => ({
+    preferences: {
+      ...state.preferences,
+      [key]: value,
+    },
+    preferencesLoaded: true,
   })),
 
   setUnreadCount: (count) => set({ unreadCount: count }),
