@@ -5,6 +5,14 @@ import { useAuthStore } from '@/stores/authStore'
 
 export type ConnectionState = 'connecting' | 'connected' | 'disconnected' | 'reconnecting'
 
+function getWebSocketBaseUrl() {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+
+  return window.location.origin
+}
+
 export function useWebSocket() {
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected')
   const clientRef = useRef<Client | null>(null)
@@ -23,7 +31,7 @@ export function useWebSocket() {
     setConnectionState('connecting')
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/ws`),
+      webSocketFactory: () => new SockJS(`${getWebSocketBaseUrl()}/ws`),
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },

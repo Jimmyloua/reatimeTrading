@@ -4,12 +4,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <include file="classpath:db/changelog/001-create-users-table.xml"/>
-    <include file="classpath:db/changelog/002-create-categories-table.xml"/>
-    <include file="classpath:db/changelog/003-create-listings-table.xml"/>
-    <include file="classpath:db/changelog/004-create-listing-images-table.xml"/>
-    <include file="classpath:db/changelog/005-seed-categories.xml"/>
-    <include file="classpath:db/changelog/006-create-chat-tables.xml"/>
-    <include file="classpath:db/changelog/007-create-transactions-tables.xml"/>
+    <include file="001-create-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="002-create-categories-table.xml" relativeToChangelogFile="true"/>
+    <include file="003-create-listings-table.xml" relativeToChangelogFile="true"/>
+    <include file="004-create-listing-images-table.xml" relativeToChangelogFile="true"/>
+    <include file="005-seed-categories.xml" relativeToChangelogFile="true"/>
+    <include file="006-create-chat-tables.xml" relativeToChangelogFile="true"/>
+    <include file="007-create-transactions-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

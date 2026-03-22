@@ -6,7 +6,7 @@ spring:
     name: trading-platform
 
   datasource:
-    url: jdbc:mysql://localhost:3306/trading_platform_dev
+    url: jdbc:mysql://localhost:3306/trading_platform_dev?createDatabaseIfNotExist=true
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,6 +24,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password:
 
   threads:
     virtual:

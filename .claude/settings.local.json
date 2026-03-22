@@ -85,7 +85,25 @@
       "Bash(powershell -Command \"Invoke-RestMethod -Uri ''https://registry.npmjs.org/vitest/latest'' | Select-Object -ExpandProperty version\")",
       "Bash(powershell -Command \"Invoke-RestMethod -Uri ''https://registry.npmjs.org/@testing-library/react/latest'' | Select-Object -ExpandProperty version\")",
       "Bash(powershell -Command \"Invoke-RestMethod -Uri ''https://api.github.com/repos/reactor/reactor-netty/releases/latest'' | Select-Object -ExpandProperty tag_name\")",
-      "Bash(powershell -Command \"Invoke-RestMethod -Uri ''https://api.github.com/repos/projectlombok/lombok/releases/latest'' | Select-Object -ExpandProperty tag_name\")"
+      "Bash(powershell -Command \"Invoke-RestMethod -Uri ''https://api.github.com/repos/projectlombok/lombok/releases/latest'' | Select-Object -ExpandProperty tag_name\")",
+      "Bash(curl -s http://localhost:5173/login)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s \"http://localhost:5173/src/main.tsx\")",
+      "Bash(curl -s \"http://localhost:5173/src/App.tsx\")",
+      "Bash(curl -s \"http://localhost:5173/src/index.css\")",
+      "Bash(curl -s \"http://localhost:5173/node_modules/.vite/deps/@base-ui_react.js\")",
+      "Bash(npm install:*)",
+      "Bash(curl -s http://localhost:5174/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5174/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/api/auth/login)",
+      "Bash(curl -s \"http://localhost:5174/src/App.tsx\")",
+      "Bash(curl -s \"http://localhost:5174/src/stores/authStore.ts\")",
+      "Bash(curl -s \"http://localhost:5174/src/lib/utils.ts\")",
+      "Bash(curl -s \"http://localhost:5174/src/index.css\")",
+      "Bash(curl -s \"http://localhost:5174/node_modules/.vite/deps/@base-ui_react_button.js\")",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(npx typescript:*)",
+      "Bash(curl -s \"http://localhost:5174/src/pages/LoginPage.tsx\")"
     ]
   }
 }
