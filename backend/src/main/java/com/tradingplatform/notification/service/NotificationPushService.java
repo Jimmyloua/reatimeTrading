@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class NotificationPushService {
 
     private final NotificationService notificationService;
+    private final NotificationPreferenceService notificationPreferenceService;
     private final SimpMessagingTemplate messagingTemplate;
 
     /**
@@ -30,6 +31,11 @@ public class NotificationPushService {
      * @param message the message that was received
      */
     public void pushMessageNotification(Long recipientId, MessageResponse message) {
+        if (!notificationPreferenceService.isEnabled(recipientId, NotificationType.NEW_MESSAGE)) {
+            log.debug("Skipping NEW_MESSAGE notification for user {} because the category is disabled", recipientId);
+            return;
+        }
+
         String title = "New Message";
         String content = message.getSenderName() + " sent you a message";
 
@@ -54,6 +60,11 @@ public class NotificationPushService {
      * @param listingTitle the listing title
      */
     public void pushItemSoldNotification(Long sellerId, Long listingId, String listingTitle) {
+        if (!notificationPreferenceService.isEnabled(sellerId, NotificationType.ITEM_SOLD)) {
+            log.debug("Skipping ITEM_SOLD notification for user {} because the category is disabled", sellerId);
+            return;
+        }
+
         String title = "Item Sold";
         String content = "Your item '" + truncate(listingTitle, 50) + "' was marked as sold";
 
@@ -78,6 +89,11 @@ public class NotificationPushService {
      * @param status the transaction status
      */
     public void pushTransactionNotification(Long userId, Long transactionId, String status) {
+        if (!notificationPreferenceService.isEnabled(userId, NotificationType.TRANSACTION_UPDATE)) {
+            log.debug("Skipping TRANSACTION_UPDATE notification for user {} because the category is disabled", userId);
+            return;
+        }
+
         String title = "Transaction Update";
         String content = "Transaction status: " + status;
 

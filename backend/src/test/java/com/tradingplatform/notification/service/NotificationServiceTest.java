@@ -121,10 +121,30 @@ class NotificationServiceTest {
     }
 
     @Test
-    @DisplayName("Phase 5 scaffold: 05-01 may extend normalization coverage to null and mixed-case inputs")
-    void phase5Scaffold_referenceNormalizationSlot() {
-        // Placeholder for stricter NOTF-07 edge-case assertions once the final
-        // canonicalization rules are locked in by 05-01.
+    @DisplayName("Should lowercase unknown legacy reference types and preserve null values")
+    void testCreateNotification_handlesUnknownAndNullReferenceTypes() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Notification legacyResult = notificationService.createNotification(
+                testUserId,
+                NotificationType.SYSTEM_ANNOUNCEMENT,
+                "Legacy",
+                "Legacy reference type",
+                400L,
+                "Offer_Update"
+        );
+
+        Notification nullResult = notificationService.createNotification(
+                testUserId,
+                NotificationType.SYSTEM_ANNOUNCEMENT,
+                "No Reference",
+                "Null reference type",
+                null,
+                null
+        );
+
+        assertThat(legacyResult.getReferenceType()).isEqualTo("offer_update");
+        assertThat(nullResult.getReferenceType()).isNull();
     }
 
     @Test
@@ -173,7 +193,7 @@ class NotificationServiceTest {
         Notification notif1 = Notification.builder()
                 .id(1L).userId(testUserId).type(NotificationType.NEW_MESSAGE)
                 .title("Title1").content("Content1").read(false).build();
-        when(notificationRepository.findTop50UnreadByUserId(testUserId)).thenReturn(List.of(notif1));
+        when(notificationRepository.findUnreadByUserId(testUserId)).thenReturn(List.of(notif1));
 
         // Act
         List<NotificationResponse> result = notificationService.getUnreadNotifications(testUserId);
@@ -181,6 +201,26 @@ class NotificationServiceTest {
         // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).isRead()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Should cap unread notifications at fifty entries")
+    void testGetUnreadNotifications_limitsToFifty() {
+        List<Notification> unreadNotifications = java.util.stream.LongStream.rangeClosed(1, 55)
+                .mapToObj(id -> Notification.builder()
+                        .id(id)
+                        .userId(testUserId)
+                        .type(NotificationType.NEW_MESSAGE)
+                        .title("Title" + id)
+                        .content("Content" + id)
+                        .read(false)
+                        .build())
+                .toList();
+        when(notificationRepository.findUnreadByUserId(testUserId)).thenReturn(unreadNotifications);
+
+        List<NotificationResponse> result = notificationService.getUnreadNotifications(testUserId);
+
+        assertThat(result).hasSize(50);
     }
 
     @Test
@@ -221,10 +261,4 @@ class NotificationServiceTest {
         verify(notificationRepository).markAllAsReadByUserId(eq(testUserId), any());
     }
 
-    @Test
-    @DisplayName("Phase 5 scaffold: 05-01 may assert preference-backed suppression paths in service helpers")
-    void phase5Scaffold_preferenceSuppressionSlot() {
-        // Placeholder for service-level preference enforcement checks that depend
-        // on the final persisted preference implementation introduced in 05-01.
-    }
 }

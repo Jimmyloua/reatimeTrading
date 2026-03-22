@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class NotificationService {
             .title(title)
             .content(content)
             .referenceId(referenceId)
-            .referenceType(referenceType)
+            .referenceType(normalizeReferenceType(referenceType))
             .read(false)
             .build();
 
@@ -86,7 +87,8 @@ public class NotificationService {
      */
     @Transactional(readOnly = true)
     public List<NotificationResponse> getUnreadNotifications(Long userId) {
-        return notificationRepository.findTop50UnreadByUserId(userId).stream()
+        return notificationRepository.findUnreadByUserId(userId).stream()
+            .limit(50)
             .map(this::toResponse)
             .collect(Collectors.toList());
     }
@@ -123,5 +125,12 @@ public class NotificationService {
      */
     private NotificationResponse toResponse(Notification notification) {
         return NotificationResponse.from(notification);
+    }
+
+    private String normalizeReferenceType(String referenceType) {
+        if (referenceType == null) {
+            return null;
+        }
+        return referenceType.trim().toLowerCase(Locale.ROOT);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -247,9 +248,75 @@ class NotificationPushServiceTest {
     }
 
     @Test
-    @DisplayName("Phase 5 scaffold: 05-01 may harden ITEM_SOLD suppression coverage")
-    void phase5Scaffold_itemSoldSuppressionSlot() {
-        // Placeholder for the remaining NOTF-06 suppression permutations once the
-        // final preference persistence contract from 05-01 is complete.
+    @DisplayName("Test 6: Disabled ITEM_SOLD preference suppresses creation and push")
+    void testPushItemSoldNotification_suppressedWhenDisabled() {
+        Long sellerId = 4L;
+
+        when(notificationPreferenceService.isEnabled(sellerId, NotificationType.ITEM_SOLD)).thenReturn(false);
+
+        pushService.pushItemSoldNotification(sellerId, 88L, "Camera");
+
+        verify(notificationService, never()).createNotification(anyLong(), any(), anyString(), anyString(), any(), any());
+        verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test
+    @DisplayName("Test 7: Disabled TRANSACTION_UPDATE preference suppresses creation and push only")
+    void testPushTransactionNotification_suppressedWhenDisabled() {
+        Long userId = 7L;
+
+        when(notificationPreferenceService.isEnabled(userId, NotificationType.TRANSACTION_UPDATE)).thenReturn(false);
+
+        pushService.pushTransactionNotification(userId, 300L, "completed");
+
+        verify(notificationService, never()).createNotification(anyLong(), any(), anyString(), anyString(), any(), any());
+        verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test
+    @DisplayName("Test 8: Transaction notification keeps canonical transaction reference when enabled")
+    void testPushTransactionNotification_usesCanonicalTransactionReference() {
+        Long userId = 42L;
+        Notification notification = Notification.builder()
+                .id(10L)
+                .userId(userId)
+                .type(NotificationType.TRANSACTION_UPDATE)
+                .title("Transaction Update")
+                .content("Transaction status: shipped")
+                .referenceId(300L)
+                .referenceType("transaction")
+                .read(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(notificationPreferenceService.isEnabled(userId, NotificationType.TRANSACTION_UPDATE)).thenReturn(true);
+        when(notificationService.createNotification(
+                eq(userId),
+                eq(NotificationType.TRANSACTION_UPDATE),
+                anyString(),
+                anyString(),
+                eq(300L),
+                eq("transaction")
+        )).thenReturn(notification);
+
+        pushService.pushTransactionNotification(userId, 300L, "shipped");
+
+        verify(notificationService).createNotification(
+                eq(userId),
+                eq(NotificationType.TRANSACTION_UPDATE),
+                eq("Transaction Update"),
+                eq("Transaction status: shipped"),
+                eq(300L),
+                eq("transaction")
+        );
+        verify(messagingTemplate).convertAndSendToUser(
+                eq("42"),
+                eq("/queue/notifications"),
+                argThat((NotificationResponse response) -> {
+                    assertThat(response.getReferenceType()).isEqualTo("transaction");
+                    assertThat(response.getReferenceId()).isEqualTo(300L);
+                    return true;
+                })
+        );
     }
 }
