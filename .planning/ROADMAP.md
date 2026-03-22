@@ -202,6 +202,19 @@ The following requirements are deferred to v2:
 
 These should be re-evaluated after v1 launch based on user feedback and usage patterns.
 
+### Phase 5: Notification detail actions, quick notification settings, and seller chat entry from listings
+
+**Goal:** Users can open the relevant context from notifications, control in-app notification preferences, and start or resume seller conversations directly from listing detail.
+**Requirements**: NOTF-05, NOTF-06, NOTF-07, CHAT-06, CHAT-07
+**Depends on:** Phase 4
+**Plans:** 4 plans
+
+Plans:
+- [ ] 05-00-PLAN.md - Wave 0 Phase 5 Test Scaffolding (Wave 0) - Add backend/frontend failing tests for notification actions, preferences, and listing chat entry
+- [ ] 05-01-PLAN.md - Notification Preference Backend (Wave 1) - Add persisted notification settings, suppression logic, and canonical reference normalization
+- [ ] 05-02-PLAN.md - Notification Actions and Messages Deep Links (Wave 2) - Wire quick settings UI, notification routing, and URL-backed message bootstrap
+- [ ] 05-03-PLAN.md - Listing Detail Seller Chat Entry (Wave 3) - Add seller chat CTA on listing detail and close with a human verification gate
+
 ---
 
 *Roadmap created: 2026-03-21*
