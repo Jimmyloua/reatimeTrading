@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -55,6 +56,14 @@ public class User {
     @Builder.Default
     private boolean profileComplete = false;
 
+    // D-41: Rating aggregation fields
+    @Column(name = "average_rating", precision = 3, scale = 1)
+    private BigDecimal averageRating;
+
+    @Column(name = "total_ratings")
+    @Builder.Default
+    private Integer totalRatings = 0;
+
     /**
      * Returns the display name if set, otherwise returns "New User" placeholder.
      * Implements D-08 from CONTEXT.md.
@@ -70,5 +79,23 @@ public class User {
      */
     public void updateProfileComplete() {
         this.profileComplete = displayName != null && !displayName.isBlank();
+    }
+
+    /**
+     * Updates rating aggregate fields.
+     * Called by RatingService after rating reveal.
+     * Implements D-38, D-39: Profile rating display.
+     */
+    public void updateRatingAggregate(BigDecimal average, Integer total) {
+        this.averageRating = average;
+        this.totalRatings = total;
+    }
+
+    /**
+     * Returns average rating with fallback for users with no ratings.
+     */
+    @Transient
+    public BigDecimal getAverageRatingOrZero() {
+        return averageRating != null ? averageRating : BigDecimal.ZERO;
     }
 }
