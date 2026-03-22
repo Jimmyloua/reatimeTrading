@@ -26,6 +26,7 @@ import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { RatingPage } from './pages/RatingPage'
 import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
+import homeHeroBg from './assets/home-hero-bg.svg'
 
 function App() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -194,22 +195,40 @@ function HomePage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <h1 className="text-3xl font-semibold text-foreground">
-          Welcome to Trading Platform
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          A safe, transparent marketplace for second-hand digital devices
-        </p>
-        <div className="mt-8 flex gap-4">
-          <Link to="/register">
-            <Button>Create account</Button>
-          </Link>
-          <Link to="/login">
-            <Button variant="outline">Sign in</Button>
-          </Link>
+      <section
+        className="relative overflow-hidden rounded-[2rem] border border-white/10 px-8 py-16 text-center text-white shadow-2xl"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(7, 17, 31, 0.86), rgba(18, 56, 95, 0.74)), url(${homeHeroBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_38%)]" />
+        <div className="relative mx-auto max-w-3xl">
+          <p className="text-sm font-medium uppercase tracking-[0.28em] text-white/70">
+            Real-time marketplace
+          </p>
+          <h1 className="mt-5 text-4xl font-semibold text-white md:text-5xl">
+            Welcome to Trading Platform
+          </h1>
+          <p className="mt-5 text-lg text-slate-200">
+            A safe, transparent marketplace for second-hand digital devices
+            with fast chat, listing discovery, and transaction tracking.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <Link to="/register">
+              <Button className="bg-white text-slate-900 hover:bg-slate-100">
+                Create account
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="outline" className="border-white/40 bg-white/10 text-white hover:bg-white/15">
+                Sign in
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
     )
   }
 

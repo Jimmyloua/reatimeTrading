@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
+const backendTarget = process.env.VITE_API_URL || 'http://localhost:8081'
+
 // https://vite.dev/config/
 export default defineConfig({
   define: {
@@ -13,7 +15,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: backendTarget,
+        changeOrigin: true,
+      },
+      '/ws': {
+        target: backendTarget,
         changeOrigin: true,
       },
     },

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/trading_platform?createDatabaseIfNotExist=true
     username: root
-    password:
+    password: la19991104
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

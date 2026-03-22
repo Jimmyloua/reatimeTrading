@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { ListingSearchRequest, Condition } from '@/types/listing'
+import browseHeroBg from '@/assets/browse-hero-bg.svg'
 
 const DEFAULT_PAGE_SIZE = 20
 
@@ -149,14 +150,32 @@ export default function BrowseListingsPage() {
 
   return (
     <div className="py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground">Browse Listings</h1>
-        {totalElements > 0 && (
-          <p className="text-sm text-muted-foreground">
-            {totalElements} {totalElements === 1 ? 'result' : 'results'}
-          </p>
-        )}
-      </div>
+      <section
+        className="relative overflow-hidden rounded-[2rem] border border-white/10 px-6 py-10 shadow-xl"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(12, 23, 38, 0.84), rgba(25, 76, 118, 0.72)), url(${browseHeroBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_35%)]" />
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.24em] text-white/70">
+              Marketplace search
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold text-white">Browse Listings</h1>
+            <p className="mt-3 max-w-2xl text-sm text-slate-200 md:text-base">
+              Explore devices by category, location, price range, and condition.
+            </p>
+          </div>
+          {totalElements > 0 && (
+            <div className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm">
+              {totalElements} {totalElements === 1 ? 'result' : 'results'}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Filters */}
       <ListingFilters
