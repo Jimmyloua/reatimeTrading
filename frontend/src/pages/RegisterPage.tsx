@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import axios from 'axios'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { authApi } from '@/api/authApi'
@@ -58,7 +59,11 @@ export default function RegisterPage() {
       // Navigate to home
       navigate('/')
     } catch (err) {
-      toast.error('Registration failed. Please try again.')
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.message || err.response?.data?.errors?.email || 'Registration failed. Please try again.'
+        : 'Registration failed. Please try again.'
+
+      toast.error(message)
     } finally {
       setIsLoading(false)
     }
