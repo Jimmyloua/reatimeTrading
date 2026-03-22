@@ -60,10 +60,14 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: var(--font-size-body);
   line-height: 1.5;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--background);
+  color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 /* Typography */
