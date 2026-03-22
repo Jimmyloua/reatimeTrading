@@ -103,10 +103,10 @@ export function ListingCard({
   const { id, title, price, condition, status, city, region, primaryImageUrl, categoryName, createdAt } = listing
 
   return (
-    <Card className={cn('group overflow-hidden transition-shadow hover:shadow-lg', className)}>
+    <Card className={cn('group overflow-hidden border-white/60 bg-white/92 shadow-[0_16px_44px_rgba(15,23,42,0.08)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.14)]', className)}>
       <Link to={`/listings/${id}`} className="block">
         {/* Image */}
-        <div className="relative aspect-square bg-muted">
+        <div className="relative aspect-[1/0.9] bg-muted">
           {primaryImageUrl ? (
             <img
               src={primaryImageUrl}
@@ -122,45 +122,48 @@ export function ListingCard({
           {/* Status badge */}
           <span
             className={cn(
-              'absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-medium',
+              'absolute top-3 right-3 rounded-full px-3 py-1 text-[11px] font-semibold shadow-lg',
               STATUS_COLORS[status]
             )}
           >
             {STATUS_LABELS[status]}
           </span>
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/40 to-transparent" />
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-2">
+        <div className="space-y-3 p-4">
           {/* Title */}
-          <h3 className="font-medium text-foreground line-clamp-2">{title}</h3>
+          <h3 className="line-clamp-2 text-base font-semibold text-slate-900">{title}</h3>
 
           {/* Price */}
-          <p className="text-lg font-semibold text-foreground">{formatPrice(price)}</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xl font-semibold text-slate-950">{formatPrice(price)}</p>
+            <span
+              className={cn(
+                'inline-block rounded-full px-3 py-1 text-xs font-semibold',
+                CONDITION_COLORS[condition]
+              )}
+            >
+              {CONDITION_LABELS[condition]}
+            </span>
+          </div>
 
-          {/* Condition badge */}
-          <span
-            className={cn(
-              'inline-block px-2 py-0.5 rounded text-xs font-medium',
-              CONDITION_COLORS[condition]
-            )}
-          >
-            {CONDITION_LABELS[condition]}
-          </span>
-
-          {/* Category */}
-          <p className="text-sm text-muted-foreground">{categoryName}</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium text-slate-500">{categoryName}</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Latest</p>
+          </div>
 
           {/* Location */}
           {(city || region) && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 text-sm text-slate-500">
               <MapPin className="h-3 w-3" />
               <span>{[city, region].filter(Boolean).join(', ')}</span>
             </div>
           )}
 
           {/* Created date */}
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1 text-sm text-slate-400">
             <Clock className="h-3 w-3" />
             <span>{formatRelativeTime(createdAt)}</span>
           </div>

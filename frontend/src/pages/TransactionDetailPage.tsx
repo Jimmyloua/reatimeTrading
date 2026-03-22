@@ -10,6 +10,9 @@ import { TransactionActionPanel } from '@/components/transaction/TransactionActi
 import { transactionApi } from '@/api/transactionApi'
 import { ArrowLeft } from 'lucide-react'
 
+const TRANSACTION_DETAIL_BG =
+  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=2000'
+
 export function TransactionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -46,22 +49,48 @@ export function TransactionDetailPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-8">
-      <Button variant="ghost" className="mb-4" onClick={() => navigate('/transactions')}>
+    <div className="container mx-auto max-w-5xl px-4 py-8">
+      <Button variant="ghost" className="mb-4 bg-white/70" onClick={() => navigate('/transactions')}>
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Transactions
       </Button>
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Transaction #{transaction.id}</h1>
-        <TransactionStatusBadge status={transaction.status} />
-      </div>
+      <section
+        className="relative mb-6 overflow-hidden rounded-[2.25rem] border border-white/40 px-6 py-8 shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
+        style={{
+          backgroundImage: `linear-gradient(110deg, rgba(8, 17, 30, 0.88), rgba(23, 70, 111, 0.7) 52%, rgba(255, 194, 86, 0.16)), url(${TRANSACTION_DETAIL_BG})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_28%)]" />
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.28em] text-amber-200/85">
+              Transaction detail
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
+              Transaction #{transaction.id}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-200 md:text-base">
+              Review item value, participants, current status, and every milestone in the order
+              flow from one focused page.
+            </p>
+          </div>
+          <div className="rounded-[1.5rem] border border-white/20 bg-white/12 p-4 text-white backdrop-blur-md">
+            <div className="text-sm uppercase tracking-[0.18em] text-white/65">Current status</div>
+            <div className="mt-3">
+              <TransactionStatusBadge status={transaction.status} />
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left column: Item and Participants */}
         <div className="space-y-6">
           {/* Item Card */}
-          <Card>
+          <Card className="border-white/60 bg-white/92 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-lg">Item</CardTitle>
             </CardHeader>
@@ -89,7 +118,7 @@ export function TransactionDetailPage() {
           </Card>
 
           {/* Participants Card */}
-          <Card>
+          <Card className="border-white/60 bg-white/92 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-lg">Participants</CardTitle>
             </CardHeader>
@@ -114,7 +143,7 @@ export function TransactionDetailPage() {
           </Card>
 
           {/* Actions Card */}
-          <Card>
+          <Card className="border-white/60 bg-white/92 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
             <CardContent className="pt-6">
               <TransactionActionPanel
                 transaction={transaction}
@@ -125,7 +154,7 @@ export function TransactionDetailPage() {
         </div>
 
         {/* Right column: Timeline */}
-        <Card>
+        <Card className="border-white/60 bg-white/92 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
           <CardContent className="pt-6">
             <TransactionTimeline transaction={transaction} />
           </CardContent>
