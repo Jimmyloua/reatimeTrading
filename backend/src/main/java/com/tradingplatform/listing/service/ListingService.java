@@ -223,6 +223,7 @@ public class ListingService {
     /**
      * Converts a Listing to ListingResponse DTO.
      */
+    @Transactional(readOnly = true)
     public ListingResponse toListingResponse(Listing listing) {
         String primaryImageUrl = null;
         ListingImage primaryImage = listingImageRepository
@@ -250,6 +251,7 @@ public class ListingService {
     /**
      * Converts a Listing to ListingDetailResponse DTO.
      */
+    @Transactional(readOnly = true)
     public ListingDetailResponse toListingDetailResponse(Listing listing) {
         // Get seller info
         User seller = userRepository.findById(listing.getUserId())
