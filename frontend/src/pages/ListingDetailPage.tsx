@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { ArrowLeft, Pencil, Trash2, MapPin, Clock, User } from 'lucide-react'
+import { ArrowLeft, Pencil, Trash2, MapPin, Clock } from 'lucide-react'
 import { getInitials, getAvatarColor } from './ProfilePage'
+import { RequestToBuyButton } from '@/components/transaction/RequestToBuyButton'
 import type { Condition, ListingStatus } from '@/types/listing'
 
 // Condition colors and labels
@@ -280,10 +281,11 @@ export default function ListingDetailPage() {
               </Button>
             </div>
           ) : isAuthenticated && listing.status === 'AVAILABLE' ? (
-            <Button className="w-full">
-              <User className="h-4 w-4 mr-2" />
-              Contact Seller
-            </Button>
+            <RequestToBuyButton
+              listingId={listingId}
+              sellerId={listing.seller.id}
+              isOwner={false}
+            />
           ) : null}
         </div>
       </div>
