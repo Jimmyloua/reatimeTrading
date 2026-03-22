@@ -9,6 +9,7 @@ import com.tradingplatform.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -115,10 +116,10 @@ public class ChatWebSocketController {
      * @param principal the authenticated user
      */
     @MessageMapping("/chat.heartbeat")
-    public void handleHeartbeat(Principal principal) {
+    public void handleHeartbeat(Principal principal, @Header(name = "simpSessionId", required = false) String sessionId) {
         Long userId = getUserId(principal);
         if (userId != null) {
-            presenceService.heartbeat(userId);
+            presenceService.heartbeat(userId, sessionId);
         }
     }
 
@@ -133,9 +134,11 @@ public class ChatWebSocketController {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         Authentication auth = (Authentication) accessor.getUser();
         if (auth != null && auth.getPrincipal() instanceof UserPrincipal principal) {
-            presenceService.userConnected(principal.getId());
-            broadcastPresence(principal.getId(), true);
-            notificationPushService.pushSellerOnlineNotifications(principal.getId());
+            boolean becameOnline = presenceService.userConnected(principal.getId(), accessor.getSessionId());
+            if (becameOnline) {
+                broadcastPresence(principal.getId(), true);
+                notificationPushService.pushSellerOnlineNotifications(principal.getId());
+            }
             log.info("User {} connected via WebSocket", principal.getId());
         }
     }
@@ -151,8 +154,10 @@ public class ChatWebSocketController {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         Authentication auth = (Authentication) accessor.getUser();
         if (auth != null && auth.getPrincipal() instanceof UserPrincipal principal) {
-            presenceService.userDisconnected(principal.getId());
-            broadcastPresence(principal.getId(), false);
+            boolean becameOffline = presenceService.userDisconnected(principal.getId(), accessor.getSessionId());
+            if (becameOffline) {
+                broadcastPresence(principal.getId(), false);
+            }
             log.info("User {} disconnected from WebSocket", principal.getId());
         }
     }

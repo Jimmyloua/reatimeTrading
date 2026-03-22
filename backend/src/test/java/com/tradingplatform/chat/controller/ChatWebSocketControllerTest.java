@@ -147,14 +147,16 @@ class ChatWebSocketControllerTest {
             org.springframework.messaging.simp.stomp.StompCommand.CONNECT);
 
         accessor.setUser((org.springframework.security.core.Authentication) principal);
+        accessor.setSessionId("session-1");
         when(event.getMessage()).thenReturn(
             org.springframework.messaging.support.MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders()));
+        when(presenceService.userConnected(1L, "session-1")).thenReturn(true);
 
         // Act
         controller.handleWebSocketConnectListener(event);
 
         // Assert
-        verify(presenceService).userConnected(1L);
+        verify(presenceService).userConnected(1L, "session-1");
         verify(notificationPushService).pushSellerOnlineNotifications(1L);
         verify(messagingTemplate).convertAndSend(
             eq("/topic/presence.1"),
@@ -173,14 +175,16 @@ class ChatWebSocketControllerTest {
             org.springframework.messaging.simp.stomp.StompCommand.DISCONNECT);
 
         accessor.setUser((org.springframework.security.core.Authentication) principal);
+        accessor.setSessionId("session-1");
         when(event.getMessage()).thenReturn(
             org.springframework.messaging.support.MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders()));
+        when(presenceService.userDisconnected(1L, "session-1")).thenReturn(true);
 
         // Act
         controller.handleWebSocketDisconnectListener(event);
 
         // Assert
-        verify(presenceService).userDisconnected(1L);
+        verify(presenceService).userDisconnected(1L, "session-1");
         verify(messagingTemplate).convertAndSend(
             eq("/topic/presence.1"),
             argThat((PresenceUpdateResponse response) ->
@@ -193,10 +197,10 @@ class ChatWebSocketControllerTest {
     @DisplayName("Test 6: heartbeat updates presence")
     void testHeartbeatUpdatesPresence() {
         // Act
-        controller.handleHeartbeat(principal);
+        controller.handleHeartbeat(principal, "session-1");
 
         // Assert
-        verify(presenceService).heartbeat(1L);
+        verify(presenceService).heartbeat(1L, "session-1");
     }
 
     @Test

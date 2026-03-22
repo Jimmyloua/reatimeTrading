@@ -23,6 +23,7 @@ describe('App shell', () => {
   beforeEach(() => {
     useAuthStore.getState().logout()
     localStorage.clear()
+    sessionStorage.clear()
   })
 
   test('renders logged-out home page', () => {
