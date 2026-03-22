@@ -22,7 +22,7 @@ interface RequestToBuyButtonProps {
 
 export function RequestToBuyButton({
   listingId,
-  sellerId,
+  sellerId: _sellerId,
   conversationId,
   isOwner,
 }: RequestToBuyButtonProps) {
