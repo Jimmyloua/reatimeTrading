@@ -74,10 +74,10 @@ Inherited from Phase 1 UI-SPEC. 4 sizes, 2 weights.
 | Element | Size | Weight | Line Height |
 |---------|------|--------|-------------|
 | Transaction status label | 14px | 600 | 1.4 |
-| Transaction amount | 18px | 600 | 1.3 |
+| Transaction amount | 20px | 600 | 1.2 |
 | Review text | 16px | 400 | 1.5 |
 | Rating count | 14px | 400 | 1.4 |
-| Average rating score | 24px | 600 | 1.2 |
+| Average rating score | 28px | 600 | 1.2 |
 | Empty state body | 16px | 400 | 1.5 |
 
 ---
@@ -280,6 +280,26 @@ No third-party registries declared for this phase.
 | ReviewList | List of reviews on user profile |
 | RatingSummary | Aggregate rating display (average + count) |
 | DisputeForm | Form to submit dispute with reason and description |
+
+---
+
+## Visual Focal Points
+
+### Primary Screens Focal Points
+
+| Screen | Primary Focal Point | Visual Treatment |
+|--------|--------------------| --------------------|
+| Transaction History List | Status badge on each transaction card | Color-coded badge positioned in top-right corner, uses status-specific color for immediate recognition |
+| Transaction Detail | Timeline current step | Pulsing indicator + bold label + accent color connector line draws eye to current progress |
+| Rating Form | Star rating input | Large touch targets (24px per star), amber fill color on hover/selection creates strong visual pull |
+| Profile Reviews | Average rating score | 28px Display weight at top of reviews section, immediately visible |
+| Dispute Form | Submit button | Destructive-styled button with warning context, draws attention to the action |
+
+### Focal Point Hierarchy
+
+1. **Status indicators** (badges, timeline steps) are the visual anchors because they convey the most critical information at a glance
+2. **Primary action buttons** are secondary focal points with accent color background
+3. **Item previews** and participant info support the focal points but do not compete for attention
 
 ---
 
