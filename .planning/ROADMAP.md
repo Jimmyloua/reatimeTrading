@@ -131,8 +131,8 @@ Plans:
 Plans:
 - [x] 04-00-PLAN.md - Wave 0 Test Infrastructure (Wave 0) - Database migration, test stubs, ErrorCode additions
 - [x] 04-01-PLAN.md - Transaction Backend (Wave 1) - TransactionStatus enum, Transaction/LedgerEntry entities, service, controller
-- [ ] 04-02-PLAN.md - Rating Backend (Wave 1) - Rating entity, blind rating service, User entity extension
-- [ ] 04-03-PLAN.md - Dispute Backend (Wave 2) - Dispute entity, service, controller for conflict resolution
+- [x] 04-02-PLAN.md - Rating Backend (Wave 1) - Rating entity, blind rating service, User entity extension
+- [x] 04-03-PLAN.md - Dispute Backend (Wave 2) - Dispute entity, service, controller for conflict resolution
 - [ ] 04-04-PLAN.md - Frontend Transaction UI (Wave 3) - Transaction pages, components, API client
 - [ ] 04-05-PLAN.md - Frontend Rating UI (Wave 3) - Star rating, review form, profile rating display
 - [ ] 04-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
