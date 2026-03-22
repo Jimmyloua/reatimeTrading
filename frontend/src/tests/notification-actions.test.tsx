@@ -86,6 +86,7 @@ describe('Notification action scaffolds', () => {
   test.each([
     ['ITEM_SOLD', 'listing', 99, '/listings/99'],
     ['TRANSACTION_UPDATE', 'transaction', 77, '/transactions/77'],
+    ['SELLER_ONLINE', 'conversation', 88, '/messages?conversation=88'],
   ] as const)(
     'routes %s notifications to %s details',
     async (type, referenceType, referenceId, expectedPath) => {

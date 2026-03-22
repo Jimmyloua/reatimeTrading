@@ -49,4 +49,12 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
      */
     @Query("SELECT c FROM Conversation c WHERE (c.buyerId = :userId OR c.sellerId = :userId) AND c.lastMessageAt IS NOT NULL ORDER BY c.lastMessageAt DESC")
     List<Conversation> findActiveByParticipantId(@Param("userId") Long userId);
+
+    /**
+     * Find all conversations for listings owned by the seller.
+     *
+     * @param sellerId the seller ID
+     * @return matching conversations
+     */
+    List<Conversation> findBySellerId(Long sellerId);
 }

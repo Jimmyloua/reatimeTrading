@@ -1,9 +1,14 @@
 package com.tradingplatform.notification.service;
 
 import com.tradingplatform.chat.dto.MessageResponse;
+import com.tradingplatform.chat.entity.Conversation;
+import com.tradingplatform.chat.repository.ConversationRepository;
+import com.tradingplatform.listing.repository.ListingRepository;
 import com.tradingplatform.notification.dto.NotificationResponse;
 import com.tradingplatform.notification.entity.Notification;
 import com.tradingplatform.notification.entity.NotificationType;
+import com.tradingplatform.notification.repository.NotificationRepository;
+import com.tradingplatform.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,6 +26,10 @@ public class NotificationPushService {
 
     private final NotificationService notificationService;
     private final NotificationPreferenceService notificationPreferenceService;
+    private final NotificationRepository notificationRepository;
+    private final ConversationRepository conversationRepository;
+    private final ListingRepository listingRepository;
+    private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     /**
@@ -107,6 +116,52 @@ public class NotificationPushService {
         );
 
         pushNotification(userId, notification);
+    }
+
+    /**
+     * Push notifications to buyers who already have a conversation with the seller.
+     *
+     * @param sellerId the seller that just came online
+     */
+    public void pushSellerOnlineNotifications(Long sellerId) {
+        String sellerName = userRepository.findById(sellerId)
+            .map(user -> user.getDisplayNameOrFallback())
+            .orElse("The seller");
+
+        for (Conversation conversation : conversationRepository.findBySellerId(sellerId)) {
+            Long buyerId = conversation.getBuyerId();
+            Long conversationId = conversation.getId();
+            if (buyerId == null || conversationId == null) {
+                continue;
+            }
+
+            if (!notificationPreferenceService.isEnabled(buyerId, NotificationType.SELLER_ONLINE)) {
+                continue;
+            }
+
+            if (notificationRepository.existsByUserIdAndTypeAndReferenceIdAndReadFalse(
+                buyerId,
+                NotificationType.SELLER_ONLINE,
+                conversationId
+            )) {
+                continue;
+            }
+
+            String listingTitle = listingRepository.findById(conversation.getListingId())
+                .map(listing -> listing.getTitle())
+                .orElse("your item");
+
+            Notification notification = notificationService.createNotification(
+                buyerId,
+                NotificationType.SELLER_ONLINE,
+                "Seller is online",
+                sellerName + " is online now for '" + truncate(listingTitle, 50) + "'",
+                conversationId,
+                "conversation"
+            );
+
+            pushNotification(buyerId, notification);
+        }
     }
 
     /**

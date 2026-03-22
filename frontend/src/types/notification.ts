@@ -1,6 +1,6 @@
 export interface Notification {
   id: number
-  type: 'NEW_MESSAGE' | 'ITEM_SOLD' | 'TRANSACTION_UPDATE' | 'SYSTEM_ANNOUNCEMENT' | 'PAYMENT_STATUS'
+  type: 'NEW_MESSAGE' | 'SELLER_ONLINE' | 'ITEM_SOLD' | 'TRANSACTION_UPDATE' | 'SYSTEM_ANNOUNCEMENT' | 'PAYMENT_STATUS'
   title: string
   content: string
   referenceId: number | null

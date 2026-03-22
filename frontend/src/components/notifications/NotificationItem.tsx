@@ -12,6 +12,7 @@ interface NotificationItemProps {
 
 const iconMap = {
   NEW_MESSAGE: MessageSquare,
+  SELLER_ONLINE: MessageSquare,
   ITEM_SOLD: Package,
   TRANSACTION_UPDATE: DollarSign,
   SYSTEM_ANNOUNCEMENT: AlertCircle,
@@ -26,7 +27,7 @@ function resolveNotificationPath(notification: Notification): string | null {
   const referenceType = notification.referenceType?.toLowerCase()
 
   if (
-    notification.type === 'NEW_MESSAGE' &&
+    (notification.type === 'NEW_MESSAGE' || notification.type === 'SELLER_ONLINE') &&
     (!referenceType || referenceType === 'conversation')
   ) {
     return `/messages?conversation=${notification.referenceId}`

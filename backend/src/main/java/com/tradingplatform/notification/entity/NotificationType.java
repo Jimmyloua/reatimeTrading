@@ -6,6 +6,7 @@ package com.tradingplatform.notification.entity;
  */
 public enum NotificationType {
     NEW_MESSAGE,        // NOTF-01
+    SELLER_ONLINE,      // buyer notified when seller comes online
     ITEM_SOLD,          // NOTF-02
     TRANSACTION_UPDATE, // D-14
     SYSTEM_ANNOUNCEMENT, // D-14

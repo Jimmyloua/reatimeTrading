@@ -135,6 +135,7 @@ public class ChatWebSocketController {
         if (auth != null && auth.getPrincipal() instanceof UserPrincipal principal) {
             presenceService.userConnected(principal.getId());
             broadcastPresence(principal.getId(), true);
+            notificationPushService.pushSellerOnlineNotifications(principal.getId());
             log.info("User {} connected via WebSocket", principal.getId());
         }
     }

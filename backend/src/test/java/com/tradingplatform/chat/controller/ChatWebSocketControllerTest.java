@@ -155,6 +155,7 @@ class ChatWebSocketControllerTest {
 
         // Assert
         verify(presenceService).userConnected(1L);
+        verify(notificationPushService).pushSellerOnlineNotifications(1L);
         verify(messagingTemplate).convertAndSend(
             eq("/topic/presence.1"),
             argThat((PresenceUpdateResponse response) ->

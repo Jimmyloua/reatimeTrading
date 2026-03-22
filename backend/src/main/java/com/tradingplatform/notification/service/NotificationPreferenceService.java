@@ -44,7 +44,7 @@ public class NotificationPreferenceService {
     public boolean isEnabled(Long userId, NotificationType type) {
         NotificationPreferenceResponse preferences = getPreferences(userId);
         return switch (type) {
-            case NEW_MESSAGE -> preferences.isNewMessageEnabled();
+            case NEW_MESSAGE, SELLER_ONLINE -> preferences.isNewMessageEnabled();
             case ITEM_SOLD -> preferences.isItemSoldEnabled();
             case TRANSACTION_UPDATE -> preferences.isTransactionUpdateEnabled();
             default -> true;

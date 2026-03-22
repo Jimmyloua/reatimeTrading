@@ -1,6 +1,7 @@
 package com.tradingplatform.notification.repository;
 
 import com.tradingplatform.notification.entity.Notification;
+import com.tradingplatform.notification.entity.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,6 +59,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      */
     @Query(value = "SELECT * FROM notifications WHERE user_id = :userId AND is_read = false ORDER BY created_at DESC LIMIT 50", nativeQuery = true)
     List<Notification> findTop50UnreadByUserId(@Param("userId") Long userId);
+
+    /**
+     * Checks whether an unread notification of the same type already exists for the reference.
+     */
+    boolean existsByUserIdAndTypeAndReferenceIdAndReadFalse(Long userId, NotificationType type, Long referenceId);
 
     /**
      * Delete notifications older than the specified date.
