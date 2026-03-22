@@ -1,7 +1,6 @@
 package com.tradingplatform.listing.controller;
 
 import com.tradingplatform.listing.dto.*;
-import com.tradingplatform.listing.entity.Category;
 import com.tradingplatform.listing.entity.Listing;
 import com.tradingplatform.listing.entity.ListingImage;
 import com.tradingplatform.listing.enums.Condition;
@@ -172,7 +171,7 @@ public class ListingController {
      * Get all root categories (category tree).
      */
     @GetMapping("/categories")
-    public ResponseEntity<List<Category>> getCategoryTree() {
+    public ResponseEntity<List<CategoryResponse>> getCategoryTree() {
         return ResponseEntity.ok(listingService.getCategoryTree());
     }
 
@@ -180,7 +179,7 @@ public class ListingController {
      * Get a category by ID.
      */
     @GetMapping("/categories/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         return listingService.getCategoryById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

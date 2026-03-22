@@ -3,6 +3,7 @@ package com.tradingplatform.listing.service;
 import com.tradingplatform.exception.ApiException;
 import com.tradingplatform.exception.ErrorCode;
 import com.tradingplatform.listing.dto.CreateListingRequest;
+import com.tradingplatform.listing.dto.CategoryResponse;
 import com.tradingplatform.listing.dto.ListingDetailResponse;
 import com.tradingplatform.listing.dto.ListingResponse;
 import com.tradingplatform.listing.dto.ListingSearchRequest;
@@ -201,8 +202,10 @@ public class ListingService {
      * @return list of root categories
      */
     @Transactional(readOnly = true)
-    public java.util.List<Category> getCategoryTree() {
-        return categoryRepository.findByParentIsNull();
+    public java.util.List<CategoryResponse> getCategoryTree() {
+        return categoryRepository.findByParentIsNull().stream()
+                .map(this::toCategoryResponse)
+                .toList();
     }
 
     /**
@@ -212,8 +215,9 @@ public class ListingService {
      * @return the category if found
      */
     @Transactional(readOnly = true)
-    public java.util.Optional<Category> getCategoryById(Long id) {
-        return categoryRepository.findById(id);
+    public java.util.Optional<CategoryResponse> getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .map(this::toCategoryResponse);
     }
 
     /**
@@ -314,5 +318,19 @@ public class ListingService {
         }
 
         return listing;
+    }
+
+    private CategoryResponse toCategoryResponse(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .slug(category.getSlug())
+                .description(category.getDescription())
+                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .displayOrder(category.getDisplayOrder())
+                .children(category.getChildren().stream()
+                        .map(this::toCategoryResponse)
+                        .toList())
+                .build();
     }
 }
