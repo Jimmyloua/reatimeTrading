@@ -181,10 +181,43 @@ class NotificationControllerTest {
     }
 
     @Test
-    @DisplayName("Phase 5 scaffold: 05-01 may tighten preference endpoint contract assertions")
-    void phase5Scaffold_preferencesEndpointContractSlot() {
-        // Wave 0 placeholder so 05-01 has an explicit controller-level hook for
-        // stricter request validation, auth handling, and response-shape assertions.
+    @DisplayName("PATCH /api/notifications/preferences merges updates and GET returns persisted state")
+    void patchPreferences_thenGetPreferences_returnsPersistedState() throws Exception {
+        mockMvc.perform(patch("/api/notifications/preferences")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "itemSoldEnabled": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.newMessageEnabled").value(true))
+                .andExpect(jsonPath("$.itemSoldEnabled").value(false))
+                .andExpect(jsonPath("$.transactionUpdateEnabled").value(true));
+
+        mockMvc.perform(get("/api/notifications/preferences")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.newMessageEnabled").value(true))
+                .andExpect(jsonPath("$.itemSoldEnabled").value(false))
+                .andExpect(jsonPath("$.transactionUpdateEnabled").value(true));
+    }
+
+    @Test
+    @DisplayName("Notification preference endpoints require authentication")
+    void notificationPreferenceEndpoints_requireAuthentication() throws Exception {
+        mockMvc.perform(get("/api/notifications/preferences"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(patch("/api/notifications/preferences")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "newMessageEnabled": false
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

@@ -11,5 +11,6 @@
     <include file="005-seed-categories.xml" relativeToChangelogFile="true"/>
     <include file="006-create-chat-tables.xml" relativeToChangelogFile="true"/>
     <include file="007-create-transactions-tables.xml" relativeToChangelogFile="true"/>
+    <include file="009-create-notification-preferences.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

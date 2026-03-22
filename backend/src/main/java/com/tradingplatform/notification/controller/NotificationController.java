@@ -1,8 +1,12 @@
 package com.tradingplatform.notification.controller;
 
 import com.tradingplatform.notification.dto.NotificationResponse;
+import com.tradingplatform.notification.dto.NotificationPreferenceResponse;
+import com.tradingplatform.notification.dto.UpdateNotificationPreferencesRequest;
+import com.tradingplatform.notification.service.NotificationPreferenceService;
 import com.tradingplatform.notification.service.NotificationService;
 import com.tradingplatform.security.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
+    private final NotificationPreferenceService notificationPreferenceService;
 
     /**
      * Gets paginated notifications for the current user.
@@ -66,6 +71,19 @@ public class NotificationController {
         Map<String, Long> result = new HashMap<>();
         result.put("unreadCount", notificationService.getUnreadCount(principal.getId()));
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/preferences")
+    public ResponseEntity<NotificationPreferenceResponse> getPreferences(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(notificationPreferenceService.getPreferences(principal.getId()));
+    }
+
+    @PatchMapping("/preferences")
+    public ResponseEntity<NotificationPreferenceResponse> updatePreferences(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody UpdateNotificationPreferencesRequest request) {
+        return ResponseEntity.ok(notificationPreferenceService.updatePreferences(principal.getId(), request));
     }
 
     /**
