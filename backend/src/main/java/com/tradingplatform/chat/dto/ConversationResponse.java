@@ -45,6 +45,16 @@ public class ConversationResponse {
     private String otherUserAvatar;
 
     /**
+     * Whether the other participant is currently online.
+     */
+    private Boolean otherUserOnline;
+
+    /**
+     * Human-readable last seen text for the other participant.
+     */
+    private String otherUserLastSeen;
+
+    /**
      * Preview of the last message.
      */
     private String lastMessage;

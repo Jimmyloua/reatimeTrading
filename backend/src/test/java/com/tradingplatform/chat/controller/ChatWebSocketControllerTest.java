@@ -155,6 +155,12 @@ class ChatWebSocketControllerTest {
 
         // Assert
         verify(presenceService).userConnected(1L);
+        verify(messagingTemplate).convertAndSend(
+            eq("/topic/presence.1"),
+            argThat((PresenceUpdateResponse response) ->
+                response.getUserId().equals(1L) && response.isOnline()
+            )
+        );
     }
 
     @Test
@@ -174,6 +180,12 @@ class ChatWebSocketControllerTest {
 
         // Assert
         verify(presenceService).userDisconnected(1L);
+        verify(messagingTemplate).convertAndSend(
+            eq("/topic/presence.1"),
+            argThat((PresenceUpdateResponse response) ->
+                response.getUserId().equals(1L) && !response.isOnline()
+            )
+        );
     }
 
     @Test

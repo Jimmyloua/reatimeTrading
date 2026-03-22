@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useChatStore } from '@/stores/chatStore'
 import { useChat } from '@/hooks/useChat'
+import { useConversationPresence } from '@/hooks/useConversationPresence'
 import { chatApi } from '@/api/chatApi'
 import { MessageBubble } from './MessageBubble'
 import { MessageInput } from './MessageInput'
@@ -10,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ExternalLink, Radio, WifiOff } from 'lucide-react'
 import { buildHeroBackground, HERO_IMAGES } from '@/lib/heroBackgrounds'
 import type { Conversation } from '@/types/chat'
+import { toast } from 'sonner'
 
 interface ChatViewProps {
   conversation: Conversation
@@ -18,7 +20,13 @@ interface ChatViewProps {
 export function ChatView({ conversation }: ChatViewProps) {
   const { messages, typingUsers, setMessages, setLoading, isLoading } = useChatStore()
   const { sendMessage, emitTyping, connectionState } = useChat(conversation.id)
+  const { isOnline: isSellerOnline, lastSeenText } = useConversationPresence({
+    otherUserId: conversation.otherUserId,
+    initialOnline: conversation.otherUserOnline ?? false,
+    initialLastSeen: conversation.otherUserLastSeen ?? 'Offline',
+  })
   const scrollRef = useRef<HTMLDivElement>(null)
+  const previousPresenceRef = useRef(isSellerOnline)
 
   // Load messages
   useEffect(() => {
@@ -44,6 +52,14 @@ export function ChatView({ conversation }: ChatViewProps) {
     }
   }, [messages])
 
+  useEffect(() => {
+    if (!previousPresenceRef.current && isSellerOnline) {
+      toast.success(`${conversation.otherUserName} is online. You can chat now.`)
+    }
+
+    previousPresenceRef.current = isSellerOnline
+  }, [conversation.otherUserName, isSellerOnline])
+
   const handleSend = (content: string, imageUrl?: string) => {
     sendMessage(content, imageUrl)
     emitTyping()
@@ -54,10 +70,10 @@ export function ChatView({ conversation }: ChatViewProps) {
     connectionState === 'connected'
       ? null
       : connectionState === 'reconnecting'
-        ? 'Reconnecting chat... you can keep typing while the connection comes back.'
+        ? 'Reconnecting chat now. Messages will send again as soon as the connection returns.'
         : connectionState === 'connecting'
-          ? 'Connecting chat... your message box is ready.'
-          : 'Chat is offline right now. Reopen this conversation or wait for reconnection.'
+          ? 'Connecting chat now...'
+          : 'Chat connection is offline right now. We will keep trying to reconnect automatically.'
 
   return (
     <div
@@ -74,13 +90,18 @@ export function ChatView({ conversation }: ChatViewProps) {
               Direct conversation
             </p>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
-            {connectionState === 'connected' ? (
-              <Radio className="h-3.5 w-3.5 text-emerald-500" />
-            ) : (
-              <WifiOff className="h-3.5 w-3.5 text-amber-500" />
-            )}
-            {connectionState === 'connected' ? 'Live' : connectionState}
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
+              {connectionState === 'connected' ? (
+                <Radio className="h-3.5 w-3.5 text-emerald-500" />
+              ) : (
+                <WifiOff className="h-3.5 w-3.5 text-amber-500" />
+              )}
+              {connectionState === 'connected' ? 'Chat live' : connectionState}
+            </div>
+            <div className="rounded-full border border-white/60 bg-white/80 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
+              {isSellerOnline ? 'Seller online' : lastSeenText}
+            </div>
           </div>
         </div>
         <div className="mt-3">

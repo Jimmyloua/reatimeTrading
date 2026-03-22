@@ -17,6 +17,8 @@ export interface Conversation {
   otherUserId: number
   otherUserName: string
   otherUserAvatar: string | null
+  otherUserOnline?: boolean
+  otherUserLastSeen?: string
   lastMessage: string | null
   lastMessageAt: string | null
   unreadCount: number
@@ -27,4 +29,10 @@ export interface TypingIndicator {
   userId: number
   username: string
   typing: boolean
+}
+
+export interface PresenceUpdate {
+  userId: number
+  online: boolean
+  lastSeenText: string
 }

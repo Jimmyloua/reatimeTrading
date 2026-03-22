@@ -25,6 +25,8 @@ public interface ChatMapper {
     @Mapping(target = "otherUserId", expression = "java(conversation.getOtherParticipantId(currentUserId))")
     @Mapping(target = "otherUserName", ignore = true)
     @Mapping(target = "otherUserAvatar", ignore = true)
+    @Mapping(target = "otherUserOnline", ignore = true)
+    @Mapping(target = "otherUserLastSeen", ignore = true)
     @Mapping(target = "lastMessage", source = "conversation.lastMessagePreview")
     @Mapping(target = "unreadCount", expression = "java(conversation.getUnreadCountForUser(currentUserId))")
     ConversationResponse toConversationResponse(Conversation conversation, Long currentUserId);

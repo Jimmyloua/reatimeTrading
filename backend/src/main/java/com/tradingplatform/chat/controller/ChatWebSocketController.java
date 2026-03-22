@@ -134,6 +134,7 @@ public class ChatWebSocketController {
         Authentication auth = (Authentication) accessor.getUser();
         if (auth != null && auth.getPrincipal() instanceof UserPrincipal principal) {
             presenceService.userConnected(principal.getId());
+            broadcastPresence(principal.getId(), true);
             log.info("User {} connected via WebSocket", principal.getId());
         }
     }
@@ -150,8 +151,20 @@ public class ChatWebSocketController {
         Authentication auth = (Authentication) accessor.getUser();
         if (auth != null && auth.getPrincipal() instanceof UserPrincipal principal) {
             presenceService.userDisconnected(principal.getId());
+            broadcastPresence(principal.getId(), false);
             log.info("User {} disconnected from WebSocket", principal.getId());
         }
+    }
+
+    private void broadcastPresence(Long userId, boolean online) {
+        messagingTemplate.convertAndSend(
+            "/topic/presence." + userId,
+            PresenceUpdateResponse.builder()
+                .userId(userId)
+                .online(online)
+                .lastSeenText(presenceService.getLastSeenText(userId))
+                .build()
+        );
     }
 
     /**

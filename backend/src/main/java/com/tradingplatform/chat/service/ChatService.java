@@ -32,6 +32,7 @@ public class ChatService {
     private final ListingRepository listingRepository;
     private final UserRepository userRepository;
     private final ChatMapper chatMapper;
+    private final PresenceService presenceService;
 
     /**
      * Creates a new conversation or returns existing one for the listing/buyer combination.
@@ -224,6 +225,8 @@ public class ChatService {
             response.setOtherUserName(user.getDisplayNameOrFallback());
             response.setOtherUserAvatar(user.getAvatarPath());
         });
+        response.setOtherUserOnline(presenceService.isUserOnline(otherId));
+        response.setOtherUserLastSeen(presenceService.getLastSeenText(otherId));
 
         return response;
     }
