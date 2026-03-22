@@ -126,7 +126,7 @@ Plans:
 4. Seller can rate buyer (1-5 stars) after transaction completion
 5. User profile displays average rating score and total number of ratings received
 
-**Plans:** 7/7 plans executed
+**Plans:** 8/8 plans executed
 
 Plans:
 - [x] 04-00-PLAN.md - Wave 0 Test Infrastructure (Wave 0) - Database migration, test stubs, ErrorCode additions
@@ -136,6 +136,7 @@ Plans:
 - [x] 04-04-PLAN.md - Frontend Transaction UI (Wave 3) - Transaction pages, components, API client
 - [x] 04-05-PLAN.md - Frontend Rating UI (Wave 3) - Star rating, review form, profile rating display
 - [x] 04-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
+- [x] 04-07-PLAN.md - Frontend Integration Gap Closure (Wave 5) - Integrate orphaned components into application flow
 
 **Architecture:** Transaction Service with state machine, Reputation Service for ratings aggregation, transaction history queries
 
@@ -152,7 +153,7 @@ Plans:
 | 1. Foundation and User Management | 6/6 | Complete | 2026-03-21 |
 | 2. Core Marketplace (Listings and Discovery) | 6/6 | Complete | 2026-03-21 |
 | 3. Real-Time Communication | 7/7 | Complete | 2026-03-22 |
-| 4. Transactions and Trust | 7/7 | Complete | 2026-03-22 |
+| 4. Transactions and Trust | 8/8 | Complete | 2026-03-22 |
 
 ## Coverage
 
