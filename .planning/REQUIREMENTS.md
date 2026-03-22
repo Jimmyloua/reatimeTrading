@@ -59,19 +59,19 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Transactions
 
-- [ ] **TRAN-01**: User can mark an item as sold to a specific buyer
-- [ ] **TRAN-02**: User can view transaction history (purchases and sales)
-- [ ] **TRAN-03**: User can see transaction status (pending, completed, cancelled)
-- [ ] **TRAN-04**: Buyer can rate seller after transaction completion
-- [ ] **TRAN-05**: Seller can rate buyer after transaction completion
-- [ ] **TRAN-06**: User can write review text with rating (optional)
+- [x] **TRAN-01**: User can mark an item as sold to a specific buyer
+- [x] **TRAN-02**: User can view transaction history (purchases and sales)
+- [x] **TRAN-03**: User can see transaction status (pending, completed, cancelled)
+- [x] **TRAN-04**: Buyer can rate seller after transaction completion
+- [x] **TRAN-05**: Seller can rate buyer after transaction completion
+- [x] **TRAN-06**: User can write review text with rating (optional)
 
 ### Ratings and Reviews
 
-- [ ] **RATE-01**: User can leave 1-5 star rating after completed transaction
-- [ ] **RATE-02**: User ratings are visible on user profile
-- [ ] **RATE-03**: User can see average rating score on profile
-- [ ] **RATE-04**: User can see total number of ratings received
+- [x] **RATE-01**: User can leave 1-5 star rating after completed transaction
+- [x] **RATE-02**: User ratings are visible on user profile
+- [x] **RATE-03**: User can see average rating score on profile
+- [x] **RATE-04**: User can see total number of ratings received
 
 ## v2 Requirements
 
@@ -155,16 +155,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTF-02 | Phase 3 | Complete |
 | NOTF-03 | Phase 3 | Complete |
 | NOTF-04 | Phase 3 | Complete |
-| TRAN-01 | Phase 4 | Pending |
-| TRAN-02 | Phase 4 | Pending |
-| TRAN-03 | Phase 4 | Pending |
-| TRAN-04 | Phase 4 | Pending |
-| TRAN-05 | Phase 4 | Pending |
-| TRAN-06 | Phase 4 | Pending |
-| RATE-01 | Phase 4 | Pending |
-| RATE-02 | Phase 4 | Pending |
-| RATE-03 | Phase 4 | Pending |
-| RATE-04 | Phase 4 | Pending |
+| TRAN-01 | Phase 4 | Complete |
+| TRAN-02 | Phase 4 | Complete |
+| TRAN-03 | Phase 4 | Complete |
+| TRAN-04 | Phase 4 | Complete |
+| TRAN-05 | Phase 4 | Complete |
+| TRAN-06 | Phase 4 | Complete |
+| RATE-01 | Phase 4 | Complete |
+| RATE-02 | Phase 4 | Complete |
+| RATE-03 | Phase 4 | Complete |
+| RATE-04 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 43 total
