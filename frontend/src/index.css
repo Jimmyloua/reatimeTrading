@@ -60,6 +60,10 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: var(--font-size-body);
   line-height: 1.5;
+  background:
+    radial-gradient(circle at top left, rgba(76, 125, 181, 0.12), transparent 24%),
+    radial-gradient(circle at top right, rgba(255, 199, 94, 0.12), transparent 20%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4fa 45%, #ffffff 100%);
   background-color: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
