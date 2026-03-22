@@ -11,6 +11,8 @@ interface ChatState {
 
   setConversations: (conversations: Conversation[]) => void
   addConversation: (conversation: Conversation) => void
+  upsertConversation: (conversation: Conversation) => void
+  syncConversationPreview: (message: Message) => void
   setActiveConversation: (conversation: Conversation | null) => void
   setMessages: (messages: Message[]) => void
   addMessage: (message: Message) => void
@@ -35,11 +37,57 @@ const initialState = {
 export const useChatStore = create<ChatState>((set) => ({
   ...initialState,
 
-  setConversations: (conversations) => set({ conversations }),
+  setConversations: (conversations) => set((state) => {
+    const activeConversation =
+      state.activeConversation
+        ? conversations.find((conversation) => conversation.id === state.activeConversation?.id) ?? state.activeConversation
+        : null
+
+    return {
+      conversations,
+      activeConversation,
+    }
+  }),
 
   addConversation: (conversation) => set((state) => ({
-    conversations: [conversation, ...state.conversations]
+    conversations: state.conversations.some((current) => current.id === conversation.id)
+      ? state.conversations
+      : [conversation, ...state.conversations]
   })),
+
+  upsertConversation: (conversation) => set((state) => {
+    const withoutConversation = state.conversations.filter((current) => current.id !== conversation.id)
+
+    return {
+      conversations: [conversation, ...withoutConversation],
+      activeConversation:
+        state.activeConversation?.id === conversation.id ? conversation : state.activeConversation,
+    }
+  }),
+
+  syncConversationPreview: (message) => set((state) => {
+    const conversation = state.conversations.find((current) => current.id === message.conversationId)
+    if (!conversation) {
+      return state
+    }
+
+    const updatedConversation: Conversation = {
+      ...conversation,
+      lastMessage: message.content,
+      lastMessageAt: message.createdAt,
+    }
+
+    return {
+      conversations: [
+        updatedConversation,
+        ...state.conversations.filter((current) => current.id !== message.conversationId),
+      ],
+      activeConversation:
+        state.activeConversation?.id === message.conversationId
+          ? updatedConversation
+          : state.activeConversation,
+    }
+  }),
 
   setActiveConversation: (conversation) => set({
     activeConversation: conversation,
@@ -72,13 +120,27 @@ export const useChatStore = create<ChatState>((set) => ({
       c.id === conversationId
         ? { ...c, unreadCount: (c.unreadCount || 0) + 1 }
         : c
-    )
+    ),
+    activeConversation:
+      state.activeConversation?.id === conversationId
+        ? {
+            ...state.activeConversation,
+            unreadCount: (state.activeConversation.unreadCount || 0) + 1,
+          }
+        : state.activeConversation,
   })),
 
   clearUnread: (conversationId) => set((state) => ({
     conversations: state.conversations.map(c =>
       c.id === conversationId ? { ...c, unreadCount: 0 } : c
-    )
+    ),
+    activeConversation:
+      state.activeConversation?.id === conversationId
+        ? {
+            ...state.activeConversation,
+            unreadCount: 0,
+          }
+        : state.activeConversation,
   })),
 
   setLoading: (loading) => set({ isLoading: loading }),

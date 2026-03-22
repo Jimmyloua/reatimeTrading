@@ -7,22 +7,43 @@ const TYPING_DEBOUNCE_MS = 3000
 
 export function useChat(conversationId: number | null) {
   const { subscribe, publish, connectionState } = useWebSocket()
-  const { addMessage, setTyping } = useChatStore()
+  const { addMessage, clearUnread, incrementUnread, setTyping, syncConversationPreview } = useChatStore()
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Subscribe to messages for this conversation
+  // Subscribe to message updates for both active and inactive conversations.
   useEffect(() => {
-    if (!conversationId || connectionState !== 'connected') return
+    if (connectionState !== 'connected') return
 
     const messageSub = subscribe(
       `/user/queue/messages`,
       (message) => {
         const msg: Message = JSON.parse(message.body)
+        syncConversationPreview(msg)
+
         if (msg.conversationId === conversationId) {
           addMessage(msg)
+          clearUnread(msg.conversationId)
+        } else {
+          incrementUnread(msg.conversationId)
         }
       }
     )
+
+    return () => {
+      messageSub?.unsubscribe()
+    }
+  }, [
+    conversationId,
+    connectionState,
+    subscribe,
+    addMessage,
+    clearUnread,
+    incrementUnread,
+    syncConversationPreview,
+  ])
+
+  useEffect(() => {
+    if (!conversationId || connectionState !== 'connected') return
 
     const typingSub = subscribe(
       `/topic/conversation.${conversationId}.typing`,
@@ -33,10 +54,9 @@ export function useChat(conversationId: number | null) {
     )
 
     return () => {
-      messageSub?.unsubscribe()
       typingSub?.unsubscribe()
     }
-  }, [conversationId, connectionState, subscribe, addMessage, setTyping])
+  }, [conversationId, connectionState, subscribe, setTyping])
 
   const sendMessage = useCallback((content: string, imageUrl?: string) => {
     if (!conversationId) return
