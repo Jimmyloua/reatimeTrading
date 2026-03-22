@@ -15,7 +15,7 @@ export function TypingIndicator({ typingUsers, users }: TypingIndicatorProps) {
     .join(', ')
 
   return (
-    <div className="px-4 py-2 text-sm text-neutral-500 italic">
+    <div className="border-t border-slate-200/60 bg-white/70 px-4 py-2 text-sm italic text-slate-500 backdrop-blur-sm">
       {names} {typingUserIds.length === 1 ? 'is' : 'are'} typing...
     </div>
   )

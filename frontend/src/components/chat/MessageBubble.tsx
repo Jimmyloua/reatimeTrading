@@ -12,10 +12,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <div className={cn('flex mb-3', isOwn ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[70%] rounded-2xl px-4 py-2',
+          'max-w-[70%] rounded-[1.5rem] px-4 py-3 shadow-sm backdrop-blur-sm',
           isOwn
-            ? 'bg-neutral-800 text-white rounded-br-md'
-            : 'bg-neutral-100 rounded-bl-md'
+            ? 'bg-slate-900 text-white rounded-br-md shadow-slate-900/15'
+            : 'border border-white/80 bg-white/85 text-slate-800 rounded-bl-md'
         )}
       >
         {message.imageUrl && (
@@ -26,9 +26,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           />
         )}
         {message.content && (
-          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+          <p className="text-sm whitespace-pre-wrap leading-6">{message.content}</p>
         )}
-        <div className={cn('text-xs mt-1', isOwn ? 'text-neutral-400' : 'text-neutral-500')}>
+        <div className={cn('text-xs mt-2', isOwn ? 'text-slate-300' : 'text-slate-500')}>
           {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>

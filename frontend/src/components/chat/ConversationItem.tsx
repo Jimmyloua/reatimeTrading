@@ -23,8 +23,10 @@ export function ConversationItem({ conversation, isActive, onClick }: Conversati
   return (
     <div
       onClick={onClick}
-      className={`flex items-center gap-3 p-3 cursor-pointer rounded-lg transition-colors ${
-        isActive ? 'bg-neutral-100' : 'hover:bg-neutral-50'
+      className={`flex items-center gap-3 rounded-[1.25rem] border px-3 py-3 cursor-pointer transition-all ${
+        isActive
+          ? 'border-slate-900/10 bg-white shadow-md shadow-slate-900/8'
+          : 'border-transparent bg-white/55 hover:border-white/60 hover:bg-white/75'
       }`}
     >
       <Avatar className="h-10 w-10">
@@ -34,7 +36,7 @@ export function ConversationItem({ conversation, isActive, onClick }: Conversati
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <span className="font-medium truncate">
+          <span className="font-medium truncate text-slate-900">
             {conversation.otherUserName}
           </span>
           {conversation.unreadCount > 0 && (
@@ -44,11 +46,14 @@ export function ConversationItem({ conversation, isActive, onClick }: Conversati
           )}
         </div>
         <div className="flex items-center justify-between mt-1">
-          <span className="text-sm text-neutral-500 truncate">
+          <span className="text-sm text-slate-500 truncate">
             Re: {conversation.listingTitle}
           </span>
-          <span className="text-xs text-neutral-400">{timeAgo}</span>
+          <span className="text-xs text-slate-400">{timeAgo}</span>
         </div>
+        {conversation.lastMessage ? (
+          <p className="mt-2 truncate text-xs text-slate-500">{conversation.lastMessage}</p>
+        ) : null}
       </div>
     </div>
   )

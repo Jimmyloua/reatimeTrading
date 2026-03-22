@@ -46,9 +46,9 @@ export function ConversationList({ onSelectConversation, activeConversationId }:
 
   if (conversations.length === 0) {
     return (
-      <div className="p-4 text-center">
-        <p className="text-neutral-500">No conversations</p>
-        <p className="text-sm text-neutral-400 mt-1">
+      <div className="p-6 text-center">
+        <p className="text-neutral-600">No conversations</p>
+        <p className="mt-1 text-sm text-neutral-400">
           When you contact a seller, conversations will appear here.
         </p>
       </div>
@@ -56,7 +56,7 @@ export function ConversationList({ onSelectConversation, activeConversationId }:
   }
 
   return (
-    <div className="divide-y">
+    <div className="space-y-3 p-3">
       {conversations.map((conversation) => (
         <ConversationItem
           key={conversation.id}
