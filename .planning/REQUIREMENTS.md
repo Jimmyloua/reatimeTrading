@@ -151,10 +151,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-03 | Phase 3 | Complete |
 | CHAT-04 | Phase 3 | Complete |
 | CHAT-05 | Phase 3 | Complete |
+| CHAT-06 | Phase 5 | Complete |
+| CHAT-07 | Phase 5 | Complete |
 | NOTF-01 | Phase 3 | Complete |
 | NOTF-02 | Phase 3 | Complete |
 | NOTF-03 | Phase 3 | Complete |
 | NOTF-04 | Phase 3 | Complete |
+| NOTF-05 | Phase 5 | Complete |
+| NOTF-06 | Phase 5 | Complete |
+| NOTF-07 | Phase 5 | Complete |
 | TRAN-01 | Phase 4 | Complete |
 | TRAN-02 | Phase 4 | Complete |
 | TRAN-03 | Phase 4 | Complete |

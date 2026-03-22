@@ -12,6 +12,9 @@ Safe, transparent peer-to-peer transactions for second-hand digital devices with
 
 ### Validated
 
+- [x] Actionable notifications with in-app quick settings and deep links - Validated in Phase 5
+- [x] Seller chat entry directly from listing detail - Validated in Phase 5
+
 - [x] User authentication and profile management — Validated in Phase 1
 - [x] Item listing with photos, descriptions, and pricing — Validated in Phase 2
 - [x] Browse and search items by category, brand, model, price, condition, location — Validated in Phase 2
@@ -42,6 +45,7 @@ Safe, transparent peer-to-peer transactions for second-hand digital devices with
 - **Reference**: Goofish marketplace (https://www.goofish.com) provides UX inspiration for listing and discovery patterns
 - **Market**: Second-hand electronics market is growing, with established players like Swappa, Gazelle, and eBay
 - **Differentiation**: Real-time communication features combined with escrow security and reputation system
+- **Current State**: Phase 5 complete - notifications now open the relevant context, preference toggles persist, and listing detail can start or resume seller chat
 
 ## Constraints
 
@@ -79,4 +83,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-22 after Phase 3 completion*
+*Last updated: 2026-03-22 after Phase 5 completion*

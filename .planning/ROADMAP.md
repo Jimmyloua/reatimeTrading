@@ -210,10 +210,10 @@ These should be re-evaluated after v1 launch based on user feedback and usage pa
 **Plans:** 4 plans
 
 Plans:
-- [ ] 05-00-PLAN.md - Wave 0 Phase 5 Test Scaffolding (Wave 0) - Add backend/frontend failing tests for notification actions, preferences, and listing chat entry
-- [ ] 05-01-PLAN.md - Notification Preference Backend (Wave 1) - Add persisted notification settings, suppression logic, and canonical reference normalization
-- [ ] 05-02-PLAN.md - Notification Actions and Messages Deep Links (Wave 2) - Wire quick settings UI, notification routing, and URL-backed message bootstrap
-- [ ] 05-03-PLAN.md - Listing Detail Seller Chat Entry (Wave 3) - Add seller chat CTA on listing detail and close with a human verification gate
+- [x] 05-00-PLAN.md - Wave 0 Phase 5 Test Scaffolding (Wave 0) - Add backend/frontend failing tests for notification actions, preferences, and listing chat entry
+- [x] 05-01-PLAN.md - Notification Preference Backend (Wave 1) - Add persisted notification settings, suppression logic, and canonical reference normalization
+- [x] 05-02-PLAN.md - Notification Actions and Messages Deep Links (Wave 2) - Wire quick settings UI, notification routing, and URL-backed message bootstrap
+- [x] 05-03-PLAN.md - Listing Detail Seller Chat Entry (Wave 3) - Add seller chat CTA on listing detail and close with a human verification gate
 
 ---
 
