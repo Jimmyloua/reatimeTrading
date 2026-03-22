@@ -29,6 +29,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
 
+    /**
+     * Phase 5 Wave 0 note:
+     * 05-00 keeps service validation green while reserving explicit hooks for 05-01
+     * to harden preference persistence and canonical reference normalization behavior.
+     */
+
     @Mock
     private NotificationRepository notificationRepository;
 
@@ -95,6 +101,30 @@ class NotificationServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getType()).isEqualTo(NotificationType.ITEM_SOLD);
         assertThat(result.getReferenceType()).isEqualTo("listing");
+    }
+
+    @Test
+    @DisplayName("Should normalize reference type to lowercase canonical value")
+    void testCreateNotification_normalizesReferenceType() {
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Notification result = notificationService.createNotification(
+                testUserId,
+                NotificationType.TRANSACTION_UPDATE,
+                "Transaction Update",
+                "Transaction status: pending",
+                300L,
+                "TRANSACTION"
+        );
+
+        assertThat(result.getReferenceType()).isEqualTo("transaction");
+    }
+
+    @Test
+    @DisplayName("Phase 5 scaffold: 05-01 may extend normalization coverage to null and mixed-case inputs")
+    void phase5Scaffold_referenceNormalizationSlot() {
+        // Placeholder for stricter NOTF-07 edge-case assertions once the final
+        // canonicalization rules are locked in by 05-01.
     }
 
     @Test
@@ -189,5 +219,12 @@ class NotificationServiceTest {
 
         // Assert
         verify(notificationRepository).markAllAsReadByUserId(eq(testUserId), any());
+    }
+
+    @Test
+    @DisplayName("Phase 5 scaffold: 05-01 may assert preference-backed suppression paths in service helpers")
+    void phase5Scaffold_preferenceSuppressionSlot() {
+        // Placeholder for service-level preference enforcement checks that depend
+        // on the final persisted preference implementation introduced in 05-01.
     }
 }

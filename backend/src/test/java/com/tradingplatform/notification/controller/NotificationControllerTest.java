@@ -3,7 +3,9 @@ package com.tradingplatform.notification.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradingplatform.auth.dto.RegisterRequest;
 import com.tradingplatform.notification.entity.Notification;
+import com.tradingplatform.notification.entity.NotificationPreference;
 import com.tradingplatform.notification.entity.NotificationType;
+import com.tradingplatform.notification.repository.NotificationPreferenceRepository;
 import com.tradingplatform.notification.repository.NotificationRepository;
 import com.tradingplatform.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class NotificationControllerTest {
 
+    /**
+     * Phase 5 Wave 0 note:
+     * 05-00 reserves controller coverage slots that 05-01 will harden into the
+     * final NOTF-06/NOTF-07 contract if the endpoint shape changes during implementation.
+     */
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,12 +53,16 @@ class NotificationControllerTest {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private NotificationPreferenceRepository notificationPreferenceRepository;
+
     private String accessToken;
     private Long testUserId;
 
     @BeforeEach
     void setUp() throws Exception {
         notificationRepository.deleteAll();
+        notificationPreferenceRepository.deleteAll();
         userRepository.deleteAll();
 
         // Register a test user
@@ -132,6 +144,47 @@ class NotificationControllerTest {
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.unreadCount").value(2));
+    }
+
+    @Test
+    @DisplayName("GET /api/notifications/preferences returns default enabled preferences")
+    void getPreferences_returnsDefaults() throws Exception {
+        mockMvc.perform(get("/api/notifications/preferences")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.newMessageEnabled").value(true))
+                .andExpect(jsonPath("$.itemSoldEnabled").value(true))
+                .andExpect(jsonPath("$.transactionUpdateEnabled").value(true));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/notifications/preferences persists partial preference updates")
+    void patchPreferences_persistsPartialUpdate() throws Exception {
+        mockMvc.perform(patch("/api/notifications/preferences")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "newMessageEnabled": false,
+                                  "transactionUpdateEnabled": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.newMessageEnabled").value(false))
+                .andExpect(jsonPath("$.itemSoldEnabled").value(true))
+                .andExpect(jsonPath("$.transactionUpdateEnabled").value(false));
+
+        NotificationPreference saved = notificationPreferenceRepository.findByUserId(testUserId).orElseThrow();
+        assertThat(saved.getNewMessageEnabled()).isFalse();
+        assertThat(saved.getItemSoldEnabled()).isTrue();
+        assertThat(saved.getTransactionUpdateEnabled()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Phase 5 scaffold: 05-01 may tighten preference endpoint contract assertions")
+    void phase5Scaffold_preferencesEndpointContractSlot() {
+        // Wave 0 placeholder so 05-01 has an explicit controller-level hook for
+        // stricter request validation, auth handling, and response-shape assertions.
     }
 
     @Test

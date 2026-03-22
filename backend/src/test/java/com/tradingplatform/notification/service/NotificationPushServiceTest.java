@@ -26,8 +26,17 @@ import static org.mockito.Mockito.*;
 @DisplayName("NotificationPushService Tests")
 class NotificationPushServiceTest {
 
+    /**
+     * Phase 5 Wave 0 note:
+     * 05-00 keeps push-path coverage green and reserves explicit slots for 05-01
+     * to harden suppression and preference fan-out assertions.
+     */
+
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private NotificationPreferenceService notificationPreferenceService;
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
@@ -68,6 +77,7 @@ class NotificationPushServiceTest {
             eq(100L),
             eq("conversation")
         )).thenReturn(notification);
+        when(notificationPreferenceService.isEnabled(recipientId, NotificationType.NEW_MESSAGE)).thenReturn(true);
 
         // Act
         pushService.pushMessageNotification(recipientId, message);
@@ -118,6 +128,7 @@ class NotificationPushServiceTest {
             eq(listingId),
             eq("listing")
         )).thenReturn(notification);
+        when(notificationPreferenceService.isEnabled(sellerId, NotificationType.ITEM_SOLD)).thenReturn(true);
 
         // Act
         pushService.pushItemSoldNotification(sellerId, listingId, listingTitle);
@@ -166,6 +177,7 @@ class NotificationPushServiceTest {
             anyLong(),
             anyString()
         )).thenReturn(notification);
+        when(notificationPreferenceService.isEnabled(userId, NotificationType.TRANSACTION_UPDATE)).thenReturn(true);
 
         // Act
         pushService.pushTransactionNotification(userId, 300L, "completed");
@@ -201,6 +213,7 @@ class NotificationPushServiceTest {
 
         when(notificationService.createNotification(anyLong(), any(), anyString(), anyString(), anyLong(), anyString()))
             .thenReturn(notification);
+        when(notificationPreferenceService.isEnabled(sellerId, NotificationType.ITEM_SOLD)).thenReturn(true);
 
         // Act
         pushService.pushItemSoldNotification(sellerId, listingId, longTitle);
@@ -214,5 +227,29 @@ class NotificationPushServiceTest {
             eq(listingId),
             eq("listing")
         );
+    }
+
+    @Test
+    @DisplayName("Test 5: Disabled NEW_MESSAGE preference suppresses creation and push")
+    void testPushMessageNotification_suppressedWhenDisabled() {
+        Long recipientId = 9L;
+        MessageResponse message = MessageResponse.builder()
+                .conversationId(55L)
+                .senderName("John")
+                .build();
+
+        when(notificationPreferenceService.isEnabled(recipientId, NotificationType.NEW_MESSAGE)).thenReturn(false);
+
+        pushService.pushMessageNotification(recipientId, message);
+
+        verify(notificationService, never()).createNotification(anyLong(), any(), anyString(), anyString(), any(), any());
+        verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test
+    @DisplayName("Phase 5 scaffold: 05-01 may harden ITEM_SOLD suppression coverage")
+    void phase5Scaffold_itemSoldSuppressionSlot() {
+        // Placeholder for the remaining NOTF-06 suppression permutations once the
+        // final preference persistence contract from 05-01 is complete.
     }
 }
