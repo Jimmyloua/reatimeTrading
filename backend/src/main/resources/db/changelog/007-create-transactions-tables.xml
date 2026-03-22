@@ -200,4 +200,19 @@
         </addColumn>
     </changeSet>
 
+    <!-- ChangeSet 4.6: Align disputes table with entity mapping -->
+    <changeSet id="012-add-resolved-by-to-disputes" author="system">
+        <addColumn tableName="disputes">
+            <column name="resolved_by" type="BIGINT"/>
+        </addColumn>
+
+        <createIndex tableName="disputes" indexName="idx_disputes_status">
+            <column name="status"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="disputes" baseColumnNames="resolved_by"
+                                 constraintName="fk_disputes_resolved_by"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+
 </databaseChangeLog>
