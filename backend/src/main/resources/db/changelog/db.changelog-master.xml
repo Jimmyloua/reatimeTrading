@@ -10,5 +10,6 @@
     <include file="classpath:db/changelog/004-create-listing-images-table.xml"/>
     <include file="classpath:db/changelog/005-seed-categories.xml"/>
     <include file="classpath:db/changelog/006-create-chat-tables.xml"/>
+    <include file="classpath:db/changelog/007-create-transactions-tables.xml"/>
 
 </databaseChangeLog>

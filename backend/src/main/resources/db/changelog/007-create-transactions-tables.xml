@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- ChangeSet 4.1: Create transactions table (TRAN-01 to TRAN-03) -->
+    <changeSet id="007-create-transactions-table" author="system">
+        <createTable tableName="transactions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="listing_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seller_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="idempotency_key" type="VARCHAR(64)"/>
+            <column name="conversation_id" type="BIGINT"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="funded_at" type="TIMESTAMP"/>
+            <column name="reserved_at" type="TIMESTAMP"/>
+            <column name="delivered_at" type="TIMESTAMP"/>
+            <column name="confirmed_at" type="TIMESTAMP"/>
+            <column name="settled_at" type="TIMESTAMP"/>
+            <column name="cancelled_at" type="TIMESTAMP"/>
+            <column name="expired_at" type="TIMESTAMP"/>
+            <column name="cancellation_reason" type="VARCHAR(500)"/>
+            <column name="version" type="BIGINT" defaultValueNumeric="0"/>
+        </createTable>
+
+        <createIndex tableName="transactions" indexName="idx_transactions_listing">
+            <column name="listing_id"/>
+        </createIndex>
+        <createIndex tableName="transactions" indexName="idx_transactions_buyer">
+            <column name="buyer_id"/>
+        </createIndex>
+        <createIndex tableName="transactions" indexName="idx_transactions_seller">
+            <column name="seller_id"/>
+        </createIndex>
+        <createIndex tableName="transactions" indexName="idx_transactions_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="transactions" indexName="idx_transactions_idempotency">
+            <column name="idempotency_key"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="listing_id"
+                                 constraintName="fk_transactions_listing"
+                                 referencedTableName="listings" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="buyer_id"
+                                 constraintName="fk_transactions_buyer"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="seller_id"
+                                 constraintName="fk_transactions_seller"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="conversation_id"
+                                 constraintName="fk_transactions_conversation"
+                                 referencedTableName="conversations" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet 4.2: Create ledger_entries table (TRAN-04) -->
+    <changeSet id="008-create-ledger-entries-table" author="system">
+        <createTable tableName="ledger_entries">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_type" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entry_type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="idempotency_key" type="VARCHAR(64)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="ledger_entries" indexName="idx_ledger_transaction">
+            <column name="transaction_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="ledger_entries" baseColumnNames="transaction_id"
+                                 constraintName="fk_ledger_transaction"
+                                 referencedTableName="transactions" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet 4.3: Create ratings table (RATE-01 to RATE-04) -->
+    <changeSet id="009-create-ratings-table" author="system">
+        <createTable tableName="ratings">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rater_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rated_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rating" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="review_text" type="VARCHAR(500)"/>
+            <column name="is_visible" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="ratings" indexName="idx_ratings_transaction">
+            <column name="transaction_id"/>
+        </createIndex>
+        <createIndex tableName="ratings" indexName="idx_ratings_rated_user">
+            <column name="rated_user_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="ratings" baseColumnNames="transaction_id"
+                                 constraintName="fk_ratings_transaction"
+                                 referencedTableName="transactions" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="ratings" baseColumnNames="rater_id"
+                                 constraintName="fk_ratings_rater"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="ratings" baseColumnNames="rated_user_id"
+                                 constraintName="fk_ratings_rated_user"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet 4.4: Create disputes table -->
+    <changeSet id="010-create-disputes-table" author="system">
+        <createTable tableName="disputes">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="opener_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resolution" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="resolved_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <createIndex tableName="disputes" indexName="idx_disputes_transaction">
+            <column name="transaction_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="disputes" baseColumnNames="transaction_id"
+                                 constraintName="fk_disputes_transaction"
+                                 referencedTableName="transactions" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="disputes" baseColumnNames="opener_id"
+                                 constraintName="fk_disputes_opener"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet 4.5: Add rating columns to users table (RATE-03, RATE-04) -->
+    <changeSet id="011-add-rating-columns-to-users" author="system">
+        <addColumn tableName="users">
+            <column name="average_rating" type="DECIMAL(3,1)"/>
+            <column name="total_ratings" type="INT" defaultValueNumeric="0"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
