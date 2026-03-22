@@ -21,7 +21,18 @@ public enum ErrorCode {
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification not found"),
     CONVERSATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Conversation not found"),
     NOT_CONVERSATION_PARTICIPANT(HttpStatus.FORBIDDEN, "Not a participant in this conversation"),
-    CANNOT_CHAT_WITH_SELF(HttpStatus.BAD_REQUEST, "Cannot start a conversation with yourself");
+    CANNOT_CHAT_WITH_SELF(HttpStatus.BAD_REQUEST, "Cannot start a conversation with yourself"),
+
+    // Transaction error codes
+    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Transaction not found"),
+    TRANSACTION_NOT_ELIGIBLE_FOR_RATING(HttpStatus.BAD_REQUEST, "Transaction is not eligible for rating"),
+    RATING_WINDOW_EXPIRED(HttpStatus.BAD_REQUEST, "The rating window has expired"),
+    ALREADY_RATED(HttpStatus.CONFLICT, "You have already rated this transaction"),
+    INVALID_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "Invalid status transition for this transaction"),
+    LISTING_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Listing is not available for transaction"),
+    NOT_TRANSACTION_PARTICIPANT(HttpStatus.FORBIDDEN, "You are not a participant in this transaction"),
+    DISPUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "Dispute not found"),
+    DISPUTE_ALREADY_RESOLVED(HttpStatus.BAD_REQUEST, "Dispute has already been resolved");
 
     private final HttpStatus httpStatus;
     private final String message;
