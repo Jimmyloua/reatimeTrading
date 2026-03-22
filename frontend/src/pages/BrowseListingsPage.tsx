@@ -8,9 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { ListingSearchRequest, Condition } from '@/types/listing'
-
-const BROWSE_HERO_BG =
-  'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&q=80&w=2000'
+import { HERO_IMAGES, buildHeroBackground } from '@/lib/heroBackgrounds'
 
 const DEFAULT_PAGE_SIZE = 20
 
@@ -154,11 +152,7 @@ export default function BrowseListingsPage() {
     <div className="py-8 space-y-6">
       <section
         className="relative overflow-hidden rounded-[2.25rem] border border-white/40 px-6 py-10 shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
-        style={{
-          backgroundImage: `linear-gradient(110deg, rgba(7, 17, 31, 0.86), rgba(22, 69, 109, 0.68) 50%, rgba(255, 205, 96, 0.18)), url(${BROWSE_HERO_BG})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        style={buildHeroBackground(HERO_IMAGES.browse)}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_30%),linear-gradient(180deg,transparent,rgba(2,6,23,0.1))]" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">

@@ -10,6 +10,7 @@ import { ArrowLeft, Pencil, Trash2, MapPin, Clock } from 'lucide-react'
 import { getInitials, getAvatarColor } from './ProfilePage'
 import { RequestToBuyButton } from '@/components/transaction/RequestToBuyButton'
 import type { Condition, ListingStatus } from '@/types/listing'
+import { HERO_IMAGES, buildHeroBackground } from '@/lib/heroBackgrounds'
 
 // Condition colors and labels
 const CONDITION_COLORS: Record<Condition, string> = {
@@ -132,6 +133,26 @@ export default function ListingDetailPage() {
         <ArrowLeft className="h-4 w-4 mr-1" />
         Back to Listings
       </Button>
+
+      <section
+        className="relative overflow-hidden rounded-[2.25rem] border border-white/40 px-6 py-8 shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
+        style={buildHeroBackground(HERO_IMAGES.listingDetail)}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_28%)]" />
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.28em] text-amber-200/85">Listing detail</p>
+            <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{listing.title}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-200 md:text-base">
+              Review condition, seller profile, location, and every photo in a consistent marketplace detail layout.
+            </p>
+          </div>
+          <div className="rounded-[1.5rem] border border-white/20 bg-white/12 p-4 text-white backdrop-blur-md">
+            <div className="text-sm uppercase tracking-[0.18em] text-white/65">Asking price</div>
+            <div className="mt-3 text-3xl font-semibold">{formatPrice(listing.price)}</div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Gallery */}

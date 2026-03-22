@@ -6,9 +6,7 @@ import { TransactionCard } from '@/components/transaction/TransactionCard'
 import { transactionApi } from '@/api/transactionApi'
 import { useTransactionStore } from '@/stores/transactionStore'
 import type { TransactionStatus } from '@/types/transaction'
-
-const TRANSACTIONS_HERO_BG =
-  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=2000'
+import { HERO_IMAGES, buildHeroBackground } from '@/lib/heroBackgrounds'
 
 // Filter statuses for each filter type
 const FILTER_STATUSES: Record<string, TransactionStatus[]> = {
@@ -49,11 +47,7 @@ export function TransactionsPage() {
     <div className="container mx-auto max-w-5xl px-4 py-8">
       <section
         className="relative overflow-hidden rounded-[2.25rem] border border-white/40 px-6 py-10 shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
-        style={{
-          backgroundImage: `linear-gradient(110deg, rgba(8, 17, 30, 0.88), rgba(23, 70, 111, 0.7) 52%, rgba(255, 194, 86, 0.16)), url(${TRANSACTIONS_HERO_BG})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        style={buildHeroBackground(HERO_IMAGES.transactions)}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_28%)]" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

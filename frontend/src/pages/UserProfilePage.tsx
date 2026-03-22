@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, User } from 'lucide-react'
 import { DefaultAvatar } from '@/pages/ProfilePage'
 import { ProfileRatingSection } from '@/components/profile/ProfileRatingSection'
+import { HERO_IMAGES, buildHeroBackground } from '@/lib/heroBackgrounds'
 
 /**
  * Format date to readable string
@@ -106,7 +107,21 @@ export default function UserProfilePage() {
         Back
       </Button>
 
-      <Card>
+      <section
+        className="relative mb-6 overflow-hidden rounded-[2.25rem] border border-white/40 px-6 py-8 shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
+        style={buildHeroBackground(HERO_IMAGES.profile)}
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_28%)]" />
+        <div className="relative">
+          <p className="text-sm font-medium uppercase tracking-[0.28em] text-amber-200/85">Public profile</p>
+          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{displayDisplayName}</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-200 md:text-base">
+            Browse seller identity, reputation, and marketplace activity in the same visual style as listings and transactions.
+          </p>
+        </div>
+      </section>
+
+      <Card className="border-white/60 bg-white/92 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
         <CardHeader>
           <CardTitle>User Profile</CardTitle>
           <CardDescription>

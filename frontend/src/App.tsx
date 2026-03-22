@@ -26,11 +26,7 @@ import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { RatingPage } from './pages/RatingPage'
 import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
-
-const HOME_HERO_BG =
-  'https://images.unsplash.com/photo-1756705533779-105bf34e0722?auto=format&fit=crop&q=80&w=2000'
-const DASHBOARD_HERO_BG =
-  'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&q=80&w=2000'
+import { HERO_IMAGES, buildHeroBackground } from './lib/heroBackgrounds'
 
 function App() {
   const { isAuthenticated, user, logout } = useAuthStore()
@@ -202,11 +198,7 @@ function HomePage() {
     return (
       <section
         className="relative overflow-hidden rounded-[2.25rem] border border-white/40 px-8 py-14 text-white shadow-[0_30px_90px_rgba(15,23,42,0.22)]"
-        style={{
-          backgroundImage: `linear-gradient(110deg, rgba(5, 15, 28, 0.88), rgba(16, 55, 92, 0.68) 52%, rgba(255, 199, 79, 0.18)), url(${HOME_HERO_BG})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        style={buildHeroBackground(HERO_IMAGES.home)}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_28%),linear-gradient(180deg,transparent,rgba(2,6,23,0.12))]" />
         <div className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
@@ -286,11 +278,7 @@ function HomePage() {
   return (
     <section
       className="relative overflow-hidden rounded-[2rem] border border-white/40 px-8 py-12 shadow-[0_24px_80px_rgba(15,23,42,0.16)]"
-      style={{
-        backgroundImage: `linear-gradient(110deg, rgba(255,255,255,0.82), rgba(240,247,255,0.68) 48%, rgba(207,229,248,0.72)), url(${DASHBOARD_HERO_BG})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+      style={buildHeroBackground(HERO_IMAGES.dashboard, 'light')}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5),transparent_30%)]" />
       <div className="relative max-w-3xl">
