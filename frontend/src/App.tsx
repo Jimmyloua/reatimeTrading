@@ -21,6 +21,8 @@ import BrowseListingsPage from './pages/BrowseListingsPage'
 import ListingDetailPage from './pages/ListingDetailPage'
 import MessagesPage from './pages/MessagesPage'
 import NotificationsPage from './pages/NotificationsPage'
+import { TransactionsPage } from './pages/TransactionsPage'
+import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 
@@ -43,6 +45,11 @@ function App() {
             <Link to="/listings" className="text-sm text-muted-foreground hover:text-foreground">
               Browse
             </Link>
+            {isAuthenticated && (
+              <Link to="/transactions" className="text-sm text-muted-foreground hover:text-foreground">
+                Transactions
+              </Link>
+            )}
           </div>
           <div className="flex items-center gap-4">
             {isAuthenticated && user ? (
@@ -144,6 +151,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactions"
+            element={
+              <ProtectedRoute>
+                <TransactionsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactions/:id"
+            element={
+              <ProtectedRoute>
+                <TransactionDetailPage />
               </ProtectedRoute>
             }
           />
