@@ -149,8 +149,9 @@ public class ListingService {
      * Gets all listings for a user (paginated).
      */
     @Transactional(readOnly = true)
-    public Page<Listing> getUserListings(Long userId, Pageable pageable) {
-        return listingRepository.findByUserIdAndDeletedFalse(userId, pageable);
+    public Page<ListingResponse> getUserListings(Long userId, Pageable pageable) {
+        return listingRepository.findByUserIdAndDeletedFalse(userId, pageable)
+                .map(this::toListingResponse);
     }
 
     /**
@@ -163,12 +164,13 @@ public class ListingService {
      * @return paginated search results
      */
     @Transactional(readOnly = true)
-    public Page<Listing> searchListings(ListingSearchRequest request, Pageable pageable) {
+    public Page<ListingResponse> searchListings(ListingSearchRequest request, Pageable pageable) {
         // If query is provided, use full-text search
         if (request.getQuery() != null && !request.getQuery().isBlank()) {
             String sanitizedQuery = sanitizeSearchQuery(request.getQuery());
             log.debug("Performing full-text search with query: {}", sanitizedQuery);
-            return listingRepository.searchByFullText(sanitizedQuery, pageable);
+            return listingRepository.searchByFullText(sanitizedQuery, pageable)
+                    .map(this::toListingResponse);
         }
 
         // Otherwise, use specification for filtered browsing
@@ -180,7 +182,8 @@ public class ListingService {
         }
 
         Specification<Listing> spec = ListingSpecification.withFilters(request, categoryIds);
-        return listingRepository.findAll(spec, pageable);
+        return listingRepository.findAll(spec, pageable)
+                .map(this::toListingResponse);
     }
 
     /**

@@ -163,8 +163,8 @@ public class ListingController {
                 .build();
 
         Pageable pageable = PageRequest.of(page, size, parseSort(sort));
-        Page<Listing> results = listingService.searchListings(request, pageable);
-        return ResponseEntity.ok(results.map(listingService::toListingResponse));
+        Page<ListingResponse> results = listingService.searchListings(request, pageable);
+        return ResponseEntity.ok(results);
     }
 
     /**
@@ -208,7 +208,7 @@ public class ListingController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Listing> listings = listingService.getUserListings(userId, pageable);
-        return ResponseEntity.ok(listings.map(listingService::toListingResponse));
+        Page<ListingResponse> listings = listingService.getUserListings(userId, pageable);
+        return ResponseEntity.ok(listings);
     }
 }
