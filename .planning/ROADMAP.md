@@ -92,7 +92,7 @@ Plans:
 4. User receives real-time notification when receiving a new message
 5. User receives notification when their item sells, and can view/mark notifications as read
 
-**Plans:** 7 plans
+**Plans:** 7/7 plans executed
 
 Plans:
 - [x] 03-00-PLAN.md - Wave 0 Test Infrastructure - Test stubs, dependencies
@@ -126,7 +126,16 @@ Plans:
 4. Seller can rate buyer (1-5 stars) after transaction completion
 5. User profile displays average rating score and total number of ratings received
 
-**Plans:** TBD
+**Plans:** 7 plans
+
+Plans:
+- [ ] 04-00-PLAN.md - Wave 0 Test Infrastructure (Wave 0) - Database migration, test stubs, ErrorCode additions
+- [ ] 04-01-PLAN.md - Transaction Backend (Wave 1) - TransactionStatus enum, Transaction/LedgerEntry entities, service, controller
+- [ ] 04-02-PLAN.md - Rating Backend (Wave 1) - Rating entity, blind rating service, User entity extension
+- [ ] 04-03-PLAN.md - Dispute Backend (Wave 2) - Dispute entity, service, controller for conflict resolution
+- [ ] 04-04-PLAN.md - Frontend Transaction UI (Wave 3) - Transaction pages, components, API client
+- [ ] 04-05-PLAN.md - Frontend Rating UI (Wave 3) - Star rating, review form, profile rating display
+- [ ] 04-06-PLAN.md - Verification Checkpoint (Wave 4) - End-to-end verification
 
 **Architecture:** Transaction Service with state machine, Reputation Service for ratings aggregation, transaction history queries
 
@@ -143,7 +152,7 @@ Plans:
 | 1. Foundation and User Management | 6/6 | Complete | 2026-03-21 |
 | 2. Core Marketplace (Listings and Discovery) | 6/6 | Complete | 2026-03-21 |
 | 3. Real-Time Communication | 7/7 | Complete | 2026-03-22 |
-| 4. Transactions and Trust | 0/0 | Not started | - |
+| 4. Transactions and Trust | 0/7 | Not started | - |
 
 ## Coverage
 
@@ -197,3 +206,4 @@ These should be re-evaluated after v1 launch based on user feedback and usage pa
 *Roadmap created: 2026-03-21*
 *Phase 1 plans added: 2026-03-21*
 *Phase 3 plans added: 2026-03-22*
+*Phase 4 plans added: 2026-03-22*
