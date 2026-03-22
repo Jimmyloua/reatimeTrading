@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-22T03:16:46.545Z"
+last_updated: "2026-03-22T03:29:12.915Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 26
-  completed_plans: 20
+  completed_plans: 21
 ---
 
 # State: Real-Time Trading Platform
@@ -26,7 +26,7 @@ progress:
 ## Current Position
 
 Phase: 04 (transactions-and-trust) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 
 ### Phase Context
 
@@ -70,6 +70,7 @@ Plan: 2 of 7
 | Phase 03 P05 | 10min | 3 tasks | 6 files |
 | Phase 03 P06 | 25min | 3 tasks | 4 files |
 | Phase 04 P00 | 5min | 4 tasks | 5 files |
+| Phase 04 P01 | 18min | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,9 @@ Plan: 2 of 7
 | Persistence-first message saving | Messages written to DB before any WebSocket delivery to prevent data loss on server restart | Plan 03-01 |
 | WebSocket JWT authentication via ChannelInterceptor | Validates JWT on STOMP CONNECT frame for secure WebSocket connections | Plan 03-03 |
 | In-memory presence tracking for v1 | Simple ConcurrentHashMap for development; Redis recommended for production | Plan 03-03 |
+| Enum-based state machine for transactions | 10 states don't justify Spring State Machine complexity; enum with canTransitionTo is simpler | Plan 04-01 |
+| Pessimistic locking for transaction state transitions | Prevents race conditions on financial operations with concurrent access | Plan 04-01 |
+| Idempotency keys on Transaction and LedgerEntry | Database-level duplicate prevention via unique constraints on idempotency_key | Plan 04-01 |
 
 ### Technical Decisions
 
