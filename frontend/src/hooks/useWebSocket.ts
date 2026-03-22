@@ -14,6 +14,7 @@ function getWebSocketBaseUrl() {
 }
 
 export function useWebSocket() {
+  const accessToken = useAuthStore((state) => state.accessToken)
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected')
   const clientRef = useRef<Client | null>(null)
   const reconnectAttempts = useRef(0)
@@ -22,8 +23,7 @@ export function useWebSocket() {
   const BASE_DELAY = 1000
 
   const connect = useCallback(() => {
-    const token = useAuthStore.getState().accessToken
-    if (!token) {
+    if (!accessToken) {
       console.warn('No auth token, skipping WebSocket connection')
       return
     }
@@ -33,7 +33,7 @@ export function useWebSocket() {
     const client = new Client({
       webSocketFactory: () => new SockJS(`${getWebSocketBaseUrl()}/ws`),
       connectHeaders: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${accessToken}`
       },
       onConnect: () => {
         setConnectionState('connected')
@@ -55,7 +55,11 @@ export function useWebSocket() {
             MAX_RECONNECT_DELAY
           )
           reconnectAttempts.current++
-          setTimeout(connect, delay)
+          setTimeout(() => {
+            if (useAuthStore.getState().accessToken) {
+              connect()
+            }
+          }, delay)
         } else {
           setConnectionState('disconnected')
         }
@@ -66,7 +70,7 @@ export function useWebSocket() {
 
     client.activate()
     clientRef.current = client
-  }, [])
+  }, [accessToken])
 
   const disconnect = useCallback(() => {
     if (clientRef.current) {
@@ -90,15 +94,18 @@ export function useWebSocket() {
   }, [])
 
   useEffect(() => {
-    const token = useAuthStore.getState().accessToken
-    if (token && !clientRef.current?.connected) {
+    if (accessToken) {
       connect()
+    } else {
+      disconnect()
     }
 
     return () => {
-      disconnect()
+      if (!useAuthStore.getState().accessToken) {
+        disconnect()
+      }
     }
-  }, [connect, disconnect])
+  }, [accessToken, connect, disconnect])
 
   return {
     client: clientRef.current,

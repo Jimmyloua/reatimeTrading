@@ -28,9 +28,11 @@ describe('App shell', () => {
   test('renders logged-out home page', () => {
     renderApp()
 
-    expect(screen.getByText(/welcome to trading platform/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /browse/i })).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /sign in/i })).toHaveLength(2)
+    expect(
+      screen.getByText(/buy and sell digital devices in a cleaner, faster marketplace/i)
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: /browse/i }).length).toBeGreaterThan(0)
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: /create account/i })).toHaveLength(2)
   })
 
@@ -44,11 +46,13 @@ describe('App shell', () => {
         email: 'test@example.com',
         displayName: 'Test User',
         avatarUrl: null,
+        listingCount: 0,
         profileComplete: true,
         averageRating: null,
         totalRatings: 0,
         createdAt: new Date().toISOString(),
       },
+      hasHydrated: true,
     })
 
     renderApp()

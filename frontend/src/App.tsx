@@ -1,4 +1,5 @@
-import { Routes, Route, Link, Navigate } from 'react-router-dom'
+import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
 import { useAuthStore } from './stores/authStore'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Toaster } from './components/ui/sonner'
@@ -27,12 +28,62 @@ import { RatingPage } from './pages/RatingPage'
 import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 import { HERO_IMAGES, buildHeroBackground } from './lib/heroBackgrounds'
+import { authApi } from './api/authApi'
 
 function App() {
-  const { isAuthenticated, user, logout } = useAuthStore()
+  const navigate = useNavigate()
+  const didBootstrap = useRef(false)
+  const {
+    accessToken,
+    refreshToken,
+    isAuthenticated,
+    hasHydrated,
+    user,
+    logout,
+    setBootstrapping,
+    setTokens,
+    setUser,
+  } = useAuthStore()
 
-  const handleLogout = () => {
-    logout()
+  useEffect(() => {
+    if (!hasHydrated || didBootstrap.current) {
+      return
+    }
+
+    if (!refreshToken || accessToken) {
+      didBootstrap.current = true
+      return
+    }
+
+    didBootstrap.current = true
+    setBootstrapping(true)
+
+    void authApi
+      .refresh(refreshToken)
+      .then(async (response) => {
+        setTokens(response.accessToken, response.refreshToken)
+        const profile = await authApi.getProfile()
+        setUser(profile)
+      })
+      .catch(() => {
+        logout()
+      })
+      .finally(() => {
+        setBootstrapping(false)
+      })
+  }, [accessToken, hasHydrated, logout, refreshToken, setBootstrapping, setTokens, setUser])
+
+  const handleLogout = async () => {
+    try {
+      if (refreshToken) {
+        await authApi.logout(refreshToken)
+      }
+    } catch (error) {
+      console.error('Failed to notify backend about logout:', error)
+    } finally {
+      logout()
+      navigate('/login', { replace: true })
+    }
   }
 
   return (
