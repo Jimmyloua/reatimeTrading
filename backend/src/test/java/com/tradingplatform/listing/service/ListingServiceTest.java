@@ -2,6 +2,7 @@ package com.tradingplatform.listing.service;
 
 import com.tradingplatform.exception.ApiException;
 import com.tradingplatform.exception.ErrorCode;
+import com.tradingplatform.listing.dto.ListingResponse;
 import com.tradingplatform.listing.dto.CreateListingRequest;
 import com.tradingplatform.listing.dto.UpdateListingRequest;
 import com.tradingplatform.listing.entity.Category;
@@ -220,13 +221,15 @@ class ListingServiceTest {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Listing> page = new PageImpl<>(List.of(testListing));
         when(listingRepository.findByUserIdAndDeletedFalse(1L, pageable)).thenReturn(page);
+        when(listingImageRepository.findByListingIdAndIsPrimaryTrue(testListing.getId())).thenReturn(Optional.empty());
 
         // Act
-        Page<Listing> result = listingService.getUserListings(1L, pageable);
+        Page<ListingResponse> result = listingService.getUserListings(1L, pageable);
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
+        assertEquals("Test Listing", result.getContent().get(0).getTitle());
         verify(listingRepository).findByUserIdAndDeletedFalse(1L, pageable);
     }
 }

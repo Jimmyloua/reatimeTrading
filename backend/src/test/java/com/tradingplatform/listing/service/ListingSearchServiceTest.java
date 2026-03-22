@@ -1,10 +1,13 @@
 package com.tradingplatform.listing.service;
 
 import com.tradingplatform.listing.dto.ListingSearchRequest;
+import com.tradingplatform.listing.dto.CategoryResponse;
+import com.tradingplatform.listing.dto.ListingResponse;
 import com.tradingplatform.listing.entity.Category;
 import com.tradingplatform.listing.entity.Listing;
 import com.tradingplatform.listing.enums.Condition;
 import com.tradingplatform.listing.repository.CategoryRepository;
+import com.tradingplatform.listing.repository.ListingImageRepository;
 import com.tradingplatform.listing.repository.ListingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +44,9 @@ class ListingSearchServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private ListingImageRepository listingImageRepository;
 
     @InjectMocks
     private ListingService listingService;
@@ -86,9 +92,10 @@ class ListingSearchServiceTest {
         Page<Listing> expectedPage = new PageImpl<>(List.of(listing1));
         when(listingRepository.searchByFullText(any(String.class), eq(pageable)))
                 .thenReturn(expectedPage);
+        when(listingImageRepository.findByListingIdAndIsPrimaryTrue(listing1.getId())).thenReturn(Optional.empty());
 
         // Act
-        Page<Listing> result = listingService.searchListings(request, pageable);
+        Page<ListingResponse> result = listingService.searchListings(request, pageable);
 
         // Assert
         assertNotNull(result);
@@ -107,9 +114,11 @@ class ListingSearchServiceTest {
         Page<Listing> expectedPage = new PageImpl<>(List.of(listing1, listing2));
         when(listingRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(expectedPage);
+        when(listingImageRepository.findByListingIdAndIsPrimaryTrue(listing1.getId())).thenReturn(Optional.empty());
+        when(listingImageRepository.findByListingIdAndIsPrimaryTrue(listing2.getId())).thenReturn(Optional.empty());
 
         // Act
-        Page<Listing> result = listingService.searchListings(request, pageable);
+        Page<ListingResponse> result = listingService.searchListings(request, pageable);
 
         // Assert
         assertNotNull(result);
@@ -135,9 +144,10 @@ class ListingSearchServiceTest {
         Page<Listing> expectedPage = new PageImpl<>(List.of(listing1));
         when(listingRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(expectedPage);
+        when(listingImageRepository.findByListingIdAndIsPrimaryTrue(listing1.getId())).thenReturn(Optional.empty());
 
         // Act
-        Page<Listing> result = listingService.searchListings(request, pageable);
+        Page<ListingResponse> result = listingService.searchListings(request, pageable);
 
         // Assert
         assertNotNull(result);
@@ -165,9 +175,10 @@ class ListingSearchServiceTest {
         Page<Listing> expectedPage = new PageImpl<>(List.of(listing1));
         when(listingRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(expectedPage);
+        when(listingImageRepository.findByListingIdAndIsPrimaryTrue(listing1.getId())).thenReturn(Optional.empty());
 
         // Act
-        Page<Listing> result = listingService.searchListings(request, pageable);
+        Page<ListingResponse> result = listingService.searchListings(request, pageable);
 
         // Assert
         assertNotNull(result);
@@ -205,7 +216,7 @@ class ListingSearchServiceTest {
         when(categoryRepository.findByParentIsNull()).thenReturn(rootCategories);
 
         // Act
-        List<Category> result = listingService.getCategoryTree();
+        List<CategoryResponse> result = listingService.getCategoryTree();
 
         // Assert
         assertNotNull(result);
@@ -221,7 +232,7 @@ class ListingSearchServiceTest {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 
         // Act
-        Optional<Category> result = listingService.getCategoryById(1L);
+        Optional<CategoryResponse> result = listingService.getCategoryById(1L);
 
         // Assert
         assertTrue(result.isPresent());
@@ -236,7 +247,7 @@ class ListingSearchServiceTest {
         when(categoryRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act
-        Optional<Category> result = listingService.getCategoryById(999L);
+        Optional<CategoryResponse> result = listingService.getCategoryById(999L);
 
         // Assert
         assertFalse(result.isPresent());
