@@ -1,12 +1,14 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { listingApi } from '@/api/listingApi'
+import { chatApi } from '@/api/chatApi'
 import { useAuthStore } from '@/stores/authStore'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { ArrowLeft, Pencil, Trash2, MapPin, Clock } from 'lucide-react'
+import { ArrowLeft, MessageSquare, Pencil, Trash2, MapPin, Clock } from 'lucide-react'
 import { getInitials, getAvatarColor } from './ProfilePage'
 import { RequestToBuyButton } from '@/components/transaction/RequestToBuyButton'
 import type { Condition, ListingStatus } from '@/types/listing'
@@ -68,6 +70,7 @@ export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuthStore()
+  const [isStartingChat, setIsStartingChat] = useState(false)
   const listingId = parseInt(id || '0', 10)
 
   // Fetch listing detail
@@ -121,6 +124,23 @@ export default function ListingDetailPage() {
   }
 
   const primaryImage = listing.images.find((img) => img.isPrimary) || listing.images[0]
+  const canContactSeller = Boolean(isAuthenticated && !isOwner)
+
+  const handleContactSeller = async () => {
+    if (!canContactSeller || isStartingChat) {
+      return
+    }
+
+    try {
+      setIsStartingChat(true)
+      const conversation = await chatApi.createConversation({ listingId })
+      navigate(`/messages?conversation=${conversation.id}`)
+    } catch (error) {
+      console.error('Failed to start seller conversation:', error)
+    } finally {
+      setIsStartingChat(false)
+    }
+  }
 
   return (
     <div className="py-8 space-y-6">
@@ -277,6 +297,20 @@ export default function ListingDetailPage() {
                     {listing.seller.listingCount} {listing.seller.listingCount === 1 ? 'listing' : 'listings'}
                   </p>
                 </div>
+                {canContactSeller ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      void handleContactSeller()
+                    }}
+                    disabled={isStartingChat}
+                    className="shrink-0"
+                  >
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    {isStartingChat ? 'Opening chat...' : 'Chat with seller'}
+                  </Button>
+                ) : null}
               </div>
             </CardContent>
           </Card>
