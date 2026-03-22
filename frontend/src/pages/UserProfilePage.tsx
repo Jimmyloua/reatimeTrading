@@ -11,6 +11,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, User } from 'lucide-react'
 import { DefaultAvatar } from '@/pages/ProfilePage'
+import { ProfileRatingSection } from '@/components/profile/ProfileRatingSection'
 
 /**
  * Format date to readable string
@@ -160,6 +161,9 @@ export default function UserProfilePage() {
                 {profile.listingCount === 1 ? 'listing' : 'listings'}
               </p>
             </div>
+
+            {/* Ratings Section */}
+            <ProfileRatingSection userId={profile.id} />
           </div>
         </CardContent>
       </Card>
