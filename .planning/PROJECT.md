@@ -12,16 +12,15 @@ Safe, transparent peer-to-peer transactions for second-hand digital devices with
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] User authentication and profile management — Validated in Phase 1
+- [x] Item listing with photos, descriptions, and pricing — Validated in Phase 2
+- [x] Browse and search items by category, brand, model, price, condition, location — Validated in Phase 2
+- [x] Geo-location based item discovery — Validated in Phase 2
+- [x] Real-time chat between buyers and sellers — Validated in Phase 3
+- [x] Real-time notifications for messages, offers, and transaction updates — Validated in Phase 3
 
 ### Active
 
-- [ ] User authentication and profile management
-- [ ] Item listing with photos, descriptions, and pricing
-- [ ] Browse and search items by category, brand, model, price, condition, location
-- [ ] Geo-location based item discovery
-- [ ] Real-time chat between buyers and sellers
-- [ ] Real-time notifications for messages, offers, and transaction updates
 - [ ] Escrow payment system to secure transactions
 - [ ] Reputation system with ratings and transaction history
 - [ ] Transaction workflow: offer → acceptance → payment → shipment → confirmation
@@ -80,4 +79,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after initialization*
+*Last updated: 2026-03-22 after Phase 3 completion*
