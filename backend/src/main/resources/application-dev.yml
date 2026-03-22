@@ -12,6 +12,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    properties:
+      hibernate:
+        type:
+          preferred_boolean_jdbc_type: TINYINT
     hibernate:
       ddl-auto: validate
     open-in-view: false
