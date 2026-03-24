@@ -1,10 +1,11 @@
 ---
 phase: 6
 slug: chat-presence-reliability-multi-conversation-seller-status-sync-responsive-message-layout-and-redis-backed-realtime-optimization
-status: draft
+status: approved
 shadcn_initialized: true
 preset: base-nova
 created: 2026-03-24
+reviewed_at: 2026-03-24T00:00:00+08:00
 ---
 
 # Phase 6 - UI Design Contract
