@@ -29,6 +29,7 @@ import { NotificationBell } from './components/notifications/NotificationBell'
 import { getInitials, getAvatarColor } from './pages/ProfilePage'
 import { HERO_IMAGES, buildHeroBackground } from './lib/heroBackgrounds'
 import { authApi } from './api/authApi'
+import { useWebSocket } from './hooks/useWebSocket'
 
 function App() {
   const navigate = useNavigate()
@@ -88,6 +89,7 @@ function App() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
+      {isAuthenticated ? <SessionConnectionManager /> : null}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(35,92,148,0.18),transparent_28%),radial-gradient(circle_at_top_right,rgba(251,191,36,0.14),transparent_24%),linear-gradient(180deg,#f8fbff_0%,#eef5fb_46%,#ffffff_100%)]" />
       {/* Navigation */}
       <nav className="sticky top-0 z-20 border-b border-white/40 bg-white/72 px-4 py-3 backdrop-blur-xl">
@@ -240,6 +242,11 @@ function App() {
       <Toaster />
     </div>
   )
+}
+
+function SessionConnectionManager() {
+  useWebSocket()
+  return null
 }
 
 function HomePage() {

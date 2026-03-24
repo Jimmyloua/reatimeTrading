@@ -5,6 +5,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from '@/App'
 import { useAuthStore } from '@/stores/authStore'
 
+vi.mock('@/hooks/useWebSocket', () => ({
+  useWebSocket: () => ({
+    client: null,
+    connectionState: 'disconnected',
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    subscribe: vi.fn(),
+    publish: vi.fn(),
+  }),
+}))
+
 function renderApp() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
