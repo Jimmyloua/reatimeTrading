@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Send, Image as ImageIcon } from 'lucide-react'
 
 interface MessageInputProps {
-  onSend: (content: string, imageUrl?: string) => void
+  onSend: (content: string, imageUrl?: string) => void | Promise<void>
   onTyping: () => void
   canSend?: boolean
   statusMessage?: string | null

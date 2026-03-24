@@ -18,7 +18,7 @@ interface ChatViewProps {
 }
 
 export function ChatView({ conversation }: ChatViewProps) {
-  const { messages, typingUsers, setMessages, setLoading, isLoading } = useChatStore()
+  const { messages, typingUsers, setMessages, setLoading, isLoading, upsertConversation, setActiveConversation } = useChatStore()
   const { sendMessage, emitTyping, connectionState } = useChat(conversation.id)
   const { isOnline: isSellerOnline, lastSeenText } = useConversationPresence({
     otherUserId: conversation.otherUserId,
@@ -53,6 +53,34 @@ export function ChatView({ conversation }: ChatViewProps) {
   }, [messages])
 
   useEffect(() => {
+    const refreshConversation = async () => {
+      try {
+        const [latestConversation, latestMessages] = await Promise.all([
+          chatApi.getConversation(conversation.id),
+          chatApi.getMessages(conversation.id),
+        ])
+
+        upsertConversation(latestConversation)
+        setActiveConversation({
+          ...latestConversation,
+          unreadCount: 0,
+        })
+        setMessages(latestMessages.content.reverse())
+      } catch (error) {
+        console.error('Failed to refresh conversation state:', error)
+      }
+    }
+
+    const interval = window.setInterval(() => {
+      void refreshConversation()
+    }, 10000)
+
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [conversation.id, setActiveConversation, setMessages, upsertConversation])
+
+  useEffect(() => {
     if (!previousPresenceRef.current && isSellerOnline) {
       toast.success(`${conversation.otherUserName} is online. You can chat now.`)
     }
@@ -60,12 +88,16 @@ export function ChatView({ conversation }: ChatViewProps) {
     previousPresenceRef.current = isSellerOnline
   }, [conversation.otherUserName, isSellerOnline])
 
-  const handleSend = (content: string, imageUrl?: string) => {
-    sendMessage(content, imageUrl)
+  const handleSend = async (content: string, imageUrl?: string) => {
+    try {
+      await sendMessage(content, imageUrl)
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    }
     emitTyping()
   }
 
-  const canSend = connectionState === 'connected'
+  const canSend = true
   const statusMessage =
     connectionState === 'connected'
       ? null
@@ -73,7 +105,7 @@ export function ChatView({ conversation }: ChatViewProps) {
         ? 'Reconnecting chat now. Messages will send again as soon as the connection returns.'
         : connectionState === 'connecting'
           ? 'Connecting chat now...'
-          : 'Chat connection is offline right now. We will keep trying to reconnect automatically.'
+          : 'Live chat is offline right now, but messages will still send and the conversation will keep refreshing.'
 
   return (
     <div

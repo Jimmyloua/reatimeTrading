@@ -35,5 +35,13 @@ export const chatApi = {
       params: { page, size }
     })
     return response.data
+  },
+
+  async sendMessage(conversationId: number, request: Omit<SendMessageRequest, 'conversationId'>): Promise<Message> {
+    const response = await apiClient.post<Message>(`/api/conversations/${conversationId}/messages`, {
+      conversationId,
+      ...request,
+    })
+    return response.data
   }
 }

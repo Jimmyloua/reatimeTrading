@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
 import com.tradingplatform.chat.service.ChatService;
+import com.tradingplatform.notification.service.NotificationPushService;
 import com.tradingplatform.security.JwtTokenProvider;
 import com.tradingplatform.security.UserPrincipal;
 import com.tradingplatform.user.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,6 +48,12 @@ class ChatControllerTest {
 
     @MockBean
     private ChatService chatService;
+
+    @MockBean
+    private NotificationPushService notificationPushService;
+
+    @MockBean
+    private SimpMessagingTemplate messagingTemplate;
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
@@ -167,6 +175,7 @@ class ChatControllerTest {
             .build();
 
         when(chatService.sendMessage(1L, 1L, "Hello!", null)).thenReturn(response);
+        when(chatService.getOtherParticipantId(1L, 1L)).thenReturn(2L);
 
         // Act & Assert
         mockMvc.perform(post("/api/conversations/1/messages")
@@ -176,6 +185,9 @@ class ChatControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.content").value("Hello!"));
+
+        verify(messagingTemplate).convertAndSendToUser(eq("2"), eq("/queue/messages"), eq(response));
+        verify(notificationPushService).pushMessageNotification(2L, response);
     }
 
     @Test

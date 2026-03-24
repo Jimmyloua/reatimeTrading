@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { chatApi } from '@/api/chatApi'
 import { useChatStore } from '@/stores/chatStore'
 import { useWebSocket } from './useWebSocket'
 import type { Message, TypingIndicator } from '@/types/chat'
@@ -58,14 +59,22 @@ export function useChat(conversationId: number | null) {
     }
   }, [conversationId, connectionState, subscribe, setTyping])
 
-  const sendMessage = useCallback((content: string, imageUrl?: string) => {
+  const sendMessage = useCallback(async (content: string, imageUrl?: string) => {
     if (!conversationId) return
 
-    publish(
-      '/app/chat.sendMessage',
-      JSON.stringify({ conversationId, content, imageUrl })
-    )
-  }, [conversationId, publish])
+    if (connectionState === 'connected') {
+      publish(
+        '/app/chat.sendMessage',
+        JSON.stringify({ conversationId, content, imageUrl })
+      )
+      return
+    }
+
+    const message = await chatApi.sendMessage(conversationId, { content, imageUrl })
+    addMessage(message)
+    clearUnread(conversationId)
+    syncConversationPreview(message)
+  }, [addMessage, clearUnread, connectionState, conversationId, publish, syncConversationPreview])
 
   const emitTyping = useCallback(() => {
     if (!conversationId) return
