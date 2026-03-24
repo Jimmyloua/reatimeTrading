@@ -57,6 +57,7 @@ export function MessageInput({ onSend, onTyping, canSend = true, statusMessage }
         </Button>
         <Textarea
           ref={textareaRef}
+          autoFocus
           value={message}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

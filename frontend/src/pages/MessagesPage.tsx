@@ -36,10 +36,16 @@ export default function MessagesPage() {
       if (matchedConversation.unreadCount > 0) {
         clearUnread(activeConversationId)
       }
-      setActiveConversation({
-        ...matchedConversation,
-        unreadCount: 0,
-      })
+      if (
+        activeConversation?.id !== activeConversationId ||
+        activeConversation.unreadCount !== 0 ||
+        activeConversation.lastMessageAt !== matchedConversation.lastMessageAt
+      ) {
+        setActiveConversation({
+          ...matchedConversation,
+          unreadCount: 0,
+        })
+      }
       return
     }
 
@@ -67,7 +73,7 @@ export default function MessagesPage() {
     return () => {
       cancelled = true
     }
-  }, [activeConversationId, clearUnread, matchedConversation, setActiveConversation, upsertConversation])
+  }, [activeConversation, activeConversationId, clearUnread, matchedConversation, setActiveConversation, upsertConversation])
 
   const handleSelectConversation = (conversationId: number) => {
     setSearchParams({ conversation: String(conversationId) })

@@ -89,10 +89,17 @@ export const useChatStore = create<ChatState>((set) => ({
     }
   }),
 
-  setActiveConversation: (conversation) => set({
-    activeConversation: conversation,
-    messages: [],
-    typingUsers: new Map()
+  setActiveConversation: (conversation) => set((state) => {
+    const isSameConversation =
+      state.activeConversation?.id !== undefined &&
+      conversation?.id !== undefined &&
+      state.activeConversation.id === conversation.id
+
+    return {
+      activeConversation: conversation,
+      messages: isSameConversation ? state.messages : [],
+      typingUsers: isSameConversation ? state.typingUsers : new Map(),
+    }
   }),
 
   setMessages: (messages) => set({ messages }),

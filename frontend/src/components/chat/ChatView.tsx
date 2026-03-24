@@ -18,7 +18,7 @@ interface ChatViewProps {
 }
 
 export function ChatView({ conversation }: ChatViewProps) {
-  const { messages, typingUsers, setMessages, setLoading, isLoading, upsertConversation, setActiveConversation } = useChatStore()
+  const { messages, typingUsers, setMessages, setLoading, isLoading, upsertConversation } = useChatStore()
   const { sendMessage, emitTyping, connectionState } = useChat(conversation.id)
   const { isOnline: isSellerOnline, lastSeenText } = useConversationPresence({
     otherUserId: conversation.otherUserId,
@@ -61,10 +61,6 @@ export function ChatView({ conversation }: ChatViewProps) {
         ])
 
         upsertConversation(latestConversation)
-        setActiveConversation({
-          ...latestConversation,
-          unreadCount: 0,
-        })
         setMessages(latestMessages.content.reverse())
       } catch (error) {
         console.error('Failed to refresh conversation state:', error)
@@ -78,7 +74,7 @@ export function ChatView({ conversation }: ChatViewProps) {
     return () => {
       window.clearInterval(interval)
     }
-  }, [conversation.id, setActiveConversation, setMessages, upsertConversation])
+  }, [conversation.id, setMessages, upsertConversation])
 
   useEffect(() => {
     if (!previousPresenceRef.current && isSellerOnline) {
