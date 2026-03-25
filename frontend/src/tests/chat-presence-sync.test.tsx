@@ -1,6 +1,7 @@
 import { act, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { useConversationPresence } from '@/hooks/useConversationPresence'
+import { resetSellerPresenceStore } from '@/stores/sellerPresenceStore'
 
 const websocketMock = vi.hoisted(() => {
   let connectionState: 'connecting' | 'connected' | 'disconnected' | 'reconnecting' = 'connected'
@@ -74,6 +75,7 @@ describe('shared seller presence contract', () => {
   })
 
   afterEach(() => {
+    resetSellerPresenceStore()
     vi.useRealTimers()
   })
 
@@ -91,6 +93,7 @@ describe('shared seller presence contract', () => {
         userId: 42,
         online: true,
         lastSeenText: 'Last seen just now',
+        updatedAt: new Date('2026-03-25T01:00:00.000Z').toISOString(),
       })
     })
 
@@ -108,13 +111,33 @@ describe('shared seller presence contract', () => {
     expect(screen.getByText('header: Seller online')).toBeInTheDocument()
 
     websocketMock.setConnectionState('disconnected')
+    view.rerender(<PresenceLabel label="header" otherUserId={42} initialOnline />)
 
     act(() => {
       vi.advanceTimersByTime(30_001)
     })
 
-    view.rerender(<PresenceLabel label="header" otherUserId={42} initialOnline />)
-
     expect(screen.getByText('header: Status updating')).toBeInTheDocument()
+  })
+
+  test('offline payloads should stay synchronized across repeated seller rows', () => {
+    render(
+      <>
+        <PresenceLabel label="row-a" otherUserId={42} initialOnline initialLastSeen="Last seen 5m ago" />
+        <PresenceLabel label="header" otherUserId={42} initialOnline initialLastSeen="Last seen 5m ago" />
+      </>,
+    )
+
+    act(() => {
+      websocketMock.emit('/topic/presence.42', {
+        userId: 42,
+        online: false,
+        lastSeenText: 'Last seen 2m ago',
+        updatedAt: new Date('2026-03-25T01:05:00.000Z').toISOString(),
+      })
+    })
+
+    expect(screen.getByText('row-a: Last seen 2m ago')).toBeInTheDocument()
+    expect(screen.getByText('header: Last seen 2m ago')).toBeInTheDocument()
   })
 })
