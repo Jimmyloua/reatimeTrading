@@ -235,15 +235,16 @@ Plans:
 **Goal:** Users can enter discovery through accessible category disclosures, server-driven homepage modules, curated collections, and a notification center that keeps filters, preferences, and read actions synchronized.
 **Requirements**: P7-01, P7-02, P7-03, P7-04, P7-05
 **Depends on:** Phase 6
-**Plans:** 6 plans
+**Plans:** 7 plans
 
 Plans:
 - [ ] 07-00-PLAN.md - Wave 0 Phase 7 Test Scaffolding (Wave 0) - Add failing frontend/backend tests for browse disclosure, homepage modules, curated content, and filtered notification management
-- [ ] 07-01-PLAN.md - Backend Curated Content and Homepage Modules (Wave 1) - Create content schema, seed data, and read-only APIs for ordered collections and homepage modules
+- [ ] 07-01-PLAN.md - Backend Content Foundation (Wave 1) - Create content schema, seed data, entities, repositories, and foundation filtering logic for ordered collections and homepage modules
 - [ ] 07-02-PLAN.md - Backend Notification Management Filters and Visible Read Actions (Wave 1) - Extend notification APIs with URL-backed filters and mark-visible-as-read behavior
-- [ ] 07-03-PLAN.md - Frontend Browse Disclosure and Server-Driven Homepage (Wave 2) - Implement category disclosure, collection-aware browse routing, and server-driven homepage modules
+- [ ] 07-06-PLAN.md - Content API Delivery Contracts (Wave 2) - Add content DTOs, controller endpoints, and frontend content client/type contracts
+- [ ] 07-03-PLAN.md - Frontend Browse Disclosure and Server-Driven Homepage (Wave 3) - Implement category disclosure, collection-aware browse routing, and server-driven homepage modules using the shared content contracts
 - [ ] 07-04-PLAN.md - Frontend Notification Management Center (Wave 2) - Add URL-backed notification filters, grouped preferences, and synced unread state
-- [ ] 07-05-PLAN.md - Phase 7 Verification Gate (Wave 3) - Run full automation and block on human verification for interaction-heavy behavior
+- [ ] 07-05-PLAN.md - Phase 7 Verification Gate (Wave 4) - Run full automation and block on human verification for interaction-heavy behavior
 
 ---
 
