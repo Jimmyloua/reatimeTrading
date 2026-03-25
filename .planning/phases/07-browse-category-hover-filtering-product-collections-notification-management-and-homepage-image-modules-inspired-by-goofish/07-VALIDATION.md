@@ -2,7 +2,7 @@
 phase: 07
 slug: browse-category-hover-filtering-product-collections-notification-management-and-homepage-image-modules-inspired-by-goofish
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-03-25
 ---
