@@ -35,4 +35,5 @@ export interface PresenceUpdate {
   userId: number
   online: boolean
   lastSeenText: string
+  updatedAt: string
 }

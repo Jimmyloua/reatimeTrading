@@ -1,6 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useWebSocket } from './useWebSocket'
-import type { PresenceUpdate } from '@/types/chat'
+import {
+  consumeSellerOnlineToast,
+  dropSellerPresenceSubscription,
+  ensureSellerPresenceSubscription,
+  getSellerPresenceCopy,
+  getSellerPresenceSnapshot,
+  getSellerPresenceStatusClassName,
+  releaseSellerPresence,
+  retainSellerPresence,
+  seedSellerPresence,
+  subscribeToSellerPresence,
+  syncSellerPresenceTransport,
+  type SellerPresenceStatus,
+} from '@/stores/sellerPresenceStore'
 
 interface UseConversationPresenceOptions {
   otherUserId: number
@@ -14,32 +27,61 @@ export function useConversationPresence({
   initialLastSeen,
 }: UseConversationPresenceOptions) {
   const { subscribe, connectionState } = useWebSocket()
-  const [isOnline, setIsOnline] = useState(initialOnline)
-  const [lastSeenText, setLastSeenText] = useState(initialLastSeen)
+  const [snapshot, setSnapshot] = useState(() =>
+    getSellerPresenceSnapshot(otherUserId, {
+      online: initialOnline,
+      lastSeenText: initialLastSeen,
+    }),
+  )
 
   useEffect(() => {
-    setIsOnline(initialOnline)
-    setLastSeenText(initialLastSeen)
+    const fallback = {
+      online: initialOnline,
+      lastSeenText: initialLastSeen,
+    }
+    seedSellerPresence(otherUserId, fallback)
+    setSnapshot(getSellerPresenceSnapshot(otherUserId, fallback))
   }, [initialLastSeen, initialOnline, otherUserId])
 
   useEffect(() => {
-    if (connectionState !== 'connected') {
-      return
-    }
-
-    const subscription = subscribe(`/topic/presence.${otherUserId}`, (message) => {
-      const update: PresenceUpdate = JSON.parse(message.body)
-      setIsOnline(update.online)
-      setLastSeenText(update.lastSeenText)
+    retainSellerPresence(otherUserId, {
+      online: initialOnline,
+      lastSeenText: initialLastSeen,
     })
 
     return () => {
-      subscription?.unsubscribe()
+      releaseSellerPresence(otherUserId)
     }
-  }, [connectionState, otherUserId, subscribe])
+  }, [initialLastSeen, initialOnline, otherUserId])
+
+  useEffect(() => {
+    return subscribeToSellerPresence(otherUserId, () => {
+      setSnapshot(getSellerPresenceSnapshot(otherUserId, {
+        online: initialOnline,
+        lastSeenText: initialLastSeen,
+      }))
+    })
+  }, [initialLastSeen, initialOnline, otherUserId])
+
+  useEffect(() => {
+    syncSellerPresenceTransport(otherUserId, connectionState)
+
+    if (connectionState === 'connected') {
+      ensureSellerPresenceSubscription(otherUserId, subscribe, {
+        online: initialOnline,
+        lastSeenText: initialLastSeen,
+      })
+    } else {
+      dropSellerPresenceSubscription(otherUserId)
+    }
+  }, [connectionState, initialLastSeen, initialOnline, otherUserId, subscribe])
 
   return {
-    isOnline,
-    lastSeenText,
+    isOnline: snapshot.status === 'online',
+    lastSeenText: snapshot.lastSeenText,
+    status: snapshot.status as SellerPresenceStatus,
+    statusCopy: getSellerPresenceCopy(snapshot),
+    statusDotClassName: getSellerPresenceStatusClassName(snapshot.status),
+    consumeOnlineToast: () => consumeSellerOnlineToast(otherUserId),
   }
 }

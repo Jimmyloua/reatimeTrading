@@ -20,10 +20,16 @@ interface ChatViewProps {
 export function ChatView({ conversation }: ChatViewProps) {
   const { messages, typingUsers, setMessages, setLoading, isLoading, upsertConversation } = useChatStore()
   const { sendMessage, emitTyping, connectionState } = useChat(conversation.id)
-  const { isOnline: isSellerOnline, lastSeenText } = useConversationPresence({
+  const {
+    isOnline: isSellerOnline,
+    status,
+    statusCopy,
+    statusDotClassName,
+    consumeOnlineToast,
+  } = useConversationPresence({
     otherUserId: conversation.otherUserId,
     initialOnline: conversation.otherUserOnline ?? false,
-    initialLastSeen: conversation.otherUserLastSeen ?? 'Offline',
+    initialLastSeen: conversation.otherUserLastSeen ?? 'Status updating',
   })
   const scrollRef = useRef<HTMLDivElement>(null)
   const previousPresenceRef = useRef(isSellerOnline)
@@ -53,36 +59,12 @@ export function ChatView({ conversation }: ChatViewProps) {
   }, [messages])
 
   useEffect(() => {
-    const refreshConversation = async () => {
-      try {
-        const [latestConversation, latestMessages] = await Promise.all([
-          chatApi.getConversation(conversation.id),
-          chatApi.getMessages(conversation.id),
-        ])
-
-        upsertConversation(latestConversation)
-        setMessages(latestMessages.content.reverse())
-      } catch (error) {
-        console.error('Failed to refresh conversation state:', error)
-      }
-    }
-
-    const interval = window.setInterval(() => {
-      void refreshConversation()
-    }, 10000)
-
-    return () => {
-      window.clearInterval(interval)
-    }
-  }, [conversation.id, setMessages, upsertConversation])
-
-  useEffect(() => {
-    if (!previousPresenceRef.current && isSellerOnline) {
+    if (!previousPresenceRef.current && isSellerOnline && consumeOnlineToast()) {
       toast.success(`${conversation.otherUserName} is online. You can chat now.`)
     }
 
     previousPresenceRef.current = isSellerOnline
-  }, [conversation.otherUserName, isSellerOnline])
+  }, [consumeOnlineToast, conversation.otherUserName, isSellerOnline])
 
   const handleSend = async (content: string, imageUrl?: string) => {
     try {
@@ -128,7 +110,10 @@ export function ChatView({ conversation }: ChatViewProps) {
               {connectionState === 'connected' ? 'Chat live' : connectionState}
             </div>
             <div className="rounded-full border border-white/60 bg-white/80 px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
-              {isSellerOnline ? 'Seller online' : lastSeenText}
+              <span className="inline-flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${statusDotClassName}`} aria-hidden="true" />
+                <span>{statusCopy}</span>
+              </span>
             </div>
           </div>
         </div>

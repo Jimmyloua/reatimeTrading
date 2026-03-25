@@ -47,7 +47,7 @@ export function ConversationList({ onSelectConversation, activeConversationId }:
   if (conversations.length === 0) {
     return (
       <div className="p-6 text-center">
-        <p className="text-neutral-600">No conversations</p>
+        <p className="text-neutral-600">No conversations yet</p>
         <p className="mt-1 text-sm text-neutral-400">
           When you contact a seller, conversations will appear here.
         </p>

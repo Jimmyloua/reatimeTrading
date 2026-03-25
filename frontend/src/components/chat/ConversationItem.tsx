@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { useConversationPresence } from '@/hooks/useConversationPresence'
 import type { Conversation } from '@/types/chat'
 
 interface ConversationItemProps {
@@ -9,6 +10,11 @@ interface ConversationItemProps {
 }
 
 export function ConversationItem({ conversation, isActive, onClick }: ConversationItemProps) {
+  const { statusCopy, statusDotClassName } = useConversationPresence({
+    otherUserId: conversation.otherUserId,
+    initialOnline: conversation.otherUserOnline ?? false,
+    initialLastSeen: conversation.otherUserLastSeen ?? 'Status updating',
+  })
   const initials = conversation.otherUserName
     .split(' ')
     .map(n => n[0])
@@ -54,6 +60,10 @@ export function ConversationItem({ conversation, isActive, onClick }: Conversati
         {conversation.lastMessage ? (
           <p className="mt-2 truncate text-xs text-slate-500">{conversation.lastMessage}</p>
         ) : null}
+        <div className="mt-2 flex items-center gap-2 text-xs font-medium text-slate-500">
+          <span className={`h-2 w-2 rounded-full ${statusDotClassName}`} aria-hidden="true" />
+          <span>{statusCopy}</span>
+        </div>
       </div>
     </div>
   )
