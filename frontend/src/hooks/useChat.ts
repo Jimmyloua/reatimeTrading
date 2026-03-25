@@ -8,8 +8,52 @@ const TYPING_DEBOUNCE_MS = 3000
 
 export function useChat(conversationId: number | null) {
   const { subscribe, publish, connectionState } = useWebSocket()
-  const { addMessage, clearUnread, incrementUnread, setTyping, syncConversationPreview } = useChatStore()
+  const {
+    addMessage,
+    clearUnread,
+    hasSeenMessage,
+    incrementUnread,
+    markMessageSeen,
+    setConversations,
+    setMessages,
+    setTyping,
+    syncConversationPreview,
+    upsertConversation,
+  } = useChatStore()
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const previousConnectionStateRef = useRef(connectionState)
+
+  const refreshActiveConversation = useCallback(async () => {
+    if (!conversationId) {
+      return
+    }
+
+    const [latestConversation, latestMessages] = await Promise.all([
+      chatApi.getConversation(conversationId),
+      chatApi.getMessages(conversationId),
+    ])
+
+    upsertConversation(latestConversation)
+    setMessages(latestMessages.content.reverse())
+    clearUnread(conversationId)
+  }, [clearUnread, conversationId, setMessages, upsertConversation])
+
+  const rehydrateConversationState = useCallback(async () => {
+    if (!conversationId) {
+      return
+    }
+
+    const [latestConversation, latestMessages, latestConversations] = await Promise.all([
+      chatApi.getConversation(conversationId),
+      chatApi.getMessages(conversationId),
+      chatApi.getConversations(),
+    ])
+
+    setConversations(latestConversations.content)
+    upsertConversation(latestConversation)
+    setMessages(latestMessages.content.reverse())
+    clearUnread(conversationId)
+  }, [clearUnread, conversationId, setConversations, setMessages, upsertConversation])
 
   // Subscribe to message updates for both active and inactive conversations.
   useEffect(() => {
@@ -19,12 +63,17 @@ export function useChat(conversationId: number | null) {
       `/user/queue/messages`,
       (message) => {
         const msg: Message = JSON.parse(message.body)
+        if (hasSeenMessage(msg.id)) {
+          return
+        }
+
         syncConversationPreview(msg)
 
         if (msg.conversationId === conversationId) {
           addMessage(msg)
           clearUnread(msg.conversationId)
         } else {
+          markMessageSeen(msg.id)
           incrementUnread(msg.conversationId)
         }
       }
@@ -39,7 +88,9 @@ export function useChat(conversationId: number | null) {
     subscribe,
     addMessage,
     clearUnread,
+    hasSeenMessage,
     incrementUnread,
+    markMessageSeen,
     syncConversationPreview,
   ])
 
@@ -59,6 +110,32 @@ export function useChat(conversationId: number | null) {
     }
   }, [conversationId, connectionState, subscribe, setTyping])
 
+  useEffect(() => {
+    if (!conversationId || connectionState === 'connected') {
+      return
+    }
+
+    const interval = window.setInterval(() => {
+      void refreshActiveConversation()
+    }, 10000)
+
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [connectionState, conversationId, refreshActiveConversation])
+
+  useEffect(() => {
+    if (
+      conversationId &&
+      previousConnectionStateRef.current !== 'connected' &&
+      connectionState === 'connected'
+    ) {
+      void rehydrateConversationState()
+    }
+
+    previousConnectionStateRef.current = connectionState
+  }, [connectionState, conversationId, rehydrateConversationState])
+
   const sendMessage = useCallback(async (content: string, imageUrl?: string) => {
     if (!conversationId) return
 
@@ -74,7 +151,24 @@ export function useChat(conversationId: number | null) {
     addMessage(message)
     clearUnread(conversationId)
     syncConversationPreview(message)
-  }, [addMessage, clearUnread, connectionState, conversationId, publish, syncConversationPreview])
+
+    const [latestConversation, latestConversations] = await Promise.all([
+      chatApi.getConversation(conversationId),
+      chatApi.getConversations(),
+    ])
+
+    setConversations(latestConversations.content)
+    upsertConversation(latestConversation)
+  }, [
+    addMessage,
+    clearUnread,
+    connectionState,
+    conversationId,
+    publish,
+    setConversations,
+    syncConversationPreview,
+    upsertConversation,
+  ])
 
   const emitTyping = useCallback(() => {
     if (!conversationId) return

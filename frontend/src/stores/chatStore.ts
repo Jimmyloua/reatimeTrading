@@ -5,6 +5,7 @@ interface ChatState {
   conversations: Conversation[]
   activeConversation: Conversation | null
   messages: Message[]
+  seenMessageIds: Set<number>
   typingUsers: Map<number, boolean>
   isLoading: boolean
   error: string | null
@@ -17,6 +18,8 @@ interface ChatState {
   setMessages: (messages: Message[]) => void
   addMessage: (message: Message) => void
   prependMessages: (messages: Message[]) => void
+  hasSeenMessage: (messageId: number) => boolean
+  markMessageSeen: (messageId: number) => void
   setTyping: (userId: number, isTyping: boolean) => void
   incrementUnread: (conversationId: number) => void
   clearUnread: (conversationId: number) => void
@@ -29,12 +32,38 @@ const initialState = {
   conversations: [],
   activeConversation: null,
   messages: [],
+  seenMessageIds: new Set<number>(),
   typingUsers: new Map(),
   isLoading: false,
   error: null
 }
 
-export const useChatStore = create<ChatState>((set) => ({
+function toTimestamp(value: string | null) {
+  if (!value) {
+    return Number.NEGATIVE_INFINITY
+  }
+
+  const timestamp = Date.parse(value)
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp
+}
+
+function sortConversationsByLastMessage(conversations: Conversation[]) {
+  return [...conversations].sort((left, right) => toTimestamp(right.lastMessageAt) - toTimestamp(left.lastMessageAt))
+}
+
+function dedupeMessages(messages: Message[]) {
+  const uniqueMessages = new Map<number, Message>()
+
+  for (const message of messages) {
+    if (!uniqueMessages.has(message.id)) {
+      uniqueMessages.set(message.id, message)
+    }
+  }
+
+  return Array.from(uniqueMessages.values())
+}
+
+export const useChatStore = create<ChatState>((set, get) => ({
   ...initialState,
 
   setConversations: (conversations) => set((state) => {
@@ -44,7 +73,7 @@ export const useChatStore = create<ChatState>((set) => ({
         : null
 
     return {
-      conversations,
+      conversations: sortConversationsByLastMessage(conversations),
       activeConversation,
     }
   }),
@@ -52,14 +81,14 @@ export const useChatStore = create<ChatState>((set) => ({
   addConversation: (conversation) => set((state) => ({
     conversations: state.conversations.some((current) => current.id === conversation.id)
       ? state.conversations
-      : [conversation, ...state.conversations]
+      : sortConversationsByLastMessage([conversation, ...state.conversations])
   })),
 
   upsertConversation: (conversation) => set((state) => {
     const withoutConversation = state.conversations.filter((current) => current.id !== conversation.id)
 
     return {
-      conversations: [conversation, ...withoutConversation],
+      conversations: sortConversationsByLastMessage([conversation, ...withoutConversation]),
       activeConversation:
         state.activeConversation?.id === conversation.id ? conversation : state.activeConversation,
     }
@@ -77,11 +106,26 @@ export const useChatStore = create<ChatState>((set) => ({
       lastMessageAt: message.createdAt,
     }
 
+    const currentTimestamp = toTimestamp(conversation.lastMessageAt)
+    const incomingTimestamp = toTimestamp(message.createdAt)
+
+    if (incomingTimestamp <= currentTimestamp) {
+      return {
+        conversations: state.conversations.map((current) =>
+          current.id === message.conversationId ? updatedConversation : current,
+        ),
+        activeConversation:
+          state.activeConversation?.id === message.conversationId
+            ? updatedConversation
+            : state.activeConversation,
+      }
+    }
+
     return {
-      conversations: [
+      conversations: sortConversationsByLastMessage([
         updatedConversation,
         ...state.conversations.filter((current) => current.id !== message.conversationId),
-      ],
+      ]),
       activeConversation:
         state.activeConversation?.id === message.conversationId
           ? updatedConversation
@@ -98,19 +142,65 @@ export const useChatStore = create<ChatState>((set) => ({
     return {
       activeConversation: conversation,
       messages: isSameConversation ? state.messages : [],
+      seenMessageIds: state.seenMessageIds,
       typingUsers: isSameConversation ? state.typingUsers : new Map(),
     }
   }),
 
-  setMessages: (messages) => set({ messages }),
+  setMessages: (messages) => {
+    const dedupedMessages = dedupeMessages(messages)
+    const nextSeenMessageIds = new Set(get().seenMessageIds)
+    dedupedMessages.forEach((message) => nextSeenMessageIds.add(message.id))
 
-  addMessage: (message) => set((state) => ({
-    messages: [...state.messages, message]
-  })),
+    set({
+      messages: dedupedMessages,
+      seenMessageIds: nextSeenMessageIds,
+    })
+  },
 
-  prependMessages: (messages) => set((state) => ({
-    messages: [...messages, ...state.messages]
-  })),
+  addMessage: (message) => set((state) => {
+    if (state.seenMessageIds.has(message.id)) {
+      return state
+    }
+
+    const nextSeenMessageIds = new Set(state.seenMessageIds)
+    nextSeenMessageIds.add(message.id)
+
+    return {
+      messages: [...state.messages, message],
+      seenMessageIds: nextSeenMessageIds,
+    }
+  }),
+
+  prependMessages: (messages) => set((state) => {
+    const dedupedIncomingMessages = messages.filter((message) => !state.seenMessageIds.has(message.id))
+    if (dedupedIncomingMessages.length === 0) {
+      return state
+    }
+
+    const nextSeenMessageIds = new Set(state.seenMessageIds)
+    dedupedIncomingMessages.forEach((message) => nextSeenMessageIds.add(message.id))
+
+    return {
+      messages: [...dedupedIncomingMessages, ...state.messages],
+      seenMessageIds: nextSeenMessageIds,
+    }
+  }),
+
+  hasSeenMessage: (messageId) => get().seenMessageIds.has(messageId),
+
+  markMessageSeen: (messageId) => set((state) => {
+    if (state.seenMessageIds.has(messageId)) {
+      return state
+    }
+
+    const nextSeenMessageIds = new Set(state.seenMessageIds)
+    nextSeenMessageIds.add(messageId)
+
+    return {
+      seenMessageIds: nextSeenMessageIds,
+    }
+  }),
 
   setTyping: (userId, isTyping) => set((state) => {
     const newTyping = new Map(state.typingUsers)

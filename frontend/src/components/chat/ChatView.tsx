@@ -18,11 +18,10 @@ interface ChatViewProps {
 }
 
 export function ChatView({ conversation }: ChatViewProps) {
-  const { messages, typingUsers, setMessages, setLoading, isLoading, upsertConversation } = useChatStore()
+  const { messages, typingUsers, setMessages, setLoading, isLoading } = useChatStore()
   const { sendMessage, emitTyping, connectionState } = useChat(conversation.id)
   const {
     isOnline: isSellerOnline,
-    status,
     statusCopy,
     statusDotClassName,
     consumeOnlineToast,
