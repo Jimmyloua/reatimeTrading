@@ -47,10 +47,12 @@ created: 2026-03-25
 | 07-02-01 | 02 | 1 | P7-05 | backend service | `cd backend && mvn -q -Dtest=NotificationServiceTest test` | Yes | pending |
 | 07-02-02 | 02 | 1 | P7-05 | backend controller | `cd backend && mvn -q -Dtest=NotificationControllerTest test` | Yes | pending |
 | 07-06-01 | 06 | 2 | P7-03 | backend controller | `cd backend && mvn -q -Dtest=ContentControllerTest test` | Planned | pending |
-| 07-03-01 | 03 | 2 | P7-02, P7-03 | frontend homepage | `cd frontend && npm test -- --run src/tests/homepage-modules.test.tsx` | Planned | pending |
-| 07-03-02 | 03 | 2 | P7-01, P7-02 | frontend browse | `cd frontend && npm test -- --run src/tests/browse-category-hover.test.tsx` | Planned | pending |
+| 07-06-02 | 06 | 2 | P7-03 | frontend contract compile | `cd frontend && npx tsc --noEmit` | Planned | pending |
+| 07-03-01 | 03 | 3 | P7-02, P7-03 | frontend homepage | `cd frontend && npm test -- --run src/tests/homepage-modules.test.tsx` | Planned | pending |
+| 07-03-02 | 03 | 3 | P7-01, P7-02 | frontend browse | `cd frontend && npm test -- --run src/tests/browse-category-hover.test.tsx` | Planned | pending |
 | 07-04-01 | 04 | 2 | P7-04, P7-05 | frontend page filtering | `cd frontend && npm test -- --run src/tests/notification-management.test.tsx` | Planned | pending |
-| 07-04-02 | 04 | 2 | P7-04 | frontend dropdown/store sync | `cd frontend && npm test -- --run src/tests/notification-preferences.test.tsx src/tests/notification-management.test.tsx` | Planned | pending |
+| 07-07-01 | 07 | 3 | P7-04, P7-05 | frontend dropdown/store sync | `cd frontend && npm test -- --run src/tests/notification-management.test.tsx` | Planned | pending |
+| 07-07-02 | 07 | 3 | P7-04 | frontend grouped preferences | `cd frontend && npm test -- --run src/tests/notification-preferences.test.tsx src/tests/notification-management.test.tsx` | Planned | pending |
 
 *Status: pending / green / red / flaky*
 
