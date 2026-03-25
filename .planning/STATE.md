@@ -3,17 +3,17 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-25T01:16:49.381Z"
+last_updated: "2026-03-25T01:37:29.785Z"
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 35
-  completed_plans: 32
+  completed_plans: 33
 ---
 
 # State: Real-Time Trading Platform
 
-**Last Updated:** 2026-03-22
+**Last Updated:** 2026-03-25
 
 ## Project Reference
 
@@ -26,21 +26,20 @@ progress:
 ## Current Position
 
 Phase: 06 (chat-presence-reliability-multi-conversation-seller-status-sync-responsive-message-layout-and-redis-backed-realtime-optimization) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 
 ### Phase Context
 
-**Phase 4 Goal:** Users can complete transactions with clear status tracking, and build trust through ratings and reviews.
+**Phase 6 Goal:** Users can rely on seller presence, conversation previews, and message delivery across reconnects, repeated seller threads, multiple backend nodes, and mobile or desktop message layouts.
 
 **Success Criteria:**
 
-1. User can mark an item as sold to a specific buyer
-2. User can view their complete transaction history (purchases and sales) with status
-3. Buyer can rate seller (1-5 stars) after transaction completion
-4. Seller can rate buyer (1-5 stars) after transaction completion
-5. User profile displays average rating score and total number of ratings received
+1. Seller presence survives reconnects and multi-session disconnects without dropping offline on the first lost socket
+2. Presence transitions fan out across app nodes through Redis-backed realtime events
+3. Messages persist to MySQL before recipient fan-out and still reach websocket subscribers on other nodes
+4. Repeated seller threads and responsive messages UI can build on a shared backend presence contract
 
-**Requirements:** TRAN-01 to TRAN-06, RATE-01 to RATE-04
+**Requirements:** P6-01 to P6-05
 
 ## Performance Metrics
 
@@ -80,6 +79,7 @@ Plan: 2 of 4
 | Phase 04 P07 | 5min | 3 tasks | 3 files |
 | Phase 05 P00 | 10min | 2 tasks | 9 files |
 | Phase 06 P00 | 10min | 2 tasks | 5 files |
+| Phase 06 P01 | 17min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -114,6 +114,9 @@ Plan: 2 of 4
 | navigate() for Button-wrapped Links | Match existing codebase pattern; asChild prop not supported in Button component | Plan 04-04 |
 | Blind rating system | Ratings hidden until both parties submit to prevent rating bias | Plan 04-02 |
 | Component integration via props drilling | Simple prop passing for RequestToBuyButton and ProfileRatingSection avoids state management complexity | Plan 04-07 |
+| Redis for ephemeral websocket fan-out only | Keeps durable chat correctness in MySQL while enabling cross-node delivery | Plan 06-01 |
+| Redis session TTL plus per-user membership for presence | Prevents one disconnected socket from taking a multi-session seller offline | Plan 06-01 |
+| Disposable local redis-server for presence verification | Docker was unavailable, so tests launch Redis directly during the suite | Plan 06-01 |
 
 ### Technical Decisions
 
@@ -175,11 +178,13 @@ Plan: 2 of 4
 | 2026-03-22 | Plan 04-06 completed | Phase 4 verification - all manual tests passed |
 | 2026-03-22 | Plan 04-07 completed | Frontend integration gap closure |
 | 2026-03-22 | Phase 4 COMPLETE | 10 requirements verified, project complete |
+| 2026-03-25 | Plan 06-00 completed | Phase 6 backend/frontend red test scaffolding |
+| 2026-03-25 | Plan 06-01 completed | Redis fan-out and Redis-backed presence backend shipped |
 
 ### Next Actions
 
-1. Project v1 complete - ready for integration testing, security audit, and production deployment
-2. Begin v2 planning for escrow, enhanced discovery, and enhanced reputation features
+1. Execute Plan 06-02 for shared seller presence sync and degraded-mode frontend refresh behavior
+2. Execute Plan 06-03 for responsive `/messages` layout and phase verification
 
 ### Blockers
 
