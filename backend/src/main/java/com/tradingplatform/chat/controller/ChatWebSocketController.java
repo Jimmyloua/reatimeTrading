@@ -166,6 +166,7 @@ public class ChatWebSocketController {
                 .userId(userId)
                 .online(online)
                 .lastSeenText(presenceService.getLastSeenText(userId))
+                .updatedAt(presenceService.getLastActivityAt(userId))
                 .build()
         );
     }

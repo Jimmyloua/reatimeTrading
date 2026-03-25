@@ -79,8 +79,8 @@ class PresenceServiceRedisTest {
         assertTrue(presenceService.userConnected(7L, "sess-a"));
         assertFalse(presenceService.userConnected(7L, "sess-b"));
 
-        assertEquals("7", redisTemplate.opsForValue().get("chat:presence:session:sess-a"));
-        assertEquals("7", redisTemplate.opsForValue().get("chat:presence:session:sess-b"));
+        assertTrue(redisTemplate.opsForValue().get("chat:presence:session:sess-a").startsWith("7|"));
+        assertTrue(redisTemplate.opsForValue().get("chat:presence:session:sess-b").startsWith("7|"));
         assertEquals(Set.of("sess-a", "sess-b"), redisTemplate.opsForSet().members("chat:presence:user:7:sessions"));
         assertTrue(presenceService.isUserOnline(7L));
     }

@@ -2,167 +2,166 @@ package com.tradingplatform.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Service for tracking user online presence.
  * Implements D-10: Online/offline presence shown per user.
  * Implements D-11: Presence status visible in chat header and conversation list.
- *
- * Note: In production, use Redis for distributed presence tracking.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PresenceService {
 
-    private static final long PRESENCE_TIMEOUT_SECONDS = 60;
+    static final String SESSION_KEY_PREFIX = "chat:presence:session:";
+    static final String USER_KEY_PREFIX = "chat:presence:user:";
+    static final long PRESENCE_TIMEOUT_SECONDS = 60;
 
-    // In production, use Redis for distributed presence tracking
-    private final Map<Long, LocalDateTime> onlineUsers = new ConcurrentHashMap<>();
-    private final Map<Long, Set<String>> userSessions = new ConcurrentHashMap<>();
-    private final Map<String, Long> sessionUsers = new ConcurrentHashMap<>();
-    private final Map<String, LocalDateTime> sessionLastSeen = new ConcurrentHashMap<>();
+    private static final String SESSION_SET_SUFFIX = ":sessions";
+    private static final String LAST_SEEN_SUFFIX = ":last-seen";
+    private static final String VALUE_DELIMITER = "|";
 
-    /**
-     * Called when a user connects via WebSocket.
-     *
-     * @param userId the user ID
-     */
+    private final StringRedisTemplate redisTemplate;
+
     public boolean userConnected(Long userId, String sessionId) {
-        LocalDateTime now = LocalDateTime.now();
         boolean wasOnline = isUserOnline(userId);
+        LocalDateTime now = LocalDateTime.now();
 
-        if (sessionId != null && !sessionId.isBlank()) {
-            sessionUsers.put(sessionId, userId);
-            userSessions.computeIfAbsent(userId, ignored -> ConcurrentHashMap.newKeySet()).add(sessionId);
-            sessionLastSeen.put(sessionId, now);
+        if (hasSessionId(sessionId)) {
+            storeSession(userId, sessionId, now);
         }
-
-        onlineUsers.put(userId, now);
+        storeLastSeen(userId, now);
         log.debug("User {} connected", userId);
         return !wasOnline;
     }
 
-    /**
-     * Called when a user disconnects from WebSocket.
-     *
-     * @param userId the user ID
-     */
     public boolean userDisconnected(Long userId, String sessionId) {
-        if (sessionId != null && !sessionId.isBlank()) {
-            removeSession(sessionId);
+        LocalDateTime now = LocalDateTime.now();
+        if (hasSessionId(sessionId)) {
+            removeSession(userId, sessionId);
         } else {
             removeAllSessions(userId);
         }
+        storeLastSeen(userId, now);
 
         if (hasActiveSession(userId)) {
-            onlineUsers.put(userId, latestSessionActivity(userId));
             log.debug("User {} disconnected from one session but remains online", userId);
             return false;
         }
 
-        onlineUsers.remove(userId);
+        redisTemplate.delete(userSessionSetKey(userId));
         log.debug("User {} disconnected", userId);
         return true;
     }
 
-    /**
-     * Checks if a user is currently online.
-     * User is considered offline after 60 seconds of inactivity.
-     *
-     * @param userId the user ID
-     * @return true if online, false otherwise
-     */
     public boolean isUserOnline(Long userId) {
-        LocalDateTime lastSeen = onlineUsers.get(userId);
-        if (lastSeen == null) return false;
-
-        // Consider offline if no activity for 60 seconds
-        return lastSeen.isAfter(LocalDateTime.now().minusSeconds(PRESENCE_TIMEOUT_SECONDS));
+        return hasActiveSession(userId);
     }
 
-    /**
-     * Gets a human-readable last seen text.
-     *
-     * @param userId the user ID
-     * @return "Online", "Last seen X ago", or "Offline"
-     */
     public String getLastSeenText(Long userId) {
         if (isUserOnline(userId)) {
             return "Online";
         }
-        LocalDateTime lastSeen = onlineUsers.get(userId);
+
+        LocalDateTime lastSeen = getLastActivityAt(userId);
         if (lastSeen == null) {
             return "Offline";
         }
-        // Format relative time (simplified)
-        long seconds = java.time.Duration.between(lastSeen, LocalDateTime.now()).getSeconds();
+
+        long seconds = Duration.between(lastSeen, LocalDateTime.now()).getSeconds();
         if (seconds < 60) return "Last seen just now";
         if (seconds < 3600) return "Last seen " + (seconds / 60) + "m ago";
         if (seconds < 86400) return "Last seen " + (seconds / 3600) + "h ago";
         return "Last seen " + (seconds / 86400) + "d ago";
     }
 
-    /**
-     * Updates the user's last activity timestamp.
-     * Called on heartbeat to keep presence alive.
-     *
-     * @param userId the user ID
-     */
-    public void heartbeat(Long userId, String sessionId) {
-        LocalDateTime now = LocalDateTime.now();
-
-        if (sessionId != null && !sessionId.isBlank()) {
-            sessionUsers.put(sessionId, userId);
-            userSessions.computeIfAbsent(userId, ignored -> ConcurrentHashMap.newKeySet()).add(sessionId);
-            sessionLastSeen.put(sessionId, now);
+    public LocalDateTime getLastActivityAt(Long userId) {
+        List<LocalDateTime> candidates = new ArrayList<>();
+        LocalDateTime storedLastSeen = readLastSeen(userId);
+        if (storedLastSeen != null) {
+            candidates.add(storedLastSeen);
         }
 
-        if (onlineUsers.containsKey(userId) || hasActiveSession(userId)) {
-            onlineUsers.put(userId, now);
-        }
-    }
-
-    /**
-     * Expires stale sessions and returns users that became offline.
-     *
-     * @return the users that transitioned to offline
-     */
-    public List<Long> expireStaleSessions() {
-        LocalDateTime cutoff = LocalDateTime.now().minusSeconds(PRESENCE_TIMEOUT_SECONDS);
-        List<String> expiredSessionIds = new ArrayList<>();
-
-        for (Map.Entry<String, LocalDateTime> entry : sessionLastSeen.entrySet()) {
-            if (entry.getValue().isBefore(cutoff)) {
-                expiredSessionIds.add(entry.getKey());
+        Set<String> sessions = redisTemplate.opsForSet().members(userSessionSetKey(userId));
+        if (sessions != null) {
+            for (String sessionId : sessions) {
+                SessionPresence sessionPresence = readSessionPresence(sessionId);
+                if (sessionPresence != null) {
+                    candidates.add(sessionPresence.lastSeen());
+                }
             }
         }
 
-        List<Long> usersBecameOffline = new ArrayList<>();
-        for (String sessionId : expiredSessionIds) {
-            Long userId = sessionUsers.get(sessionId);
-            removeSession(sessionId);
+        return candidates.stream().max(Comparator.naturalOrder()).orElse(null);
+    }
 
+    public void heartbeat(Long userId, String sessionId) {
+        if (!hasSessionId(sessionId)) {
+            return;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        storeSession(userId, sessionId, now);
+        storeLastSeen(userId, now);
+    }
+
+    public List<Long> expireStaleSessions() {
+        List<Long> usersBecameOffline = new ArrayList<>();
+        Set<String> userSessionKeys = redisTemplate.keys(USER_KEY_PREFIX + "*"+ SESSION_SET_SUFFIX);
+        if (userSessionKeys == null || userSessionKeys.isEmpty()) {
+            return usersBecameOffline;
+        }
+
+        LocalDateTime cutoff = LocalDateTime.now().minusSeconds(PRESENCE_TIMEOUT_SECONDS);
+        for (String sessionSetKey : userSessionKeys) {
+            Long userId = extractUserId(sessionSetKey);
             if (userId == null) {
                 continue;
             }
 
-            if (hasActiveSession(userId)) {
-                onlineUsers.put(userId, latestSessionActivity(userId));
+            Set<String> sessions = redisTemplate.opsForSet().members(sessionSetKey);
+            if (sessions == null || sessions.isEmpty()) {
+                redisTemplate.delete(sessionSetKey);
                 continue;
             }
 
-            if (onlineUsers.remove(userId) != null) {
-                usersBecameOffline.add(userId);
-                log.debug("User {} marked offline after heartbeat timeout", userId);
+            boolean hadSessions = !sessions.isEmpty();
+            LocalDateTime latestExpiredSeen = null;
+            for (String sessionId : sessions) {
+                SessionPresence sessionPresence = readSessionPresence(sessionId);
+                if (sessionPresence == null) {
+                    redisTemplate.opsForSet().remove(sessionSetKey, sessionId);
+                    continue;
+                }
+
+                if (!sessionPresence.lastSeen().isAfter(cutoff)) {
+                    redisTemplate.delete(sessionKey(sessionId));
+                    redisTemplate.opsForSet().remove(sessionSetKey, sessionId);
+                    if (latestExpiredSeen == null || sessionPresence.lastSeen().isAfter(latestExpiredSeen)) {
+                        latestExpiredSeen = sessionPresence.lastSeen();
+                    }
+                }
+            }
+
+            Set<String> remainingSessions = redisTemplate.opsForSet().members(sessionSetKey);
+            if (remainingSessions == null || remainingSessions.isEmpty()) {
+                redisTemplate.delete(sessionSetKey);
+                if (latestExpiredSeen != null) {
+                    storeLastSeen(userId, latestExpiredSeen);
+                }
+                if (hadSessions) {
+                    usersBecameOffline.add(userId);
+                    log.debug("User {} marked offline after heartbeat timeout", userId);
+                }
             }
         }
 
@@ -170,67 +169,105 @@ public class PresenceService {
     }
 
     private boolean hasActiveSession(Long userId) {
-        Set<String> sessions = userSessions.get(userId);
+        Set<String> sessions = redisTemplate.opsForSet().members(userSessionSetKey(userId));
         if (sessions == null || sessions.isEmpty()) {
             return false;
         }
 
         LocalDateTime cutoff = LocalDateTime.now().minusSeconds(PRESENCE_TIMEOUT_SECONDS);
+        boolean hasActive = false;
         for (String sessionId : sessions) {
-            LocalDateTime lastSeen = sessionLastSeen.get(sessionId);
-            if (lastSeen != null && lastSeen.isAfter(cutoff)) {
-                return true;
+            SessionPresence sessionPresence = readSessionPresence(sessionId);
+            if (sessionPresence == null) {
+                redisTemplate.opsForSet().remove(userSessionSetKey(userId), sessionId);
+                continue;
+            }
+
+            if (sessionPresence.lastSeen().isAfter(cutoff)) {
+                hasActive = true;
+            } else {
+                redisTemplate.delete(sessionKey(sessionId));
+                redisTemplate.opsForSet().remove(userSessionSetKey(userId), sessionId);
+                storeLastSeen(userId, sessionPresence.lastSeen());
             }
         }
 
-        return false;
+        return hasActive;
     }
 
-    private LocalDateTime latestSessionActivity(Long userId) {
-        Set<String> sessions = userSessions.get(userId);
-        if (sessions == null || sessions.isEmpty()) {
-            return LocalDateTime.now();
-        }
-
-        LocalDateTime latest = null;
-        for (String sessionId : sessions) {
-            LocalDateTime lastSeen = sessionLastSeen.get(sessionId);
-            if (lastSeen != null && (latest == null || lastSeen.isAfter(latest))) {
-                latest = lastSeen;
-            }
-        }
-
-        return latest == null ? LocalDateTime.now() : latest;
+    private void storeSession(Long userId, String sessionId, LocalDateTime lastSeen) {
+        redisTemplate.opsForSet().add(userSessionSetKey(userId), sessionId);
+        redisTemplate.opsForValue().set(
+            sessionKey(sessionId),
+            userId + VALUE_DELIMITER + lastSeen,
+            Duration.ofSeconds(PRESENCE_TIMEOUT_SECONDS)
+        );
     }
 
-    private void removeSession(String sessionId) {
-        Long userId = sessionUsers.remove(sessionId);
-        sessionLastSeen.remove(sessionId);
+    private void storeLastSeen(Long userId, LocalDateTime lastSeen) {
+        redisTemplate.opsForValue().set(lastSeenKey(userId), lastSeen.toString());
+    }
 
-        if (userId == null) {
-            return;
+    private LocalDateTime readLastSeen(Long userId) {
+        String value = redisTemplate.opsForValue().get(lastSeenKey(userId));
+        return value == null ? null : LocalDateTime.parse(value);
+    }
+
+    private SessionPresence readSessionPresence(String sessionId) {
+        String value = redisTemplate.opsForValue().get(sessionKey(sessionId));
+        if (value == null || value.isBlank()) {
+            return null;
         }
 
-        Set<String> sessions = userSessions.get(userId);
-        if (sessions == null) {
-            return;
+        String[] parts = value.split("\\|", 2);
+        if (parts.length != 2) {
+            return null;
         }
+        return new SessionPresence(Long.parseLong(parts[0]), LocalDateTime.parse(parts[1]));
+    }
 
-        sessions.remove(sessionId);
-        if (sessions.isEmpty()) {
-            userSessions.remove(userId);
-        }
+    private void removeSession(Long userId, String sessionId) {
+        redisTemplate.delete(sessionKey(sessionId));
+        redisTemplate.opsForSet().remove(userSessionSetKey(userId), sessionId);
     }
 
     private void removeAllSessions(Long userId) {
-        Set<String> sessions = userSessions.remove(userId);
-        if (sessions == null) {
+        Set<String> sessions = redisTemplate.opsForSet().members(userSessionSetKey(userId));
+        if (sessions == null || sessions.isEmpty()) {
             return;
         }
 
         for (String sessionId : sessions) {
-            sessionUsers.remove(sessionId);
-            sessionLastSeen.remove(sessionId);
+            redisTemplate.delete(sessionKey(sessionId));
         }
+        redisTemplate.delete(userSessionSetKey(userId));
+    }
+
+    private Long extractUserId(String sessionSetKey) {
+        String prefix = USER_KEY_PREFIX;
+        String suffix = SESSION_SET_SUFFIX;
+        if (!sessionSetKey.startsWith(prefix) || !sessionSetKey.endsWith(suffix)) {
+            return null;
+        }
+        return Long.parseLong(sessionSetKey.substring(prefix.length(), sessionSetKey.length() - suffix.length()));
+    }
+
+    private boolean hasSessionId(String sessionId) {
+        return sessionId != null && !sessionId.isBlank();
+    }
+
+    private String sessionKey(String sessionId) {
+        return SESSION_KEY_PREFIX + sessionId;
+    }
+
+    private String userSessionSetKey(Long userId) {
+        return USER_KEY_PREFIX + userId + SESSION_SET_SUFFIX;
+    }
+
+    private String lastSeenKey(Long userId) {
+        return USER_KEY_PREFIX + userId + LAST_SEEN_SUFFIX;
+    }
+
+    private record SessionPresence(Long userId, LocalDateTime lastSeen) {
     }
 }

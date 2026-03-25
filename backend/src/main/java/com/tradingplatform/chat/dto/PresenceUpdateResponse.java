@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * Presence update payload for real-time seller/buyer availability.
  */
@@ -17,4 +19,5 @@ public class PresenceUpdateResponse {
     private Long userId;
     private boolean online;
     private String lastSeenText;
+    private LocalDateTime updatedAt;
 }
