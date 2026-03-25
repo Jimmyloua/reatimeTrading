@@ -2,6 +2,7 @@ package com.tradingplatform.chat.controller;
 
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
+import com.tradingplatform.chat.redis.RedisChatEventPublisher;
 import com.tradingplatform.chat.service.ChatService;
 import com.tradingplatform.chat.service.PresenceService;
 import com.tradingplatform.notification.service.NotificationPushService;
@@ -40,6 +41,9 @@ class ChatWebSocketControllerTest {
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
+
+    @Mock
+    private RedisChatEventPublisher redisChatEventPublisher;
 
     @InjectMocks
     private ChatWebSocketController controller;
@@ -80,8 +84,8 @@ class ChatWebSocketControllerTest {
         verify(chatService).sendMessage(100L, 1L, "Hello", null);
         verify(chatService).getOtherParticipantId(100L, 1L);
 
-        // Verify delivery to recipient
-        verify(messagingTemplate).convertAndSendToUser(eq("2"), eq("/queue/messages"), any(MessageResponse.class));
+        // Verify recipient fan-out is published for Redis-backed delivery
+        verify(redisChatEventPublisher).publishMessageDelivery(eq(2L), eq(100L), any(MessageResponse.class));
 
         // Verify ACK sent to sender
         verify(messagingTemplate).convertAndSendToUser(eq("1"), eq("/queue/message-ack"), any(MessageAck.class));
@@ -91,8 +95,8 @@ class ChatWebSocketControllerTest {
     }
 
     @Test
-    @DisplayName("Test 2: sendMessage delivers to recipient via /user/queue/messages")
-    void testSendMessageDeliversToRecipient() {
+    @DisplayName("Test 2: sendMessage publishes recipient delivery for Redis fan-out")
+    void testSendMessagePublishesRecipientDelivery() {
         // Arrange
         WebSocketMessageRequest request = new WebSocketMessageRequest();
         request.setConversationId(100L);
@@ -112,11 +116,8 @@ class ChatWebSocketControllerTest {
         controller.sendMessage(request, principal);
 
         // Assert
-        verify(messagingTemplate).convertAndSendToUser(
-            eq("2"),
-            eq("/queue/messages"),
-            any(MessageResponse.class)
-        );
+        verify(redisChatEventPublisher).publishMessageDelivery(eq(2L), eq(100L), any(MessageResponse.class));
+        verify(messagingTemplate, never()).convertAndSendToUser(eq("2"), eq("/queue/messages"), any(MessageResponse.class));
     }
 
     @Test
@@ -158,8 +159,7 @@ class ChatWebSocketControllerTest {
         // Assert
         verify(presenceService).userConnected(1L, "session-1");
         verify(notificationPushService).pushSellerOnlineNotifications(1L);
-        verify(messagingTemplate).convertAndSend(
-            eq("/topic/presence.1"),
+        verify(redisChatEventPublisher).publishPresenceUpdate(
             argThat((PresenceUpdateResponse response) ->
                 response.getUserId().equals(1L) && response.isOnline()
             )
@@ -185,8 +185,7 @@ class ChatWebSocketControllerTest {
 
         // Assert
         verify(presenceService).userDisconnected(1L, "session-1");
-        verify(messagingTemplate).convertAndSend(
-            eq("/topic/presence.1"),
+        verify(redisChatEventPublisher).publishPresenceUpdate(
             argThat((PresenceUpdateResponse response) ->
                 response.getUserId().equals(1L) && !response.isOnline()
             )

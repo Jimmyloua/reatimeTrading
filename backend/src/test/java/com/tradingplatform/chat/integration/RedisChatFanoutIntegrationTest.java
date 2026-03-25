@@ -27,8 +27,16 @@ class RedisChatFanoutIntegrationTest {
             "Expected backend chat sources to subscribe or publish the Redis channel " + MESSAGE_CHANNEL
         );
         assertTrue(
+            source.contains("MESSAGE_DELIVERY"),
+            "Expected realtime chat contracts to define a MESSAGE_DELIVERY event type"
+        );
+        assertTrue(
             source.contains("convertAndSendToUser") && source.contains("\"/queue/messages\""),
             "Expected Redis message events to fan out via convertAndSendToUser(recipientUserId.toString(), \"/queue/messages\", ...)"
+        );
+        assertTrue(
+            source.contains("publishMessageDelivery"),
+            "Expected persisted chat messages to publish Redis-backed delivery events after database writes"
         );
     }
 
@@ -40,6 +48,10 @@ class RedisChatFanoutIntegrationTest {
         assertTrue(
             source.contains(PRESENCE_CHANNEL),
             "Expected backend chat sources to subscribe or publish the Redis channel " + PRESENCE_CHANNEL
+        );
+        assertTrue(
+            source.contains("PRESENCE_UPDATE"),
+            "Expected realtime chat contracts to define a PRESENCE_UPDATE event type"
         );
         assertTrue(
             source.contains("convertAndSend") && source.contains("\"/topic/presence.\""),
