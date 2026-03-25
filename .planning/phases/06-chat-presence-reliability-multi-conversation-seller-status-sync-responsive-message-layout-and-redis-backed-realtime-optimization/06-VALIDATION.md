@@ -19,18 +19,18 @@ created: 2026-03-24
 |----------|-------|
 | **Framework** | Spring Boot Test + JUnit 5, Vitest 4.1.0 |
 | **Config file** | `backend/src/test/resources/application-test.yml`, `frontend/vitest.config.ts` |
-| **Quick run command** | `cd backend && mvn -q -Dtest=ChatWebSocketControllerTest,ChatServiceTest test` and `cd frontend && npm test -- --run src/tests/messages-page-routing.test.tsx` |
+| **Quick run command** | `cd backend && mvn -q -Dtest=ChatWebSocketControllerTest,ChatServiceTest test` and `cd frontend && npm test -- --run src/tests/chat-realtime-fallback.test.tsx src/tests/messages-page-routing.test.tsx` |
 | **Full suite command** | `cd backend && mvn test` and `cd frontend && npm test` |
-| **Estimated runtime** | ~120 seconds |
+| **Estimated runtime** | ~90 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `cd backend && mvn -q -Dtest=ChatWebSocketControllerTest,ChatServiceTest test` and `cd frontend && npm test -- --run src/tests/messages-page-routing.test.tsx`
+- **After every task commit:** Run `cd backend && mvn -q -Dtest=ChatWebSocketControllerTest,ChatServiceTest test` and `cd frontend && npm test -- --run src/tests/chat-realtime-fallback.test.tsx src/tests/messages-page-routing.test.tsx`
 - **After every plan wave:** Run `cd backend && mvn test` and `cd frontend && npm test`
 - **Before `$gsd-verify-work`:** Full suite must be green
-- **Max feedback latency:** 120 seconds
+- **Max feedback latency:** 90 seconds
 
 ---
 
@@ -53,7 +53,7 @@ created: 2026-03-24
 - [ ] `backend/src/test/java/com/tradingplatform/chat/service/PresenceServiceRedisTest.java` - distributed presence TTL, session accounting, stale transition behavior
 - [ ] `backend/src/test/java/com/tradingplatform/chat/integration/RedisChatFanoutIntegrationTest.java` - Redis pub/sub to WebSocket fan-out path
 - [ ] `frontend/src/tests/chat-presence-sync.test.tsx` - repeated seller rows and active header share one presence source
-- [ ] `frontend/src/tests/chat-realtime-fallback.test.tsx` - reconnect, degraded polling, duplicate-safe event application
+- [ ] `frontend/src/tests/chat-realtime-fallback.test.tsx` - reconnect and REST fallback reconcile conversation-list previews/unread metadata, degraded polling, duplicate-safe event application
 - [ ] `frontend/src/tests/messages-responsive-layout.test.tsx` - mobile single-pane vs desktop two-pane shell
 
 ---
@@ -73,7 +73,7 @@ created: 2026-03-24
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
 - [ ] Wave 0 covers all MISSING references
 - [ ] No watch-mode flags
-- [ ] Feedback latency < 120s
+- [ ] Feedback latency < 90s
 - [ ] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
