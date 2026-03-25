@@ -6,7 +6,6 @@ import { chatApi } from '@/api/chatApi'
 import { MessageBubble } from './MessageBubble'
 import { MessageInput } from './MessageInput'
 import { TypingIndicator } from './TypingIndicator'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ExternalLink, Radio, WifiOff } from 'lucide-react'
 import { buildHeroBackground, HERO_IMAGES } from '@/lib/heroBackgrounds'
@@ -130,7 +129,7 @@ export function ChatView({ conversation }: ChatViewProps) {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="relative flex-1 px-4 py-5" ref={scrollRef}>
+      <div ref={scrollRef} className="relative min-h-0 flex-1 overflow-y-auto px-4 py-5">
         {isLoading ? (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
@@ -151,7 +150,7 @@ export function ChatView({ conversation }: ChatViewProps) {
             <MessageBubble key={message.id} message={message} />
           ))
         )}
-      </ScrollArea>
+      </div>
 
       {/* Typing indicator */}
       <div className="relative">

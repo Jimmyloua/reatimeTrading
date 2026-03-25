@@ -16,6 +16,8 @@ vi.mock('@/api/notificationApi', () => ({
     getPreferences: vi.fn(),
     updatePreferences: vi.fn(),
     getUnreadCount: vi.fn(),
+    markAsRead: vi.fn(),
+    markAllAsRead: vi.fn(),
   },
 }))
 
@@ -33,11 +35,11 @@ describe('Notification preference scaffolds', () => {
       content: [
         {
           id: 501,
-          type: 'ITEM_SOLD',
-          title: 'Camera sold',
-          content: 'Your listing has sold',
+          type: 'TRANSACTION_UPDATE',
+          title: 'Transaction updated',
+          content: 'Your transaction has moved to the next step',
           referenceId: 88,
-          referenceType: 'listing',
+          referenceType: 'transaction',
           read: false,
           readAt: null,
           createdAt: '2026-03-22T00:00:00Z',
@@ -67,7 +69,7 @@ describe('Notification preference scaffolds', () => {
 
     expect(screen.getByRole('heading', { name: /notifications/i })).toBeInTheDocument()
 
-    expect(await screen.findByText('Camera sold')).toBeInTheDocument()
+    expect(await screen.findByText('Transaction updated')).toBeInTheDocument()
     expect(await screen.findByRole('checkbox', { name: /new messages/i })).toBeChecked()
     expect(await screen.findByRole('checkbox', { name: /item sold/i })).not.toBeChecked()
     expect(await screen.findByRole('checkbox', { name: /transaction updates/i })).toBeChecked()
@@ -89,6 +91,47 @@ describe('Notification preference scaffolds', () => {
         itemSoldEnabled: false,
         transactionUpdateEnabled: true,
       })
+    })
+  })
+
+  test('filters notification items immediately when quick settings are toggled off', async () => {
+    useNotificationStore.setState({
+      notifications: [
+        {
+          id: 501,
+          type: 'ITEM_SOLD',
+          title: 'Camera sold',
+          content: 'Your listing has sold',
+          referenceId: 88,
+          referenceType: 'listing',
+          read: false,
+          readAt: null,
+          createdAt: '2026-03-22T00:00:00Z',
+        },
+      ],
+      preferences: {
+        newMessageEnabled: true,
+        itemSoldEnabled: true,
+        transactionUpdateEnabled: true,
+      },
+      preferencesLoaded: true,
+      unreadCount: 1,
+      isLoading: false,
+      error: null,
+    })
+
+    render(
+      <MemoryRouter>
+        <NotificationDropdown />
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByText('Camera sold')).toBeInTheDocument()
+
+    fireEvent.click(await screen.findByRole('checkbox', { name: /item sold/i }))
+
+    await waitFor(() => {
+      expect(screen.queryByText('Camera sold')).not.toBeInTheDocument()
     })
   })
 })

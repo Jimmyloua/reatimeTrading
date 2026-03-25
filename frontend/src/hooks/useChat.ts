@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { chatApi } from '@/api/chatApi'
 import { useChatStore } from '@/stores/chatStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useWebSocket } from './useWebSocket'
 import type { Message, TypingIndicator } from '@/types/chat'
 
@@ -8,6 +9,7 @@ const TYPING_DEBOUNCE_MS = 3000
 
 export function useChat(conversationId: number | null) {
   const { subscribe, publish, connectionState } = useWebSocket()
+  const currentUser = useAuthStore((state) => state.user)
   const {
     addMessage,
     clearUnread,
@@ -22,6 +24,7 @@ export function useChat(conversationId: number | null) {
   } = useChatStore()
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const previousConnectionStateRef = useRef(connectionState)
+  const optimisticMessageIdRef = useRef(-1)
 
   const refreshActiveConversation = useCallback(async () => {
     if (!conversationId) {
@@ -111,6 +114,18 @@ export function useChat(conversationId: number | null) {
   }, [conversationId, connectionState, subscribe, setTyping])
 
   useEffect(() => {
+    if (!conversationId || connectionState !== 'connected') return
+
+    const ackSub = subscribe('/user/queue/message-ack', () => {
+      void refreshActiveConversation()
+    })
+
+    return () => {
+      ackSub?.unsubscribe()
+    }
+  }, [connectionState, conversationId, refreshActiveConversation, subscribe])
+
+  useEffect(() => {
     if (!conversationId || connectionState === 'connected') {
       return
     }
@@ -140,6 +155,23 @@ export function useChat(conversationId: number | null) {
     if (!conversationId) return
 
     if (connectionState === 'connected') {
+      const optimisticMessage: Message = {
+        id: optimisticMessageIdRef.current,
+        conversationId,
+        senderId: currentUser?.id ?? 0,
+        senderName: currentUser?.displayName ?? currentUser?.email ?? 'You',
+        content,
+        imageUrl: imageUrl ?? null,
+        status: 'SENT',
+        createdAt: new Date().toISOString(),
+        isOwnMessage: true,
+      }
+
+      optimisticMessageIdRef.current -= 1
+      addMessage(optimisticMessage)
+      clearUnread(conversationId)
+      syncConversationPreview(optimisticMessage)
+
       publish(
         '/app/chat.sendMessage',
         JSON.stringify({ conversationId, content, imageUrl })
@@ -164,6 +196,9 @@ export function useChat(conversationId: number | null) {
     clearUnread,
     connectionState,
     conversationId,
+    currentUser?.displayName,
+    currentUser?.email,
+    currentUser?.id,
     publish,
     setConversations,
     syncConversationPreview,

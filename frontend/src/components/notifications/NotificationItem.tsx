@@ -6,7 +6,7 @@ import type { Notification } from '@/types/notification'
 
 interface NotificationItemProps {
   notification: Notification
-  onMarkAsRead: (id: number) => void
+  onMarkAsRead: (id: number) => Promise<void> | void
   onClick?: () => void
 }
 
@@ -96,7 +96,7 @@ export function NotificationItem({ notification, onMarkAsRead, onClick }: Notifi
         <button
           onClick={(e) => {
             e.stopPropagation()
-            onMarkAsRead(notification.id)
+            void onMarkAsRead(notification.id)
           }}
           className="text-xs text-blue-600 hover:underline whitespace-nowrap"
         >

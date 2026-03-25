@@ -15,3 +15,35 @@ export interface NotificationPreferences {
   itemSoldEnabled: boolean
   transactionUpdateEnabled: boolean
 }
+
+export function getNotificationPreferenceKey(
+  notificationType: Notification['type']
+): keyof NotificationPreferences | null {
+  switch (notificationType) {
+    case 'NEW_MESSAGE':
+    case 'SELLER_ONLINE':
+      return 'newMessageEnabled'
+    case 'ITEM_SOLD':
+      return 'itemSoldEnabled'
+    case 'TRANSACTION_UPDATE':
+    case 'PAYMENT_STATUS':
+      return 'transactionUpdateEnabled'
+    default:
+      return null
+  }
+}
+
+export function filterNotificationsByPreferences(
+  notifications: Notification[],
+  preferences: NotificationPreferences
+): Notification[] {
+  return notifications.filter((notification) => {
+    const preferenceKey = getNotificationPreferenceKey(notification.type)
+
+    if (!preferenceKey) {
+      return true
+    }
+
+    return preferences[preferenceKey]
+  })
+}

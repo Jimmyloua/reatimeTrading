@@ -5,6 +5,7 @@ import { useNotificationStore } from '@/stores/notificationStore'
 import { useNotifications } from '@/hooks/useNotifications'
 import { NotificationItem } from './NotificationItem'
 import { notificationApi } from '@/api/notificationApi'
+import { filterNotificationsByPreferences } from '@/types/notification'
 
 const defaultPreferences = {
   newMessageEnabled: true,
@@ -23,6 +24,7 @@ export function NotificationDropdown() {
   const markAsRead = store.markAsRead
   const updatePreference = store.updatePreference
   useNotifications()
+  const recentNotifications = filterNotificationsByPreferences(notifications, preferences).slice(0, 5)
 
   useEffect(() => {
     const hydrateDropdown = async () => {
@@ -52,8 +54,6 @@ export function NotificationDropdown() {
       console.error('Failed to mark as read:', error)
     }
   }
-
-  const recentNotifications = notifications.slice(0, 5)
 
   const handlePreferenceChange = async (
     key: keyof typeof preferences,

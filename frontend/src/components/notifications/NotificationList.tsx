@@ -4,9 +4,20 @@ import { NotificationItem } from './NotificationItem'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useEffect } from 'react'
+import { filterNotificationsByPreferences } from '@/types/notification'
 
 export function NotificationList() {
-  const { notifications, isLoading, setNotifications, markAsRead, markAllAsRead, setLoading } = useNotificationStore()
+  const {
+    notifications,
+    preferences,
+    isLoading,
+    setNotifications,
+    markAsRead,
+    markAllAsRead,
+    setLoading,
+  } = useNotificationStore()
+
+  const visibleNotifications = filterNotificationsByPreferences(notifications, preferences)
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -58,7 +69,7 @@ export function NotificationList() {
     )
   }
 
-  if (notifications.length === 0) {
+  if (visibleNotifications.length === 0) {
     return (
       <div className="p-4 text-center">
         <p className="text-neutral-500">No notifications</p>
@@ -71,7 +82,7 @@ export function NotificationList() {
 
   return (
     <div>
-      {notifications.some(n => !n.read) && (
+      {visibleNotifications.some((notification) => !notification.read) && (
         <div className="p-2 border-b flex justify-end">
           <Button variant="ghost" size="sm" onClick={handleMarkAllAsRead}>
             Mark all as read
@@ -79,7 +90,7 @@ export function NotificationList() {
         </div>
       )}
       <div className="divide-y">
-        {notifications.map((notification) => (
+        {visibleNotifications.map((notification) => (
           <NotificationItem
             key={notification.id}
             notification={notification}

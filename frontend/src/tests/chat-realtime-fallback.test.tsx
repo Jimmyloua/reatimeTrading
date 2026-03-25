@@ -2,6 +2,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { ChatView } from '@/components/chat/ChatView'
 import { useChatStore } from '@/stores/chatStore'
+import { useAuthStore } from '@/stores/authStore'
 import { chatApi } from '@/api/chatApi'
 import type { Conversation, Message } from '@/types/chat'
 
@@ -151,6 +152,27 @@ describe('chat realtime fallback contract', () => {
       typingUsers: new Map(),
       isLoading: false,
       error: null,
+    })
+    useAuthStore.setState({
+      accessToken: 'token',
+      refreshToken: 'refresh',
+      user: {
+        id: 1,
+        email: 'buyer@example.com',
+        displayName: 'Buyer',
+        firstName: 'Buyer',
+        lastName: 'User',
+        avatarUrl: null,
+        bio: null,
+        city: null,
+        region: null,
+        country: null,
+        createdAt: '2026-03-20T00:00:00Z',
+        updatedAt: '2026-03-20T00:00:00Z',
+      },
+      isAuthenticated: true,
+      hasHydrated: true,
+      isBootstrapping: false,
     })
 
     vi.mocked(chatApi.getConversation).mockResolvedValue(activeConversation)
@@ -379,6 +401,51 @@ describe('chat realtime fallback contract', () => {
         'Seller replied elsewhere',
       )
       expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.unreadCount).toBe(3)
+    })
+  })
+
+  test('connected mode renders the sender message immediately and then rehydrates it from the server ack', async () => {
+    vi.mocked(chatApi.getMessages)
+      .mockResolvedValueOnce({
+        content: [],
+        totalElements: 0,
+      })
+      .mockResolvedValueOnce({
+        content: [
+          {
+            id: 902,
+            conversationId: 55,
+            senderId: 1,
+            senderName: 'Buyer',
+            content: 'Offline send',
+            imageUrl: null,
+            status: 'DELIVERED',
+            createdAt: '2026-03-25T01:00:01Z',
+            isOwnMessage: true,
+          },
+        ],
+        totalElements: 1,
+      })
+
+    renderChatView()
+
+    act(() => {
+      screen.getByRole('button', { name: 'Send message' }).click()
+    })
+
+    await waitFor(() => {
+      expect(useChatStore.getState().messages[0]?.content).toBe('Offline send')
+      expect(useChatStore.getState().messages[0]?.isOwnMessage).toBe(true)
+    })
+
+    act(() => {
+      websocketMock.emit('/user/queue/message-ack', { messageId: 902, status: 'DELIVERED' })
+    })
+
+    await waitFor(() => {
+      expect(chatApi.getMessages).toHaveBeenCalledTimes(2)
+      expect(useChatStore.getState().messages[0]?.id).toBe(902)
+      expect(useChatStore.getState().messages[0]?.status).toBe('DELIVERED')
     })
   })
 })
