@@ -2,6 +2,7 @@ package com.tradingplatform.chat.controller;
 
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
+import com.tradingplatform.chat.redis.RedisChatEventPublisher;
 import com.tradingplatform.chat.service.ChatService;
 import com.tradingplatform.chat.service.PresenceService;
 import com.tradingplatform.notification.service.NotificationPushService;
@@ -37,6 +38,7 @@ public class ChatWebSocketController {
     private final PresenceService presenceService;
     private final NotificationPushService notificationPushService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final RedisChatEventPublisher redisChatEventPublisher;
 
     /**
      * Handles real-time message sending.
@@ -67,11 +69,7 @@ public class ChatWebSocketController {
         // Deliver to recipient via WebSocket
         Long recipientId = chatService.getOtherParticipantId(request.getConversationId(), senderId);
         if (recipientId != null) {
-            messagingTemplate.convertAndSendToUser(
-                recipientId.toString(),
-                "/queue/messages",
-                message
-            );
+            redisChatEventPublisher.publishMessageDelivery(recipientId, request.getConversationId(), message);
 
             // Push notification to recipient
             notificationPushService.pushMessageNotification(recipientId, message);
@@ -163,8 +161,7 @@ public class ChatWebSocketController {
     }
 
     private void broadcastPresence(Long userId, boolean online) {
-        messagingTemplate.convertAndSend(
-            "/topic/presence." + userId,
+        redisChatEventPublisher.publishPresenceUpdate(
             PresenceUpdateResponse.builder()
                 .userId(userId)
                 .online(online)
