@@ -60,8 +60,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Chat Reliability and Responsive Messaging
 
 - [x] **P6-01**: Seller presence survives reconnects and only transitions to offline after the timeout/stale window is exhausted
-- [ ] **P6-02**: The same seller presence state stays synchronized across every conversation row and the active thread header
-- [ ] **P6-03**: Realtime message previews and unread counts remain duplicate-safe during reconnects and REST fallback sends
+- [x] **P6-02**: The same seller presence state stays synchronized across every conversation row and the active thread header
+- [x] **P6-03**: Realtime message previews and unread counts remain duplicate-safe during reconnects and REST fallback sends
 - [ ] **P6-04**: The `/messages` route switches between desktop two-pane and mobile single-pane layouts without losing thread context
 - [x] **P6-05**: Redis-backed realtime fan-out distributes message and presence events across app nodes while MySQL remains the source of truth for message durability and ordering
 
@@ -169,8 +169,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTF-06 | Phase 5 | Complete |
 | NOTF-07 | Phase 5 | Complete |
 | P6-01 | Phase 6 | Complete |
-| P6-02 | Phase 6 | Planned |
-| P6-03 | Phase 6 | Planned |
+| P6-02 | Phase 6 | Complete |
+| P6-03 | Phase 6 | Complete |
 | P6-04 | Phase 6 | Planned |
 | P6-05 | Phase 6 | Complete |
 | TRAN-01 | Phase 4 | Complete |

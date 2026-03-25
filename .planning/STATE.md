@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-25T01:37:29.785Z"
+last_updated: "2026-03-25T01:56:27.681Z"
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 35
-  completed_plans: 33
+  completed_plans: 34
 ---
 
 # State: Real-Time Trading Platform
@@ -26,7 +26,7 @@ progress:
 ## Current Position
 
 Phase: 06 (chat-presence-reliability-multi-conversation-seller-status-sync-responsive-message-layout-and-redis-backed-realtime-optimization) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 
 ### Phase Context
 
@@ -80,6 +80,7 @@ Plan: 3 of 4
 | Phase 05 P00 | 10min | 2 tasks | 9 files |
 | Phase 06 P00 | 10min | 2 tasks | 5 files |
 | Phase 06 P01 | 17min | 2 tasks | 12 files |
+| Phase 06 P02 | 16min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,8 @@ Plan: 3 of 4
 | Redis for ephemeral websocket fan-out only | Keeps durable chat correctness in MySQL while enabling cross-node delivery | Plan 06-01 |
 | Redis session TTL plus per-user membership for presence | Prevents one disconnected socket from taking a multi-session seller offline | Plan 06-01 |
 | Disposable local redis-server for presence verification | Docker was unavailable, so tests launch Redis directly during the suite | Plan 06-01 |
+| Shared seller-level presence store keyed by otherUserId | Keeps repeated seller rows and the active header synchronized from one frontend source of truth | Plan 06-02 |
+| Single reconnect rehydrate plus degraded-only polling | Refreshes authoritative thread and list metadata without restoring noisy connected-mode polling | Plan 06-02 |
 
 ### Technical Decisions
 
@@ -180,11 +183,12 @@ Plan: 3 of 4
 | 2026-03-22 | Phase 4 COMPLETE | 10 requirements verified, project complete |
 | 2026-03-25 | Plan 06-00 completed | Phase 6 backend/frontend red test scaffolding |
 | 2026-03-25 | Plan 06-01 completed | Redis fan-out and Redis-backed presence backend shipped |
+| 2026-03-25 | Plan 06-02 completed | Shared seller presence sync and duplicate-safe reconnect/fallback frontend shipped |
 
 ### Next Actions
 
-1. Execute Plan 06-02 for shared seller presence sync and degraded-mode frontend refresh behavior
-2. Execute Plan 06-03 for responsive `/messages` layout and phase verification
+1. Execute Plan 06-03 for responsive `/messages` shell and phase verification
+2. Verify Phase 6 end-to-end responsiveness and reconnect behavior after the layout pass
 
 ### Blockers
 

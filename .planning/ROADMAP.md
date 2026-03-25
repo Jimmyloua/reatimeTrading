@@ -155,7 +155,7 @@ Plans:
 | 3. Real-Time Communication | 7/7 | Complete | 2026-03-22 |
 | 4. Transactions and Trust | 8/8 | Complete | 2026-03-22 |
 | 5. Notification detail actions, quick notification settings, and seller chat entry from listings | 4/4 | Complete | 2026-03-24 |
-| 6. Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization | 2/4 | In Progress | |
+| 6. Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization | 3/4 | In Progress | |
 
 ## Coverage
 
@@ -227,7 +227,7 @@ Plans:
 Plans:
 - [x] 06-00-PLAN.md - Wave 0 Phase 6 Test Scaffolding (Wave 0) - Add backend and frontend failing tests for Redis presence, shared seller sync, duplicate-safe fallback, and responsive messages layout
 - [x] 06-01-PLAN.md - Redis Presence and Cross-Node Fan-Out Backend (Wave 1) - Replace in-memory presence with Redis-backed ephemeral tracking and publish realtime delivery events across nodes
-- [ ] 06-02-PLAN.md - Shared Seller Presence and Realtime Fallback Frontend (Wave 2) - Normalize seller presence by `otherUserId`, dedupe realtime events, and move refreshes to degraded-mode only
+- [x] 06-02-PLAN.md - Shared Seller Presence and Realtime Fallback Frontend (Wave 2) - Normalize seller presence by `otherUserId`, dedupe realtime events, and move refreshes to degraded-mode only
 - [ ] 06-03-PLAN.md - Responsive Messages Shell and Phase Verification Gate (Wave 3) - Apply the mobile/tablet/desktop shell contract and close with manual verification
 
 ---
