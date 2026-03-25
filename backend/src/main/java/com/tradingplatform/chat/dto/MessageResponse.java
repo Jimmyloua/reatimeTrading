@@ -1,5 +1,6 @@
 package com.tradingplatform.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tradingplatform.chat.entity.MessageStatus;
 import lombok.*;
 
@@ -58,5 +59,6 @@ public class MessageResponse {
     /**
      * Whether this message was sent by the current user.
      */
+    @JsonProperty("isOwnMessage")
     private boolean isOwnMessage;
 }

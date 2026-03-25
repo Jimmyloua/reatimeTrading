@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository for Notification entity.
@@ -64,6 +65,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      * Checks whether an unread notification of the same type already exists for the reference.
      */
     boolean existsByUserIdAndTypeAndReferenceIdAndReadFalse(Long userId, NotificationType type, Long referenceId);
+
+    Optional<Notification> findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+        Long userId,
+        NotificationType type,
+        Long referenceId,
+        String referenceType
+    );
 
     /**
      * Delete notifications older than the specified date.

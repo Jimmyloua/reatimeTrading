@@ -12,6 +12,18 @@ export interface SendMessageRequest {
   imageUrl?: string
 }
 
+type MessageApiResponse = Omit<Message, 'isOwnMessage'> & {
+  isOwnMessage?: boolean
+  ownMessage?: boolean
+}
+
+function normalizeMessage(message: MessageApiResponse): Message {
+  return {
+    ...message,
+    isOwnMessage: message.isOwnMessage ?? message.ownMessage ?? false,
+  }
+}
+
 export const chatApi = {
   async createConversation(request: CreateConversationRequest): Promise<Conversation> {
     const response = await apiClient.post<Conversation>('/api/conversations', request)
@@ -31,17 +43,20 @@ export const chatApi = {
   },
 
   async getMessages(conversationId: number, page = 0, size = 50): Promise<{ content: Message[]; totalElements: number }> {
-    const response = await apiClient.get(`/api/conversations/${conversationId}/messages`, {
+    const response = await apiClient.get<{ content: MessageApiResponse[]; totalElements: number }>(`/api/conversations/${conversationId}/messages`, {
       params: { page, size }
     })
-    return response.data
+    return {
+      ...response.data,
+      content: response.data.content.map(normalizeMessage),
+    }
   },
 
   async sendMessage(conversationId: number, request: Omit<SendMessageRequest, 'conversationId'>): Promise<Message> {
-    const response = await apiClient.post<Message>(`/api/conversations/${conversationId}/messages`, {
+    const response = await apiClient.post<MessageApiResponse>(`/api/conversations/${conversationId}/messages`, {
       conversationId,
       ...request,
     })
-    return response.data
+    return normalizeMessage(response.data)
   }
 }

@@ -40,13 +40,34 @@ public class NotificationService {
     public Notification createNotification(Long userId, NotificationType type,
                                            String title, String content,
                                            Long referenceId, String referenceType) {
+        String normalizedReferenceType = normalizeReferenceType(referenceType);
+
+        if (referenceId != null && normalizedReferenceType != null) {
+            Notification existingNotification = notificationRepository
+                .findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+                    userId,
+                    type,
+                    referenceId,
+                    normalizedReferenceType
+                )
+                .orElse(null);
+
+            if (existingNotification != null) {
+                existingNotification.setTitle(title);
+                existingNotification.setContent(content);
+                existingNotification.setRead(false);
+                existingNotification.setReadAt(null);
+                return notificationRepository.save(existingNotification);
+            }
+        }
+
         Notification notification = Notification.builder()
             .userId(userId)
             .type(type)
             .title(title)
             .content(content)
             .referenceId(referenceId)
-            .referenceType(normalizeReferenceType(referenceType))
+            .referenceType(normalizedReferenceType)
             .read(false)
             .build();
 
@@ -102,11 +123,17 @@ public class NotificationService {
      * @throws ApiException if notification not found
      */
     @Transactional
-    public void markAsRead(Long notificationId, Long userId) {
+    public NotificationResponse markAsRead(Long notificationId, Long userId) {
         int updated = notificationRepository.markAsRead(notificationId, userId, LocalDateTime.now());
         if (updated == 0) {
             throw new ApiException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
+
+        Notification notification = notificationRepository.findById(notificationId)
+            .filter(current -> current.getUserId().equals(userId))
+            .orElseThrow(() -> new ApiException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+        return toResponse(notification);
     }
 
     /**

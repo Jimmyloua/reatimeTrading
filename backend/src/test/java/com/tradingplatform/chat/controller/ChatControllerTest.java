@@ -152,7 +152,8 @@ class ChatControllerTest {
                 .param("size", "50"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content[0].id").value(1))
-            .andExpect(jsonPath("$.content[0].content").value("Hello!"));
+            .andExpect(jsonPath("$.content[0].content").value("Hello!"))
+            .andExpect(jsonPath("$.content[0].isOwnMessage").value(true));
 
         // Verify messages are marked as read
         verify(chatService).markMessagesAsRead(1L, 1L);

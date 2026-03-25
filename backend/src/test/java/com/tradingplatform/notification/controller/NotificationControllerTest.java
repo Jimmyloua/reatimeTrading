@@ -230,7 +230,10 @@ class NotificationControllerTest {
         // Act & Assert
         mockMvc.perform(patch("/api/notifications/{id}/read", notif.getId())
                         .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(notif.getId()))
+                .andExpect(jsonPath("$.content").value("Content for Test"))
+                .andExpect(jsonPath("$.read").value(true));
 
         // Verify notification is now read
         Notification updated = notificationRepository.findById(notif.getId()).orElseThrow();

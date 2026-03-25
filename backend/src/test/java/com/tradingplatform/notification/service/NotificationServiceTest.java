@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +53,9 @@ class NotificationServiceTest {
     @DisplayName("Should create notification for new message (NOTF-01)")
     void testCreateMessageNotification() {
         // Arrange
+        when(notificationRepository.findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+                anyLong(), any(), anyLong(), anyString()))
+                .thenReturn(java.util.Optional.empty());
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification n = invocation.getArgument(0);
             n.setId(1L);
@@ -81,6 +85,9 @@ class NotificationServiceTest {
     @DisplayName("Should create notification for item sold (NOTF-02)")
     void testCreateItemSoldNotification() {
         // Arrange
+        when(notificationRepository.findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+                anyLong(), any(), anyLong(), anyString()))
+                .thenReturn(java.util.Optional.empty());
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification n = invocation.getArgument(0);
             n.setId(1L);
@@ -106,6 +113,9 @@ class NotificationServiceTest {
     @Test
     @DisplayName("Should normalize reference type to lowercase canonical value")
     void testCreateNotification_normalizesReferenceType() {
+        when(notificationRepository.findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+                anyLong(), any(), anyLong(), anyString()))
+                .thenReturn(java.util.Optional.empty());
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Notification result = notificationService.createNotification(
@@ -123,6 +133,9 @@ class NotificationServiceTest {
     @Test
     @DisplayName("Should lowercase unknown legacy reference types and preserve null values")
     void testCreateNotification_handlesUnknownAndNullReferenceTypes() {
+        when(notificationRepository.findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+                anyLong(), any(), anyLong(), anyString()))
+                .thenReturn(java.util.Optional.empty());
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Notification legacyResult = notificationService.createNotification(
@@ -145,6 +158,41 @@ class NotificationServiceTest {
 
         assertThat(legacyResult.getReferenceType()).isEqualTo("offer_update");
         assertThat(nullResult.getReferenceType()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should normalize duplicate unread notifications from the same source")
+    void testCreateNotification_reusesUnreadNotificationFromSameSource() {
+        Notification existing = Notification.builder()
+                .id(99L)
+                .userId(testUserId)
+                .type(NotificationType.NEW_MESSAGE)
+                .title("Old title")
+                .content("Old content")
+                .referenceId(100L)
+                .referenceType("conversation")
+                .read(false)
+                .createdAt(LocalDateTime.now().minusMinutes(5))
+                .build();
+
+        when(notificationRepository.findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
+                testUserId, NotificationType.NEW_MESSAGE, 100L, "conversation"))
+                .thenReturn(java.util.Optional.of(existing));
+        when(notificationRepository.save(existing)).thenReturn(existing);
+
+        Notification result = notificationService.createNotification(
+                testUserId,
+                NotificationType.NEW_MESSAGE,
+                "New title",
+                "New content",
+                100L,
+                "conversation"
+        );
+
+        assertThat(result.getId()).isEqualTo(99L);
+        assertThat(result.getTitle()).isEqualTo("New title");
+        assertThat(result.getContent()).isEqualTo("New content");
+        verify(notificationRepository, never()).save(argThat(notification -> !notification.equals(existing)));
     }
 
     @Test
@@ -228,11 +276,23 @@ class NotificationServiceTest {
     void testMarkAsRead() {
         // Arrange
         when(notificationRepository.markAsRead(eq(1L), eq(testUserId), any())).thenReturn(1);
+        when(notificationRepository.findById(1L)).thenReturn(java.util.Optional.of(
+                Notification.builder()
+                        .id(1L)
+                        .userId(testUserId)
+                        .type(NotificationType.NEW_MESSAGE)
+                        .title("Test")
+                        .content("Unread content")
+                        .read(true)
+                        .readAt(LocalDateTime.now())
+                        .build()
+        ));
 
         // Act
-        notificationService.markAsRead(1L, testUserId);
+        NotificationResponse response = notificationService.markAsRead(1L, testUserId);
 
         // Assert
+        assertThat(response.getContent()).isEqualTo("Unread content");
         verify(notificationRepository).markAsRead(eq(1L), eq(testUserId), any());
     }
 

@@ -95,11 +95,10 @@ public class NotificationController {
      * @return 200 OK on success
      */
     @PatchMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(
+    public ResponseEntity<NotificationResponse> markAsRead(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal principal) {
-        notificationService.markAsRead(id, principal.getId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(notificationService.markAsRead(id, principal.getId()));
     }
 
     /**

@@ -37,8 +37,8 @@ export function NotificationList() {
 
   const handleMarkAsRead = async (id: number) => {
     try {
-      await notificationApi.markAsRead(id)
-      markAsRead(id)
+      const updatedNotification = await notificationApi.markAsRead(id)
+      markAsRead(updatedNotification)
     } catch (error) {
       console.error('Failed to mark as read:', error)
     }

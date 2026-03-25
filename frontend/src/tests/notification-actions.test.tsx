@@ -67,7 +67,17 @@ describe('Notification action scaffolds', () => {
   })
 
   test('routes NEW_MESSAGE notifications into the matching /messages conversation context and marks them read', async () => {
-    vi.mocked(notificationApi.markAsRead).mockResolvedValue(undefined)
+    vi.mocked(notificationApi.markAsRead).mockResolvedValue({
+      id: 101,
+      type: 'NEW_MESSAGE',
+      title: 'New message',
+      content: 'Seller replied to your listing question',
+      referenceId: 55,
+      referenceType: 'conversation',
+      read: true,
+      readAt: '2026-03-22T00:01:00Z',
+      createdAt: '2026-03-22T00:00:00Z',
+    })
 
     render(
       <MemoryRouter>
@@ -90,7 +100,17 @@ describe('Notification action scaffolds', () => {
   ] as const)(
     'routes %s notifications to %s details',
     async (type, referenceType, referenceId, expectedPath) => {
-      vi.mocked(notificationApi.markAsRead).mockResolvedValue(undefined)
+      vi.mocked(notificationApi.markAsRead).mockResolvedValue({
+        id: referenceId,
+        type,
+        title: `${type} title`,
+        content: `${type} content`,
+        referenceId,
+        referenceType,
+        read: true,
+        readAt: '2026-03-22T00:01:00Z',
+        createdAt: '2026-03-22T00:00:00Z',
+      })
 
       useNotificationStore.setState({
         notifications: [
@@ -125,4 +145,33 @@ describe('Notification action scaffolds', () => {
       })
     }
   )
+
+  test('mark as read keeps notification content in local state', async () => {
+    vi.mocked(notificationApi.markAsRead).mockResolvedValue({
+      id: 101,
+      type: 'NEW_MESSAGE',
+      title: 'New message',
+      content: 'Seller replied to your listing question',
+      referenceId: 55,
+      referenceType: 'conversation',
+      read: true,
+      readAt: '2026-03-22T00:01:00Z',
+      createdAt: '2026-03-22T00:00:00Z',
+    })
+
+    render(
+      <MemoryRouter>
+        <NotificationDropdown />
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getAllByRole('button', { name: /mark as read/i })[0])
+
+    await waitFor(() => {
+      expect(useNotificationStore.getState().notifications[0]?.content).toBe(
+        'Seller replied to your listing question'
+      )
+      expect(useNotificationStore.getState().notifications[0]?.read).toBe(true)
+    })
+  })
 })

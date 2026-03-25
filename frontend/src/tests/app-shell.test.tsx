@@ -73,4 +73,26 @@ describe('App shell', () => {
     expect(screen.getByRole('link', { name: /transactions/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sell/i })).toBeInTheDocument()
   })
+
+  test('does not render authenticated shell from persisted user data alone', () => {
+    useAuthStore.setState({
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      user: {
+        id: 1,
+        email: 'test@example.com',
+        displayName: 'Test User',
+        avatarUrl: null,
+        listingCount: 0,
+        createdAt: new Date().toISOString(),
+      },
+      hasHydrated: true,
+    })
+
+    renderApp()
+
+    expect(screen.queryByRole('button', { name: /sell/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+  })
 })
