@@ -36,7 +36,7 @@ export function MessageInput({ onSend, onTyping, canSend = true, statusMessage }
   }
 
   return (
-    <div className="border-t border-slate-200/70 bg-white/80 px-4 py-4 backdrop-blur-xl">
+    <div className="sticky bottom-0 border-t border-slate-200/70 bg-white/80 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-xl md:pb-4">
       {imageUrl && (
         <div className="mb-2 relative inline-block">
           <img src={imageUrl} alt="Preview" className="max-h-32 rounded-lg" />
