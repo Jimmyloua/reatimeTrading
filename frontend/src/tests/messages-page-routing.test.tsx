@@ -128,4 +128,49 @@ describe('Messages page routing scaffolds', () => {
     expect(await screen.findByTestId('chat-view')).toHaveTextContent('55:Seller Jane')
     expect(screen.getByTestId('location-search')).toHaveTextContent('?conversation=55')
   })
+
+  test('keeps routed conversation state accurate after reconnect-driven conversation list rehydrate', async () => {
+    render(
+      <MemoryRouter initialEntries={['/messages?conversation=55']}>
+        <MessagesPage />
+      </MemoryRouter>
+    )
+
+    expect(await screen.findByTestId('chat-view')).toHaveTextContent('55:Seller Jane')
+
+    useChatStore.getState().setConversations([
+      {
+        id: 55,
+        listingId: 88,
+        listingTitle: 'Camera body',
+        otherUserId: 9,
+        otherUserName: 'Seller Jane',
+        otherUserAvatar: null,
+        lastMessage: 'Active thread refreshed',
+        lastMessageAt: '2026-03-25T01:00:00Z',
+        unreadCount: 0,
+        createdAt: '2026-03-20T00:00:00Z',
+      },
+      {
+        id: 77,
+        listingId: 99,
+        listingTitle: 'Lens kit',
+        otherUserId: 11,
+        otherUserName: 'Seller Max',
+        otherUserAvatar: null,
+        lastMessage: 'Background preview refreshed',
+        lastMessageAt: '2026-03-25T01:02:00Z',
+        unreadCount: 3,
+        createdAt: '2026-03-21T00:00:00Z',
+      },
+    ])
+
+    await waitFor(() => {
+      expect(screen.getByTestId('chat-view')).toHaveTextContent('55:Seller Jane')
+      expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.lastMessage).toBe(
+        'Background preview refreshed',
+      )
+      expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.unreadCount).toBe(3)
+    })
+  })
 })
