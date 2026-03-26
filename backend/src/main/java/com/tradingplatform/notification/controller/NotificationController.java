@@ -3,6 +3,7 @@ package com.tradingplatform.notification.controller;
 import com.tradingplatform.notification.dto.NotificationResponse;
 import com.tradingplatform.notification.dto.NotificationPreferenceResponse;
 import com.tradingplatform.notification.dto.UpdateNotificationPreferencesRequest;
+import com.tradingplatform.notification.entity.NotificationType;
 import com.tradingplatform.notification.service.NotificationPreferenceService;
 import com.tradingplatform.notification.service.NotificationService;
 import com.tradingplatform.security.UserPrincipal;
@@ -40,10 +41,12 @@ public class NotificationController {
     @GetMapping
     public ResponseEntity<Page<NotificationResponse>> getNotifications(
             @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(defaultValue = "all") String tab,
+            @RequestParam(required = false) List<NotificationType> types,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return ResponseEntity.ok(notificationService.getNotifications(principal.getId(), pageable));
+        return ResponseEntity.ok(notificationService.getNotifications(principal.getId(), tab, types, pageable));
     }
 
     /**
@@ -112,6 +115,15 @@ public class NotificationController {
     public ResponseEntity<Void> markAllAsRead(
             @AuthenticationPrincipal UserPrincipal principal) {
         notificationService.markAllAsRead(principal.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/read-visible")
+    public ResponseEntity<Void> markVisibleAsRead(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(defaultValue = "all") String tab,
+            @RequestParam(required = false) List<NotificationType> types) {
+        notificationService.markVisibleAsRead(principal.getId(), tab, types);
         return ResponseEntity.ok().build();
     }
 }

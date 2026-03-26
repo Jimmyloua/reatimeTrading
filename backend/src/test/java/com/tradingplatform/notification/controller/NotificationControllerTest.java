@@ -11,14 +11,21 @@ import com.tradingplatform.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -34,12 +41,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 class NotificationControllerTest {
+    private static final String REDIS_EXECUTABLE =
+            System.getProperty("redis.server.executable",
+                    "D:/Redis/redis8_06/Redis-8.0.6-Windows-x64-msys2-with-Service/redis-server.exe");
+    private static final int REDIS_PORT = findFreePort();
+    private static final Process REDIS_PROCESS = startRedisProcess();
 
     /**
      * Phase 5 Wave 0 note:
      * 05-00 reserves controller coverage slots that 05-01 will harden into the
      * final NOTF-06/NOTF-07 contract if the endpoint shape changes during implementation.
      */
+
+    @DynamicPropertySource
+    static void configureRedis(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.redis.host", () -> "127.0.0.1");
+        registry.add("spring.data.redis.port", () -> REDIS_PORT);
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -267,6 +285,64 @@ class NotificationControllerTest {
         assertThat(unreadCount).isEqualTo(0L);
     }
 
+    @Test
+    @DisplayName("GET /api/notifications filters by tab and types query params for notification management")
+    void getNotifications_withTabAndTypes_filtersVisibleRows() throws Exception {
+        createTestNotification(testUserId, NotificationType.NEW_MESSAGE, "Unread message");
+        createTestNotification(testUserId, NotificationType.ITEM_SOLD, "Unread sold");
+        Notification readTransaction = createTestNotification(
+                testUserId,
+                NotificationType.TRANSACTION_UPDATE,
+                "Read transaction");
+        readTransaction.setRead(true);
+        notificationRepository.save(readTransaction);
+
+        mockMvc.perform(get("/api/notifications")
+                        .param("tab", "unread")
+                        .param("types", "NEW_MESSAGE,ITEM_SOLD")
+                        .param("page", "0")
+                        .param("size", "20")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[*].type", containsInAnyOrder("NEW_MESSAGE", "ITEM_SOLD")))
+                .andExpect(jsonPath("$.content[*].read", everyItem(is(false))));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/notifications/read-visible marks only the filtered unread notifications as read")
+    void markVisibleAsRead_marksOnlyFilteredNotifications() throws Exception {
+        Notification visibleMessage = createTestNotification(testUserId, NotificationType.NEW_MESSAGE, "Visible message");
+        Notification hiddenSold = createTestNotification(testUserId, NotificationType.ITEM_SOLD, "Hidden sold");
+
+        mockMvc.perform(patch("/api/notifications/read-visible")
+                        .param("tab", "unread")
+                        .param("types", "NEW_MESSAGE")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk());
+
+        Notification updatedMessage = notificationRepository.findById(visibleMessage.getId()).orElseThrow();
+        Notification unchangedSold = notificationRepository.findById(hiddenSold.getId()).orElseThrow();
+
+        assertThat(updatedMessage.getRead()).isTrue();
+        assertThat(unchangedSold.getRead()).isFalse();
+    }
+
+    @Test
+    @DisplayName("PATCH /api/notifications/read-visible with tab all and no types marks the whole visible set read")
+    void markVisibleAsRead_withAllTabAndNoTypes_marksVisibleSet() throws Exception {
+        createTestNotification(testUserId, NotificationType.NEW_MESSAGE, "Unread1");
+        createTestNotification(testUserId, NotificationType.ITEM_SOLD, "Unread2");
+        createTestNotification(testUserId, NotificationType.TRANSACTION_UPDATE, "Unread3");
+
+        mockMvc.perform(patch("/api/notifications/read-visible")
+                        .param("tab", "all")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk());
+
+        assertThat(notificationRepository.countByUserIdAndReadFalse(testUserId)).isEqualTo(0L);
+    }
+
     private Notification createTestNotification(Long userId, NotificationType type, String title) {
         Notification notification = Notification.builder()
                 .userId(userId)
@@ -276,5 +352,52 @@ class NotificationControllerTest {
                 .read(false)
                 .build();
         return notificationRepository.save(notification);
+    }
+
+    @AfterAll
+    static void stopRedisProcess() {
+        if (REDIS_PROCESS != null && REDIS_PROCESS.isAlive()) {
+            REDIS_PROCESS.destroy();
+        }
+    }
+
+    private static int findFreePort() {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        } catch (IOException exception) {
+            throw new IllegalStateException("Failed to allocate a Redis test port", exception);
+        }
+    }
+
+    private static Process startRedisProcess() {
+        try {
+            Process process = new ProcessBuilder(
+                    REDIS_EXECUTABLE,
+                    "--port", String.valueOf(REDIS_PORT),
+                    "--save", "",
+                    "--appendonly", "no"
+            ).start();
+            waitForRedis();
+            return process;
+        } catch (IOException exception) {
+            throw new IllegalStateException("Failed to start local redis-server for tests", exception);
+        }
+    }
+
+    private static void waitForRedis() {
+        long deadline = System.currentTimeMillis() + 10_000L;
+        while (System.currentTimeMillis() < deadline) {
+            try (Socket ignored = new Socket("127.0.0.1", REDIS_PORT)) {
+                return;
+            } catch (IOException ignored) {
+                try {
+                    Thread.sleep(100L);
+                } catch (InterruptedException exception) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while waiting for Redis test server", exception);
+                }
+            }
+        }
+        throw new IllegalStateException("Timed out waiting for Redis test server to accept connections");
     }
 }
