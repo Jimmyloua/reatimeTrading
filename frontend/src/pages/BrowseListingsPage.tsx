@@ -1,6 +1,9 @@
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { contentApi } from '@/api/contentApi'
 import { listingApi } from '@/api/listingApi'
+import { BrowseCategoryDisclosure } from '@/components/browse/BrowseCategoryDisclosure'
+import { CuratedCollectionRail } from '@/components/browse/CuratedCollectionRail'
 import { ListingGrid } from '@/components/ListingGrid'
 import { ListingFilters } from '@/components/ListingFilters'
 import { Card, CardContent } from '@/components/ui/card'
@@ -33,6 +36,7 @@ export default function BrowseListingsPage() {
   const region = searchParams.get('region') || undefined
   const page = searchParams.get('page') ? parseInt(searchParams.get('page')!, 10) : 0
   const sort = searchParams.get('sort') || 'createdAt,desc'
+  const collection = searchParams.get('collection') || undefined
 
   // Fetch categories
   const { data: categories = [] } = useQuery({
@@ -61,6 +65,13 @@ export default function BrowseListingsPage() {
   } = useQuery({
     queryKey: ['listings', searchRequest],
     queryFn: () => listingApi.searchListings(searchRequest),
+    placeholderData: (previous) => previous,
+  })
+
+  const { data: collectionData } = useQuery({
+    enabled: Boolean(collection),
+    queryKey: ['collection', collection],
+    queryFn: () => contentApi.getCollection(collection!),
   })
 
   // Update URL params
@@ -72,6 +83,12 @@ export default function BrowseListingsPage() {
 
     if (newFilters.categoryId) params.set('categoryId', String(newFilters.categoryId))
     else params.delete('categoryId')
+
+    if ('collection' in newFilters) {
+      const nextCollection = newFilters.collection as string | undefined
+      if (nextCollection) params.set('collection', nextCollection)
+      else params.delete('collection')
+    }
 
     if (newFilters.minPrice !== undefined) params.set('minPrice', String(newFilters.minPrice))
     else params.delete('minPrice')
@@ -107,6 +124,10 @@ export default function BrowseListingsPage() {
 
   const handleSortChange = (newSort: string) => {
     updateFilters({ sort: newSort, page: 0 })
+  }
+
+  const handleCategoryCommit = (nextCategoryId: number) => {
+    updateFilters({ categoryId: nextCategoryId, page: 0 })
   }
 
   // Loading state
@@ -194,9 +215,16 @@ export default function BrowseListingsPage() {
       </section>
 
       {/* Filters */}
+      <BrowseCategoryDisclosure
+        categories={categories}
+        onCommitCategory={handleCategoryCommit}
+      />
+
+      {collectionData ? <CuratedCollectionRail collection={collectionData} /> : null}
+
       <div className="rounded-[1.75rem] border border-slate-200/70 bg-white/88 p-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
         <ListingFilters
-          filters={searchRequest}
+          filters={{ ...searchRequest, collection }}
           onFilterChange={handleFilterChange}
           categories={categories}
           onSortChange={handleSortChange}

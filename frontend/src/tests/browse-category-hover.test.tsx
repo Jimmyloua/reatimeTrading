@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import BrowseListingsPage from '@/pages/BrowseListingsPage'
+import { contentApi } from '@/api/contentApi'
 import { listingApi } from '@/api/listingApi'
 import type { Category } from '@/types/listing'
 
@@ -10,6 +11,12 @@ vi.mock('@/api/listingApi', () => ({
   listingApi: {
     getCategories: vi.fn(),
     searchListings: vi.fn(),
+  },
+}))
+
+vi.mock('@/api/contentApi', () => ({
+  contentApi: {
+    getCollection: vi.fn(),
   },
 }))
 
@@ -69,6 +76,17 @@ describe('Browse category disclosure contract', () => {
       number: 0,
       first: true,
       last: true,
+    })
+    vi.mocked(contentApi.getCollection).mockResolvedValue({
+      slug: 'staff-picks',
+      title: 'Staff picks',
+      subtitle: 'Editor selections',
+      description: 'Featured devices',
+      coverImageUrl: '/cover.jpg',
+      targetType: 'collection',
+      targetValue: 'staff-picks',
+      displayOrder: 0,
+      items: [],
     })
   })
 

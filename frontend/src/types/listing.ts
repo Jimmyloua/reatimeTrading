@@ -75,6 +75,7 @@ export interface UpdateListingRequest {
 export interface ListingSearchRequest {
   query?: string
   categoryId?: number
+  collection?: string
   minPrice?: number
   maxPrice?: number
   conditions?: Condition[]

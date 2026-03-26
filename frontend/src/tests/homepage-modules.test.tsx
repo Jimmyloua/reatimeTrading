@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import App from '@/App'
+import { contentApi } from '@/api/contentApi'
 import { useAuthStore } from '@/stores/authStore'
 
 vi.mock('@/hooks/useWebSocket', () => ({
@@ -16,38 +17,84 @@ vi.mock('@/hooks/useWebSocket', () => ({
   }),
 }))
 
+vi.mock('@/api/contentApi', () => ({
+  contentApi: {
+    getHomepage: vi.fn(),
+  },
+}))
+
 const homepageModules = [
   {
-    id: 'hero-1',
-    type: 'hero',
+    slug: 'hero-1',
+    moduleType: 'hero',
     displayOrder: 0,
     title: 'Fresh arrivals',
-    ctaLabel: 'Browse mirrorless cameras',
-    destination: '/listings?categoryId=12',
+    subtitle: 'Editor-curated arrivals',
+    items: [
+      {
+        imageUrl: '/hero.jpg',
+        headline: 'Browse mirrorless cameras',
+        subheadline: 'Start in cameras',
+        linkType: 'category',
+        linkValue: '12',
+        accentLabel: 'Fresh arrivals',
+        displayOrder: 0,
+      },
+    ],
   },
   {
-    id: 'tiles-1',
-    type: 'image_tiles',
+    slug: 'tiles-1',
+    moduleType: 'image_tiles',
     displayOrder: 1,
     title: 'Capture kits',
-    ctaLabel: 'Shop featured cameras',
-    destination: '/listings?collection=featured-cameras',
+    subtitle: 'Tile picks',
+    items: [
+      {
+        imageUrl: '/tiles.jpg',
+        headline: 'Shop featured cameras',
+        subheadline: 'Featured camera gear',
+        linkType: 'collection',
+        linkValue: 'featured-cameras',
+        accentLabel: 'Capture kits',
+        displayOrder: 0,
+      },
+    ],
   },
   {
-    id: 'row-1',
-    type: 'collection_row',
+    slug: 'row-1',
+    moduleType: 'collection_row',
     displayOrder: 2,
     title: 'Collector favorites',
-    ctaLabel: 'Open staff picks',
-    destination: '/listings?collection=staff-picks',
+    subtitle: 'Rows of favorites',
+    items: [
+      {
+        imageUrl: '/row.jpg',
+        headline: 'Open staff picks',
+        subheadline: 'Staff curated picks',
+        linkType: 'collection',
+        linkValue: 'staff-picks',
+        accentLabel: 'Collector favorites',
+        displayOrder: 0,
+      },
+    ],
   },
   {
-    id: 'spotlight-1',
-    type: 'category_spotlight',
+    slug: 'spotlight-1',
+    moduleType: 'category_spotlight',
     displayOrder: 3,
     title: 'Audio spotlight',
-    ctaLabel: 'Browse audio gear',
-    destination: '/listings?categoryId=44',
+    subtitle: 'Audio category',
+    items: [
+      {
+        imageUrl: '/spotlight.jpg',
+        headline: 'Browse audio gear',
+        subheadline: 'Headphones and speakers',
+        linkType: 'category',
+        linkValue: '44',
+        accentLabel: 'Audio spotlight',
+        displayOrder: 0,
+      },
+    ],
   },
 ]
 
@@ -75,6 +122,9 @@ describe('Homepage module contracts', () => {
     useAuthStore.getState().logout()
     localStorage.clear()
     sessionStorage.clear()
+    vi.mocked(contentApi.getHomepage).mockResolvedValue({
+      modules: homepageModules,
+    })
   })
 
   test('renders homepage modules from server-driven content in displayOrder', async () => {
