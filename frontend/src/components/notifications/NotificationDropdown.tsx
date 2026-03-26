@@ -4,20 +4,15 @@ import { Button } from '@/components/ui/button'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useNotifications } from '@/hooks/useNotifications'
 import { NotificationItem } from './NotificationItem'
+import { NotificationPreferenceGroups } from './NotificationPreferenceGroups'
 import { notificationApi } from '@/api/notificationApi'
 import { filterNotificationsByPreferences } from '@/types/notification'
-
-const defaultPreferences = {
-  newMessageEnabled: true,
-  itemSoldEnabled: true,
-  transactionUpdateEnabled: true,
-}
 
 export function NotificationDropdown() {
   const store = useNotificationStore()
   const notifications = store.notifications
-  const preferences = store.preferences ?? defaultPreferences
-  const preferencesLoaded = store.preferencesLoaded ?? false
+  const preferences = store.preferences
+  const preferencesLoaded = store.preferencesLoaded
   const unreadCount = store.unreadCount
   const setNotifications = store.setNotifications
   const setPreferences = store.setPreferences
@@ -30,7 +25,7 @@ export function NotificationDropdown() {
     const hydrateDropdown = async () => {
       try {
         if (notifications.length === 0) {
-          const response = await notificationApi.getNotifications(0, 5)
+          const response = await notificationApi.getNotifications({ page: 0, size: 5 })
           setNotifications(response.content)
         }
 
@@ -88,39 +83,10 @@ export function NotificationDropdown() {
         <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
           Quick settings
         </p>
-        <label className="flex items-center justify-between gap-3 text-sm">
-          <span>New messages</span>
-          <input
-            type="checkbox"
-            aria-label="New messages"
-            checked={preferences.newMessageEnabled}
-            onChange={(event) => {
-              void handlePreferenceChange('newMessageEnabled', event.target.checked)
-            }}
-          />
-        </label>
-        <label className="flex items-center justify-between gap-3 text-sm">
-          <span>Item sold</span>
-          <input
-            type="checkbox"
-            aria-label="Item sold"
-            checked={preferences.itemSoldEnabled}
-            onChange={(event) => {
-              void handlePreferenceChange('itemSoldEnabled', event.target.checked)
-            }}
-          />
-        </label>
-        <label className="flex items-center justify-between gap-3 text-sm">
-          <span>Transaction updates</span>
-          <input
-            type="checkbox"
-            aria-label="Transaction updates"
-            checked={preferences.transactionUpdateEnabled}
-            onChange={(event) => {
-              void handlePreferenceChange('transactionUpdateEnabled', event.target.checked)
-            }}
-          />
-        </label>
+        <NotificationPreferenceGroups
+          onPreferenceChange={handlePreferenceChange}
+          preferences={preferences}
+        />
       </div>
 
       {recentNotifications.length === 0 ? (

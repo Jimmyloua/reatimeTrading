@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { NotificationList } from '@/components/notifications/NotificationList'
 import { useNotifications } from '@/hooks/useNotifications'
@@ -8,13 +8,8 @@ import {
 } from '@/api/notificationApi'
 import { NotificationManagementToolbar } from '@/components/notifications/NotificationManagementToolbar'
 import { useNotificationStore } from '@/stores/notificationStore'
-import { filterNotificationsByPreferences } from '@/types/notification'
-
-const defaultPreferences = {
-  newMessageEnabled: true,
-  itemSoldEnabled: true,
-  transactionUpdateEnabled: true,
-}
+import { NotificationPreferenceGroups } from '@/components/notifications/NotificationPreferenceGroups'
+import { filterNotificationsByPreferences, type Notification, type NotificationPreferences } from '@/types/notification'
 
 const DEFAULT_PAGE_SIZE = 20
 const managedNotificationTypes = ['NEW_MESSAGE', 'ITEM_SOLD', 'TRANSACTION_UPDATE'] as const
@@ -27,19 +22,21 @@ function isManagedNotificationType(value: string): value is ManagedNotificationT
 
 export default function NotificationsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [pageNotificationIds, setPageNotificationIds] = useState<number[]>([])
 
   // Initialize WebSocket subscription
   useNotifications()
   const store = useNotificationStore()
   const notifications = store.notifications
-  const preferences = store.preferences ?? defaultPreferences
-  const preferencesLoaded = store.preferencesLoaded ?? false
+  const preferences = store.preferences
+  const preferencesLoaded = store.preferencesLoaded
   const isLoading = store.isLoading
   const setPreferences = store.setPreferences
   const updatePreference = store.updatePreference
   const setNotifications = store.setNotifications
   const setLoading = store.setLoading
   const markAsRead = store.markAsRead
+  const markVisibleAsRead = store.markVisibleAsRead
 
   const tab: NotificationManagementTab = searchParams.get('tab') === 'unread' ? 'unread' : 'all'
   const pageParam = Number.parseInt(searchParams.get('page') ?? '0', 10)
@@ -84,6 +81,7 @@ export default function NotificationsPage() {
           size: DEFAULT_PAGE_SIZE,
         })
         setNotifications(response.content)
+        setPageNotificationIds(response.content.map((notification) => notification.id))
       } catch (error) {
         console.error('Failed to fetch notifications:', error)
       } finally {
@@ -95,7 +93,7 @@ export default function NotificationsPage() {
   }, [page, selectedTypesKey, setLoading, setNotifications, tab])
 
   const handlePreferenceChange = async (
-    key: keyof typeof preferences,
+    key: keyof NotificationPreferences,
     value: boolean
   ) => {
     const nextPreferences = {
@@ -159,7 +157,11 @@ export default function NotificationsPage() {
     })
   }
 
-  const visibleNotifications = filterNotificationsByPreferences(notifications, preferences).filter(
+  const pageNotifications = pageNotificationIds
+    .map((notificationId) => notifications.find((notification) => notification.id === notificationId))
+    .filter((notification): notification is Notification => Boolean(notification))
+
+  const visibleNotifications = filterNotificationsByPreferences(pageNotifications, preferences).filter(
     (notification) =>
       selectedTypes.includes(notification.type as ManagedNotificationType) &&
       (tab === 'all' || !notification.read)
@@ -187,6 +189,7 @@ export default function NotificationsPage() {
         types: selectedTypes,
         page,
       })
+      markVisibleAsRead(unreadVisibleNotifications.map((notification) => notification.id))
     } catch (error) {
       console.error('Failed to mark visible notifications as read:', error)
     }
@@ -208,51 +211,10 @@ export default function NotificationsPage() {
         />
         <div className="mb-4 mt-4 rounded-lg border bg-white p-4">
           <h2 className="text-sm font-semibold text-neutral-700">Notification preferences</h2>
-          <div className="mt-4 space-y-4">
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                Conversation activity
-              </h3>
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>New messages</span>
-                <input
-                  type="checkbox"
-                  aria-label="New messages"
-                  checked={preferences.newMessageEnabled}
-                  onChange={(event) => {
-                    void handlePreferenceChange('newMessageEnabled', event.target.checked)
-                  }}
-                />
-              </label>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                Selling activity
-              </h3>
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>Item sold</span>
-                <input
-                  type="checkbox"
-                  aria-label="Item sold"
-                  checked={preferences.itemSoldEnabled}
-                  onChange={(event) => {
-                    void handlePreferenceChange('itemSoldEnabled', event.target.checked)
-                  }}
-                />
-              </label>
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>Transaction updates</span>
-                <input
-                  type="checkbox"
-                  aria-label="Transaction updates"
-                  checked={preferences.transactionUpdateEnabled}
-                  onChange={(event) => {
-                    void handlePreferenceChange('transactionUpdateEnabled', event.target.checked)
-                  }}
-                />
-              </label>
-            </div>
-          </div>
+          <NotificationPreferenceGroups
+            onPreferenceChange={handlePreferenceChange}
+            preferences={preferences}
+          />
         </div>
         <div className="border rounded-lg overflow-hidden bg-white">
           <NotificationList

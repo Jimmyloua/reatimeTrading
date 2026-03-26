@@ -112,12 +112,16 @@ describe('Notification management contracts', () => {
     expect(screen.getByRole('checkbox', { name: /new messages/i })).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: /item sold/i })).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: /transaction updates/i })).toBeInTheDocument()
-    expect(screen.getByText(/conversation activity/i)).toBeInTheDocument()
-    expect(screen.getByText(/selling activity/i)).toBeInTheDocument()
+    expect(screen.getByText(/^messages$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^sales$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^transactions$/i)).toBeInTheDocument()
   })
 
   test('mark visible as read only affects the currently filtered rows', async () => {
     renderNotificationsPage('/notifications?tab=unread&types=NEW_MESSAGE&page=0')
+
+    expect(await screen.findByText('Unread message')).toBeInTheDocument()
+    expect(screen.queryByText('Sold item')).not.toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole('button', { name: /mark visible as read/i }))
 
@@ -129,7 +133,8 @@ describe('Notification management contracts', () => {
       })
     })
 
-    expect(screen.getByText('Unread message')).toBeInTheDocument()
-    expect(screen.queryByText('Sold item')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByText('Unread message')).not.toBeInTheDocument()
+    })
   })
 })

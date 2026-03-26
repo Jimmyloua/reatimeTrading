@@ -6,7 +6,7 @@ import type { Notification } from '@/types/notification'
 
 export function useNotifications() {
   const { subscribe, connectionState } = useWebSocket()
-  const { addNotification, setUnreadCount } = useNotificationStore()
+  const { setUnreadCount, upsertNotification } = useNotificationStore()
 
   // Subscribe to real-time notifications
   useEffect(() => {
@@ -16,14 +16,14 @@ export function useNotifications() {
       '/user/queue/notifications',
       (message) => {
         const notification: Notification = JSON.parse(message.body)
-        addNotification(notification)
+        upsertNotification(notification)
       }
     )
 
     return () => {
       subscription?.unsubscribe()
     }
-  }, [connectionState, subscribe, addNotification])
+  }, [connectionState, subscribe, upsertNotification])
 
   // Load initial unread count
   useEffect(() => {
