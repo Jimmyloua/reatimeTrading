@@ -1,5 +1,7 @@
 package com.tradingplatform.content.service;
 
+import com.tradingplatform.content.dto.CuratedCollectionResponse;
+import com.tradingplatform.content.dto.HomepageResponse;
 import com.tradingplatform.content.entity.CuratedCollection;
 import com.tradingplatform.content.entity.CuratedCollectionItem;
 import com.tradingplatform.content.entity.HomepageModule;
@@ -9,6 +11,8 @@ import com.tradingplatform.content.repository.HomepageModuleRepository;
 import com.tradingplatform.listing.entity.Listing;
 import com.tradingplatform.listing.entity.ListingImage;
 import com.tradingplatform.listing.enums.ListingStatus;
+import com.tradingplatform.listing.dto.ListingResponse;
+import com.tradingplatform.listing.enums.Condition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +42,19 @@ public class ContentService {
                 .map(this::toCuratedCollectionContent);
     }
 
+    public HomepageResponse getHomepage() {
+        return HomepageResponse.builder()
+                .modules(getActiveHomepageModules().stream()
+                        .map(this::toHomepageModuleResponse)
+                        .toList())
+                .build();
+    }
+
+    public Optional<CuratedCollectionResponse> getCollectionBySlug(String slug) {
+        return getActiveCollectionBySlug(slug)
+                .map(this::toCuratedCollectionResponse);
+    }
+
     private HomepageModuleContent toHomepageModuleContent(HomepageModule module) {
         List<HomepageModuleItemContent> items = module.getItems().stream()
                 .sorted(Comparator.comparing(HomepageModuleItem::getDisplayOrder))
@@ -62,6 +79,27 @@ public class ContentService {
         );
     }
 
+    private HomepageResponse.HomepageModuleResponse toHomepageModuleResponse(HomepageModuleContent module) {
+        return HomepageResponse.HomepageModuleResponse.builder()
+                .slug(module.slug())
+                .moduleType(module.moduleType())
+                .title(module.title())
+                .subtitle(module.subtitle())
+                .displayOrder(module.displayOrder())
+                .items(module.items().stream()
+                        .map(item -> HomepageResponse.HomepageModuleItemResponse.builder()
+                                .imageUrl(item.imageUrl())
+                                .headline(item.headline())
+                                .subheadline(item.subheadline())
+                                .linkType(item.linkType())
+                                .linkValue(item.linkValue())
+                                .accentLabel(item.accentLabel())
+                                .displayOrder(item.displayOrder())
+                                .build())
+                        .toList())
+                .build();
+    }
+
     private CuratedCollectionContent toCuratedCollectionContent(CuratedCollection collection) {
         List<CollectionListingCard> items = collection.getItems().stream()
                 .sorted(Comparator.comparing(CuratedCollectionItem::getDisplayOrder))
@@ -82,6 +120,22 @@ public class ContentService {
         );
     }
 
+    private CuratedCollectionResponse toCuratedCollectionResponse(CuratedCollectionContent collection) {
+        return CuratedCollectionResponse.builder()
+                .slug(collection.slug())
+                .title(collection.title())
+                .subtitle(collection.subtitle())
+                .description(collection.description())
+                .coverImageUrl(collection.coverImageUrl())
+                .targetType(collection.targetType())
+                .targetValue(collection.targetValue())
+                .displayOrder(collection.displayOrder())
+                .items(collection.items().stream()
+                        .map(this::toListingResponse)
+                        .toList())
+                .build();
+    }
+
     private Optional<CollectionListingCard> toCollectionListingCard(CuratedCollectionItem item, String fallbackImageUrl) {
         Listing listing = item.getListing();
         if (listing == null || listing.getStatus() != ListingStatus.AVAILABLE || Boolean.TRUE.equals(listing.getDeleted())) {
@@ -98,9 +152,13 @@ public class ContentService {
                 listing.getId(),
                 listing.getTitle(),
                 listing.getPrice(),
+                listing.getCondition(),
                 listing.getCity(),
                 listing.getRegion(),
                 imageUrl,
+                listing.getCategory().getId(),
+                listing.getCategory().getName(),
+                listing.getCreatedAt(),
                 item.getBadgeText(),
                 primaryImageUrl.isEmpty()
         ));
@@ -115,6 +173,22 @@ public class ContentService {
                         .thenComparing(ListingImage::getDisplayOrder))
                 .map(image -> "/uploads/listings/" + image.getImagePath())
                 .findFirst();
+    }
+
+    private ListingResponse toListingResponse(CollectionListingCard card) {
+        return ListingResponse.builder()
+                .id(card.listingId())
+                .title(card.title())
+                .price(card.price())
+                .condition(card.condition())
+                .status(ListingStatus.AVAILABLE)
+                .city(card.city())
+                .region(card.region())
+                .primaryImageUrl(card.imageUrl())
+                .categoryId(card.categoryId())
+                .categoryName(card.categoryName())
+                .createdAt(card.createdAt())
+                .build();
     }
 
     public record HomepageModuleContent(
@@ -155,9 +229,13 @@ public class ContentService {
             Long listingId,
             String title,
             BigDecimal price,
+            Condition condition,
             String city,
             String region,
             String imageUrl,
+            Long categoryId,
+            String categoryName,
+            java.time.LocalDateTime createdAt,
             String badgeText,
             boolean usesFallbackImage
     ) {
