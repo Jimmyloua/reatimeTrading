@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -84,7 +85,23 @@ public class NotificationService {
      */
     @Transactional(readOnly = true)
     public Page<NotificationResponse> getNotifications(Long userId, Pageable pageable) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+        return getNotifications(userId, "all", Collections.emptyList(), pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NotificationResponse> getNotifications(
+            Long userId,
+            String tab,
+            List<NotificationType> types,
+            Pageable pageable) {
+        Boolean readState = resolveReadState(tab);
+        List<NotificationType> requestedTypes = normalizeTypes(types);
+
+        Page<Notification> notifications = requestedTypes.isEmpty()
+                ? notificationRepository.findByUserIdAndOptionalRead(userId, readState, pageable)
+                : notificationRepository.findByUserIdAndOptionalReadAndTypeIn(userId, readState, requestedTypes, pageable);
+
+        return notifications
             .map(this::toResponse);
     }
 
@@ -147,6 +164,20 @@ public class NotificationService {
         notificationRepository.markAllAsReadByUserId(userId, LocalDateTime.now());
     }
 
+    @Transactional
+    public void markVisibleAsRead(Long userId, String tab, List<NotificationType> types) {
+        Boolean readState = resolveReadState(tab);
+        List<NotificationType> requestedTypes = normalizeTypes(types);
+        LocalDateTime readAt = LocalDateTime.now();
+
+        if (requestedTypes.isEmpty()) {
+            notificationRepository.markVisibleAsRead(userId, readState, readAt);
+            return;
+        }
+
+        notificationRepository.markVisibleAsReadByType(userId, readState, requestedTypes, readAt);
+    }
+
     /**
      * Converts a Notification entity to NotificationResponse DTO.
      */
@@ -159,5 +190,22 @@ public class NotificationService {
             return null;
         }
         return referenceType.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private Boolean resolveReadState(String tab) {
+        if (tab == null || tab.isBlank() || "all".equalsIgnoreCase(tab)) {
+            return null;
+        }
+        if ("unread".equalsIgnoreCase(tab)) {
+            return false;
+        }
+        throw new IllegalArgumentException("Unsupported notification tab: " + tab);
+    }
+
+    private List<NotificationType> normalizeTypes(List<NotificationType> types) {
+        if (types == null || types.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return types;
     }
 }

@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -207,7 +208,7 @@ class NotificationServiceTest {
                 .title("Title2").content("Content2").read(true).build();
 
         Page<Notification> page = new PageImpl<>(List.of(notif1, notif2));
-        when(notificationRepository.findByUserIdOrderByCreatedAtDesc(eq(testUserId), any(Pageable.class)))
+        when(notificationRepository.findByUserIdAndOptionalRead(eq(testUserId), isNull(), any(Pageable.class)))
                 .thenReturn(page);
 
         Pageable pageable = PageRequest.of(0, 20, Sort.by("createdAt").descending());
@@ -219,6 +220,61 @@ class NotificationServiceTest {
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getContent().get(0).getTitle()).isEqualTo("Title1");
         assertThat(result.getContent().get(1).getTitle()).isEqualTo("Title2");
+    }
+
+    @Test
+    @DisplayName("Should return filtered notifications for tab all with selected types")
+    void testGetNotifications_withAllTabAndTypes() {
+        Notification notif1 = Notification.builder()
+                .id(1L).userId(testUserId).type(NotificationType.NEW_MESSAGE)
+                .title("Message").content("Content1").read(false).build();
+        Notification notif2 = Notification.builder()
+                .id(2L).userId(testUserId).type(NotificationType.ITEM_SOLD)
+                .title("Sold").content("Content2").read(true).build();
+
+        Page<Notification> page = new PageImpl<>(List.of(notif1, notif2));
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("createdAt").descending());
+        List<NotificationType> types = List.of(NotificationType.NEW_MESSAGE, NotificationType.ITEM_SOLD);
+
+        when(notificationRepository.findByUserIdAndOptionalReadAndTypeIn(
+                testUserId, null, types, pageable))
+                .thenReturn(page);
+
+        Page<NotificationResponse> result = notificationService.getNotifications(testUserId, "all", types, pageable);
+
+        assertThat(result.getContent()).hasSize(2);
+        verify(notificationRepository).findByUserIdAndOptionalReadAndTypeIn(testUserId, null, types, pageable);
+    }
+
+    @Test
+    @DisplayName("Should return unread notifications when tab unread is requested")
+    void testGetNotifications_withUnreadTab() {
+        Notification notif = Notification.builder()
+                .id(1L).userId(testUserId).type(NotificationType.NEW_MESSAGE)
+                .title("Unread").content("Content").read(false).build();
+
+        Page<Notification> page = new PageImpl<>(List.of(notif));
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("createdAt").descending());
+
+        when(notificationRepository.findByUserIdAndOptionalRead(
+                testUserId, false, pageable))
+                .thenReturn(page);
+
+        Page<NotificationResponse> result = notificationService.getNotifications(
+                testUserId, "unread", Collections.emptyList(), pageable);
+
+        assertThat(result.getContent()).extracting(NotificationResponse::isRead).containsExactly(false);
+        verify(notificationRepository).findByUserIdAndOptionalRead(
+                testUserId, false, pageable);
+    }
+
+    @Test
+    @DisplayName("Should reject unsupported notification tab values")
+    void testGetNotifications_withUnsupportedTab_throwsBadRequest() {
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("createdAt").descending());
+
+        assertThatThrownBy(() -> notificationService.getNotifications(testUserId, "archived", List.of(), pageable))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -319,6 +375,27 @@ class NotificationServiceTest {
 
         // Assert
         verify(notificationRepository).markAllAsReadByUserId(eq(testUserId), any());
+    }
+
+    @Test
+    @DisplayName("Should mark only visible unread notifications as read for selected types")
+    void testMarkVisibleAsRead_withUnreadTabAndTypes() {
+        List<NotificationType> types = List.of(NotificationType.NEW_MESSAGE, NotificationType.ITEM_SOLD);
+        when(notificationRepository.markVisibleAsReadByType(eq(testUserId), eq(false), eq(types), any())).thenReturn(2);
+
+        notificationService.markVisibleAsRead(testUserId, "unread", types);
+
+        verify(notificationRepository).markVisibleAsReadByType(eq(testUserId), eq(false), eq(types), any());
+    }
+
+    @Test
+    @DisplayName("Should mark visible notifications as read for tab all without type filter")
+    void testMarkVisibleAsRead_withAllTabAndNoTypes() {
+        when(notificationRepository.markVisibleAsRead(eq(testUserId), isNull(), any())).thenReturn(3);
+
+        notificationService.markVisibleAsRead(testUserId, "all", Collections.emptyList());
+
+        verify(notificationRepository).markVisibleAsRead(eq(testUserId), isNull(), any());
     }
 
 }

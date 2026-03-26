@@ -24,6 +24,34 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
      */
     Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
+    @Query("""
+        SELECT n
+        FROM Notification n
+        WHERE n.userId = :userId
+          AND (:readState IS NULL OR n.read = :readState)
+        ORDER BY n.createdAt DESC
+        """)
+    Page<Notification> findByUserIdAndOptionalRead(
+        @Param("userId") Long userId,
+        @Param("readState") Boolean readState,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT n
+        FROM Notification n
+        WHERE n.userId = :userId
+          AND (:readState IS NULL OR n.read = :readState)
+          AND n.type IN :types
+        ORDER BY n.createdAt DESC
+        """)
+    Page<Notification> findByUserIdAndOptionalReadAndTypeIn(
+        @Param("userId") Long userId,
+        @Param("readState") Boolean readState,
+        @Param("types") List<NotificationType> types,
+        Pageable pageable
+    );
+
     /**
      * Find all notifications for a user without pagination.
      */
@@ -47,6 +75,36 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Notification n SET n.read = true, n.readAt = :readAt WHERE n.userId = :userId AND n.read = false")
     int markAllAsReadByUserId(@Param("userId") Long userId, @Param("readAt") LocalDateTime readAt);
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+        UPDATE Notification n
+        SET n.read = true, n.readAt = :readAt
+        WHERE n.userId = :userId
+          AND n.read = false
+          AND (:readState IS NULL OR n.read = :readState)
+        """)
+    int markVisibleAsRead(
+        @Param("userId") Long userId,
+        @Param("readState") Boolean readState,
+        @Param("readAt") LocalDateTime readAt
+    );
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+        UPDATE Notification n
+        SET n.read = true, n.readAt = :readAt
+        WHERE n.userId = :userId
+          AND n.read = false
+          AND (:readState IS NULL OR n.read = :readState)
+          AND n.type IN :types
+        """)
+    int markVisibleAsReadByType(
+        @Param("userId") Long userId,
+        @Param("readState") Boolean readState,
+        @Param("types") List<NotificationType> types,
+        @Param("readAt") LocalDateTime readAt
+    );
 
     /**
      * Find unread notifications for a user.
