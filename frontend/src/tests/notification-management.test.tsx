@@ -15,7 +15,7 @@ vi.mock('@/api/notificationApi', () => ({
     getNotifications: vi.fn(),
     getPreferences: vi.fn(),
     updatePreferences: vi.fn(),
-    markAllAsRead: vi.fn(),
+    markVisibleAsRead: vi.fn(),
   },
 }))
 
@@ -98,6 +98,7 @@ describe('Notification management contracts', () => {
       itemSoldEnabled: true,
       transactionUpdateEnabled: false,
     })
+    vi.mocked(notificationApi.markVisibleAsRead).mockResolvedValue()
   })
 
   test('hydrates from URL-backed tab, types, and page filters and keeps the grouped preferences shell visible', async () => {
@@ -121,7 +122,7 @@ describe('Notification management contracts', () => {
     fireEvent.click(await screen.findByRole('button', { name: /mark visible as read/i }))
 
     await waitFor(() => {
-      expect(notificationApi.markAllAsRead).toHaveBeenCalledWith({
+      expect(notificationApi.markVisibleAsRead).toHaveBeenCalledWith({
         tab: 'unread',
         types: ['NEW_MESSAGE'],
         page: 0,
