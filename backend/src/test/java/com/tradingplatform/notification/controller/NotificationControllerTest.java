@@ -373,9 +373,7 @@ class NotificationControllerTest {
         try {
             Process process = new ProcessBuilder(
                     REDIS_EXECUTABLE,
-                    "--port", String.valueOf(REDIS_PORT),
-                    "--save", "",
-                    "--appendonly", "no"
+                    "--port", String.valueOf(REDIS_PORT)
             ).start();
             waitForRedis();
             return process;
