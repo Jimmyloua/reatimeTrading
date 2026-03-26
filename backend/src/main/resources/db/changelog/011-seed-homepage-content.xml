@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   logicalFilePath="db/changelog/011-seed-homepage-content.xml"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="011-seed-curated-collections" author="system">
+        <insert tableName="curated_collections">
+            <column name="id" valueNumeric="1"/>
+            <column name="slug" value="featured-cameras"/>
+            <column name="title" value="Featured Cameras"/>
+            <column name="subtitle" value="Mirrorless picks and creator-ready kits"/>
+            <column name="description" value="Handpicked cameras and lenses for creators who want dependable imaging gear."/>
+            <column name="cover_image_url" value="/images/home/collections/featured-cameras.jpg"/>
+            <column name="target_type" value="category"/>
+            <column name="target_value" value="4"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="curated_collections">
+            <column name="id" valueNumeric="2"/>
+            <column name="slug" value="student-laptops"/>
+            <column name="title" value="Student Laptops"/>
+            <column name="subtitle" value="Portable setups for study and side projects"/>
+            <column name="description" value="Value-focused laptops with battery life and practical specs for school."/>
+            <column name="cover_image_url" value="/images/home/collections/student-laptops.jpg"/>
+            <column name="target_type" value="route"/>
+            <column name="target_value" value="/listings?collection=student-laptops"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="011-seed-homepage-modules" author="system">
+        <insert tableName="homepage_modules">
+            <column name="id" valueNumeric="1"/>
+            <column name="slug" value="home-hero"/>
+            <column name="module_type" value="hero"/>
+            <column name="title" value="Trade Smarter"/>
+            <column name="subtitle" value="Go straight to curated devices and trusted sellers."/>
+            <column name="active" valueBoolean="true"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="homepage_modules">
+            <column name="id" valueNumeric="2"/>
+            <column name="slug" value="home-image-tiles"/>
+            <column name="module_type" value="image_tiles"/>
+            <column name="title" value="Start Browsing"/>
+            <column name="subtitle" value="Jump into collections and category-led discovery."/>
+            <column name="active" valueBoolean="true"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="homepage_modules">
+            <column name="id" valueNumeric="3"/>
+            <column name="slug" value="home-featured-collections"/>
+            <column name="module_type" value="collection_row"/>
+            <column name="title" value="Curated For You"/>
+            <column name="subtitle" value="Editorial collections with stable ordering."/>
+            <column name="active" valueBoolean="true"/>
+            <column name="display_order" valueNumeric="3"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="011-seed-homepage-module-items" author="system">
+        <insert tableName="homepage_module_items">
+            <column name="id" valueNumeric="1"/>
+            <column name="homepage_module_id" valueNumeric="1"/>
+            <column name="image_url" value="/images/home/hero/trade-smarter.jpg"/>
+            <column name="headline" value="Fresh Finds Every Day"/>
+            <column name="subheadline" value="Browse newly listed devices and curated categories in one place."/>
+            <column name="link_type" value="route"/>
+            <column name="link_value" value="/listings"/>
+            <column name="accent_label" value="Browse"/>
+            <column name="display_order" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="homepage_module_items">
+            <column name="id" valueNumeric="2"/>
+            <column name="homepage_module_id" valueNumeric="2"/>
+            <column name="image_url" value="/images/home/tiles/student-laptops.jpg"/>
+            <column name="headline" value="Student Laptops"/>
+            <column name="subheadline" value="Portable picks for campus and remote work."/>
+            <column name="link_type" value="route"/>
+            <column name="link_value" value="/listings?collection=student-laptops"/>
+            <column name="accent_label" value="Collection"/>
+            <column name="display_order" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="homepage_module_items">
+            <column name="id" valueNumeric="3"/>
+            <column name="homepage_module_id" valueNumeric="2"/>
+            <column name="image_url" value="/images/home/tiles/camera-deals.jpg"/>
+            <column name="headline" value="Camera Deals"/>
+            <column name="subheadline" value="Mirrorless and DSLR gear for creators."/>
+            <column name="link_type" value="route"/>
+            <column name="link_value" value="/listings?categoryId=4"/>
+            <column name="accent_label" value="Category"/>
+            <column name="display_order" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="homepage_module_items">
+            <column name="id" valueNumeric="4"/>
+            <column name="homepage_module_id" valueNumeric="3"/>
+            <column name="image_url" value="/images/home/collections/featured-cameras-row.jpg"/>
+            <column name="headline" value="Featured Cameras"/>
+            <column name="subheadline" value="Editorially sorted camera inventory."/>
+            <column name="link_type" value="collection"/>
+            <column name="link_value" value="featured-cameras"/>
+            <column name="accent_label" value="Editors' pick"/>
+            <column name="display_order" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

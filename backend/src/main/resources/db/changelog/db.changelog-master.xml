@@ -12,5 +12,7 @@
     <include file="006-create-chat-tables.xml" relativeToChangelogFile="true"/>
     <include file="007-create-transactions-tables.xml" relativeToChangelogFile="true"/>
     <include file="009-create-notification-preferences.xml" relativeToChangelogFile="true"/>
+    <include file="010-create-content-tables.xml" relativeToChangelogFile="true"/>
+    <include file="011-seed-homepage-content.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

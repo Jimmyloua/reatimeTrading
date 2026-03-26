@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   logicalFilePath="db/changelog/010-create-content-tables.xml"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="010-create-curated-collections" author="system">
+        <createTable tableName="curated_collections">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="VARCHAR(120)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_curated_collections_slug"/>
+            </column>
+            <column name="title" type="VARCHAR(160)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subtitle" type="VARCHAR(255)"/>
+            <column name="description" type="TEXT"/>
+            <column name="cover_image_url" type="VARCHAR(500)"/>
+            <column name="target_type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_value" type="VARCHAR(255)"/>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="display_order" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="curated_collections" indexName="idx_curated_collections_active_order">
+            <column name="active"/>
+            <column name="display_order"/>
+        </createIndex>
+
+        <createIndex tableName="curated_collections" indexName="idx_curated_collections_target">
+            <column name="target_type"/>
+            <column name="target_value"/>
+        </createIndex>
+
+        <addCheckConstraint tableName="curated_collections"
+                            constraintName="chk_curated_collections_target_type"
+                            constraintBody="target_type IN ('category', 'listing', 'collection', 'route')"/>
+    </changeSet>
+
+    <changeSet id="010-create-curated-collection-items" author="system">
+        <createTable tableName="curated_collection_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="collection_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="listing_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="display_order" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="badge_text" type="VARCHAR(80)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="curated_collection_items" baseColumnNames="collection_id"
+                                 constraintName="fk_collection_items_collection"
+                                 referencedTableName="curated_collections" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="curated_collection_items" baseColumnNames="listing_id"
+                                 constraintName="fk_collection_items_listing"
+                                 referencedTableName="listings" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addUniqueConstraint tableName="curated_collection_items"
+                             columnNames="collection_id, listing_id"
+                             constraintName="uk_collection_items_collection_listing"/>
+        <addUniqueConstraint tableName="curated_collection_items"
+                             columnNames="collection_id, display_order"
+                             constraintName="uk_collection_items_collection_order"/>
+    </changeSet>
+
+    <changeSet id="010-create-homepage-modules" author="system">
+        <createTable tableName="homepage_modules">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="VARCHAR(120)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_homepage_modules_slug"/>
+            </column>
+            <column name="module_type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(160)"/>
+            <column name="subtitle" type="VARCHAR(255)"/>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="display_order" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="homepage_modules" indexName="idx_homepage_modules_active_order">
+            <column name="active"/>
+            <column name="display_order"/>
+        </createIndex>
+
+        <addCheckConstraint tableName="homepage_modules"
+                            constraintName="chk_homepage_modules_type"
+                            constraintBody="module_type IN ('hero', 'image_tiles', 'collection_row', 'category_spotlight')"/>
+    </changeSet>
+
+    <changeSet id="010-create-homepage-module-items" author="system">
+        <createTable tableName="homepage_module_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="homepage_module_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_url" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="headline" type="VARCHAR(160)"/>
+            <column name="subheadline" type="VARCHAR(255)"/>
+            <column name="link_type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="link_value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accent_label" type="VARCHAR(80)"/>
+            <column name="display_order" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="homepage_module_items" baseColumnNames="homepage_module_id"
+                                 constraintName="fk_homepage_module_items_module"
+                                 referencedTableName="homepage_modules" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addUniqueConstraint tableName="homepage_module_items"
+                             columnNames="homepage_module_id, display_order"
+                             constraintName="uk_homepage_module_items_order"/>
+
+        <addCheckConstraint tableName="homepage_module_items"
+                            constraintName="chk_homepage_module_items_link_type"
+                            constraintBody="link_type IN ('category', 'listing', 'collection', 'route')"/>
+    </changeSet>
+</databaseChangeLog>
