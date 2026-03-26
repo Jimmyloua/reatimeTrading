@@ -47,9 +47,14 @@
             <column name="target_value"/>
         </createIndex>
 
-        <addCheckConstraint tableName="curated_collections"
-                            constraintName="chk_curated_collections_target_type"
-                            constraintBody="target_type IN ('category', 'listing', 'collection', 'route')"/>
+        <sql>
+            ALTER TABLE curated_collections
+            ADD CONSTRAINT chk_curated_collections_target_type
+            CHECK (target_type IN ('category', 'listing', 'collection', 'route'))
+        </sql>
+        <rollback>
+            ALTER TABLE curated_collections DROP CONSTRAINT chk_curated_collections_target_type
+        </rollback>
     </changeSet>
 
     <changeSet id="010-create-curated-collection-items" author="system">
@@ -118,9 +123,14 @@
             <column name="display_order"/>
         </createIndex>
 
-        <addCheckConstraint tableName="homepage_modules"
-                            constraintName="chk_homepage_modules_type"
-                            constraintBody="module_type IN ('hero', 'image_tiles', 'collection_row', 'category_spotlight')"/>
+        <sql>
+            ALTER TABLE homepage_modules
+            ADD CONSTRAINT chk_homepage_modules_type
+            CHECK (module_type IN ('hero', 'image_tiles', 'collection_row', 'category_spotlight'))
+        </sql>
+        <rollback>
+            ALTER TABLE homepage_modules DROP CONSTRAINT chk_homepage_modules_type
+        </rollback>
     </changeSet>
 
     <changeSet id="010-create-homepage-module-items" author="system">
@@ -157,8 +167,13 @@
                              columnNames="homepage_module_id, display_order"
                              constraintName="uk_homepage_module_items_order"/>
 
-        <addCheckConstraint tableName="homepage_module_items"
-                            constraintName="chk_homepage_module_items_link_type"
-                            constraintBody="link_type IN ('category', 'listing', 'collection', 'route')"/>
+        <sql>
+            ALTER TABLE homepage_module_items
+            ADD CONSTRAINT chk_homepage_module_items_link_type
+            CHECK (link_type IN ('category', 'listing', 'collection', 'route'))
+        </sql>
+        <rollback>
+            ALTER TABLE homepage_module_items DROP CONSTRAINT chk_homepage_module_items_link_type
+        </rollback>
     </changeSet>
 </databaseChangeLog>
