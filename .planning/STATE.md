@@ -3,52 +3,52 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-25T03:17:35.965Z"
+last_updated: "2026-03-26T03:12:29.177Z"
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 35
-  completed_plans: 35
+  total_phases: 7
+  completed_phases: 7
+  total_plans: 43
+  completed_plans: 43
 ---
 
 # State: Real-Time Trading Platform
 
-**Last Updated:** 2026-03-25
+**Last Updated:** 2026-03-26
 
 ## Project Reference
 
 **Core Value:** Safe, transparent peer-to-peer transactions for second-hand digital devices with real-time communication and reputation-based trust.
 
-**Current Focus:** Phase 06 complete - chat-presence-reliability-multi-conversation-seller-status-sync-responsive-message-layout-and-redis-backed-realtime-optimization
+**Current Focus:** Phase 07 complete - browse-category-hover-filtering-product-collections-notification-management-and-homepage-image-modules-inspired-by-goofish
 
 **Tech Stack:** Spring Boot 3.5.x + JDK 21, React 19, MySQL 8, Redis 7, Kafka 4
 
 ## Current Position
 
-Phase: 06
-Plan: Not started
+Phase: 07
+Plan: Complete
 
 ### Phase Context
 
-**Phase 6 Goal:** Users can rely on seller presence, conversation previews, and message delivery across reconnects, repeated seller threads, multiple backend nodes, and mobile or desktop message layouts.
+**Phase 7 Goal:** Users can enter discovery through accessible category disclosures, server-driven homepage modules, curated collections, and a notification center that keeps filters, preferences, and read actions synchronized.
 
 **Success Criteria:**
 
-1. Seller presence survives reconnects and multi-session disconnects without dropping offline on the first lost socket
-2. Presence transitions fan out across app nodes through Redis-backed realtime events
-3. Messages persist to MySQL before recipient fan-out and still reach websocket subscribers on other nodes
-4. Repeated seller threads and responsive messages UI can build on a shared backend presence contract
+1. Browse category navigation previews categories without committing filters until the user explicitly selects one
+2. Homepage modules and curated collections render from backend content records and route to shareable browse URLs
+3. Notification management keeps URL-backed filters, grouped preferences, and unread counts synchronized across the bell dropdown and `/notifications`
+4. Filtered retrieval and mark-visible-as-read behavior preserve existing notification read-state and preference contracts
 
-**Requirements:** P6-01 to P6-05
+**Requirements:** P7-01 to P7-05
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Total Phases | 4 |
-| Phases Complete | 4 |
-| Total Requirements (v1) | 42 |
-| Requirements Complete | 42 |
+| Total Phases | 7 |
+| Phases Complete | 7 |
+| Total Requirements (v1) | 48 |
+| Requirements Complete | 48 |
 | Current Streak | 26 |
 | Phase 01 P01 | 15 minutes | 3 tasks | 9 files |
 | Phase 01 P02 | 22min | 3 tasks | 18 files |
@@ -82,6 +82,14 @@ Plan: Not started
 | Phase 06 P01 | 17min | 2 tasks | 12 files |
 | Phase 06 P02 | 16min | 2 tasks | 11 files |
 | Phase 06 P03 | 10min | 2 tasks | 3 files |
+| Phase 07 P00 | 15min | 2 tasks | 10 files |
+| Phase 07 P01 | 18min | 2 tasks | 10 files |
+| Phase 07 P02 | 13min | 2 tasks | 5 files |
+| Phase 07 P03 | 20min | 2 tasks | 8 files |
+| Phase 07 P04 | 17min | 2 tasks | 5 files |
+| Phase 07 P05 | 10min | 2 tasks | 2 files |
+| Phase 07 P06 | 12min | 2 tasks | 6 files |
+| Phase 07 P07 | 18min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -123,6 +131,9 @@ Plan: Not started
 | Single reconnect rehydrate plus degraded-only polling | Refreshes authoritative thread and list metadata without restoring noisy connected-mode polling | Plan 06-02 |
 | Responsive `/messages` stays on one route and switches panes by viewport | Preserves existing `?conversation` deep links while mobile swaps between list and thread panes | Plan 06-03 |
 | Bubble readability enforced with 85% mobile and 70% desktop caps | Prevents horizontal overflow while keeping dense conversation layouts readable | Plan 06-03 |
+| Browse category disclosure separates preview state from committed filters | Preserves hover and keyboard exploration without mutating the URL until explicit selection | Plan 07-03 |
+| Homepage merchandising is server-driven through ordered content records | Keeps homepage modules and curated collections editable via backend content seeds and APIs | Plan 07-01 |
+| Notification center state is URL-backed and shared between surfaces | Keeps unread counts, filters, and grouped preferences synchronized between the bell dropdown and full page | Plan 07-04 / 07-07 |
 
 ### Technical Decisions
 
@@ -142,6 +153,7 @@ Plan: Not started
 
 - Phase 5 added: Notification detail actions, quick notification settings, and seller chat entry from listings
 - Phase 6 added: Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization
+- Phase 7 added: Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish
 
 ## Session Continuity
 
@@ -189,11 +201,20 @@ Plan: Not started
 | 2026-03-25 | Plan 06-02 completed | Shared seller presence sync and duplicate-safe reconnect/fallback frontend shipped |
 | 2026-03-25 | Plan 06-03 completed | Responsive `/messages` shell shipped and human verification approved |
 | 2026-03-25 | Phase 6 COMPLETE | Seller presence, reconnect fallback, responsive messaging, and Redis-backed fan-out verified |
+| 2026-03-26 | Plan 07-00 completed | Phase 7 backend/frontend red test scaffolding shipped |
+| 2026-03-26 | Plan 07-01 completed | Backend content schema, seed data, repositories, and service foundation shipped |
+| 2026-03-26 | Plan 07-02 completed | Filtered notification retrieval and mark-visible-as-read backend behavior shipped |
+| 2026-03-26 | Plan 07-06 completed | Content controller, DTO mapping, and frontend content contracts shipped |
+| 2026-03-26 | Plan 07-04 completed | URL-backed notification management page shipped |
+| 2026-03-26 | Plan 07-03 completed | Browse disclosure, collection-aware browse routes, and server-driven homepage modules shipped |
+| 2026-03-26 | Plan 07-07 completed | Notification dropdown/store synchronization and grouped preferences shipped |
+| 2026-03-26 | Plan 07-05 completed | Targeted automation passed and manual verification was approved |
+| 2026-03-26 | Phase 7 COMPLETE | Discovery merchandising and notification management synchronization verified |
 
 ### Next Actions
 
 1. Start the next planned milestone or transition workflow
-2. Keep Phase 6 summaries as the reference context for future chat UX changes
+2. Use Phase 7 summaries as the reference context for future discovery merchandising and notification UX changes
 
 ### Blockers
 
@@ -202,4 +223,4 @@ None currently.
 ---
 
 *State initialized: 2026-03-21*
-*Project complete: 2026-03-22*
+*Phase 7 complete: 2026-03-26*

@@ -65,6 +65,14 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **P6-04**: The `/messages` route switches between desktop two-pane and mobile single-pane layouts without losing thread context
 - [x] **P6-05**: Redis-backed realtime fan-out distributes message and presence events across app nodes while MySQL remains the source of truth for message durability and ordering
 
+### Discovery Merchandising and Notification Management
+
+- [x] **P7-01**: User can browse categories through an accessible disclosure pattern that supports hover preview without committing a filter until the category is selected
+- [x] **P7-02**: User can enter browse flows from homepage modules, curated collections, and category tiles with the correct URL-backed search params applied
+- [x] **P7-03**: User sees active, ordered curated collections and homepage modules delivered from backend content records instead of hardcoded frontend arrays
+- [x] **P7-04**: User can manage notifications through URL-backed tabs and filters, grouped preferences, and synchronized unread counts across the notifications page and bell dropdown
+- [x] **P7-05**: Notification management APIs support filtered retrieval and mark-visible-as-read behavior while preserving existing read-state and preference contracts
+
 ### Transactions
 
 - [x] **TRAN-01**: User can mark an item as sold to a specific buyer
@@ -173,6 +181,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P6-03 | Phase 6 | Complete |
 | P6-04 | Phase 6 | Complete |
 | P6-05 | Phase 6 | Complete |
+| P7-01 | Phase 7 | Complete |
+| P7-02 | Phase 7 | Complete |
+| P7-03 | Phase 7 | Complete |
+| P7-04 | Phase 7 | Complete |
+| P7-05 | Phase 7 | Complete |
 | TRAN-01 | Phase 4 | Complete |
 | TRAN-02 | Phase 4 | Complete |
 | TRAN-03 | Phase 4 | Complete |
@@ -185,10 +198,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RATE-04 | Phase 4 | Complete |
 
 **Coverage:**
-- v1 requirements: 43 total
-- Mapped to phases: 43
+- v1 requirements: 48 total
+- Mapped to phases: 48
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-21*
-*Last updated: 2026-03-21 after initial definition*
+*Last updated: 2026-03-26 after Phase 7 completion*

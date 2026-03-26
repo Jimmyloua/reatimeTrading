@@ -1,9 +1,9 @@
 ---
 phase: 07
 slug: browse-category-hover-filtering-product-collections-notification-management-and-homepage-image-modules-inspired-by-goofish
-status: draft
+status: complete
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-03-25
 ---
 
@@ -38,21 +38,21 @@ created: 2026-03-25
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 07-00-01 | 00 | 0 | P7-01 | frontend integration | `cd frontend && npm test -- browse-category-hover.test.tsx` | No - W0 | pending |
-| 07-00-02 | 00 | 0 | P7-02 | frontend integration | `cd frontend && npm test -- homepage-modules.test.tsx browse-category-hover.test.tsx` | No - W0 | pending |
-| 07-00-03 | 00 | 0 | P7-03 | backend integration | `cd backend && mvn -Dtest=ContentControllerTest test` | No - W0 | pending |
-| 07-00-04 | 00 | 0 | P7-04 | frontend integration | `cd frontend && npm test -- notification-management.test.tsx notification-preferences.test.tsx` | Partial | pending |
-| 07-00-05 | 00 | 0 | P7-05 | backend integration | `cd backend && mvn -Dtest=NotificationControllerTest test` | Yes - partial | pending |
-| 07-01-01 | 01 | 1 | P7-03 | backend foundation | `cd backend && mvn -q -Dtest=ContentServiceTest test` | Planned | pending |
-| 07-02-01 | 02 | 1 | P7-05 | backend service | `cd backend && mvn -q -Dtest=NotificationServiceTest test` | Yes | pending |
-| 07-02-02 | 02 | 1 | P7-05 | backend controller | `cd backend && mvn -q -Dtest=NotificationControllerTest test` | Yes | pending |
-| 07-06-01 | 06 | 2 | P7-03 | backend controller | `cd backend && mvn -q -Dtest=ContentControllerTest test` | Planned | pending |
-| 07-06-02 | 06 | 2 | P7-03 | frontend contract compile | `cd frontend && npx tsc --noEmit` | Planned | pending |
-| 07-03-01 | 03 | 3 | P7-02, P7-03 | frontend homepage | `cd frontend && npm test -- --run src/tests/homepage-modules.test.tsx` | Planned | pending |
-| 07-03-02 | 03 | 3 | P7-01, P7-02 | frontend browse | `cd frontend && npm test -- --run src/tests/browse-category-hover.test.tsx` | Planned | pending |
-| 07-04-01 | 04 | 2 | P7-04, P7-05 | frontend page filtering | `cd frontend && npm test -- --run src/tests/notification-management.test.tsx` | Planned | pending |
-| 07-07-01 | 07 | 3 | P7-04, P7-05 | frontend dropdown/store sync | `cd frontend && npm test -- --run src/tests/notification-management.test.tsx` | Planned | pending |
-| 07-07-02 | 07 | 3 | P7-04 | frontend grouped preferences | `cd frontend && npm test -- --run src/tests/notification-preferences.test.tsx src/tests/notification-management.test.tsx` | Planned | pending |
+| 07-00-01 | 00 | 0 | P7-01 | frontend integration | `cd frontend && npm test -- browse-category-hover.test.tsx` | Yes | green |
+| 07-00-02 | 00 | 0 | P7-02 | frontend integration | `cd frontend && npm test -- homepage-modules.test.tsx browse-category-hover.test.tsx` | Yes | green |
+| 07-00-03 | 00 | 0 | P7-03 | backend integration | `cd backend && mvn -Dtest=ContentControllerTest test` | Yes | green |
+| 07-00-04 | 00 | 0 | P7-04 | frontend integration | `cd frontend && npm test -- notification-management.test.tsx` | Yes | green |
+| 07-00-05 | 00 | 0 | P7-05 | backend integration | `cd backend && mvn -Dtest=NotificationControllerTest test` | Yes | green |
+| 07-01-01 | 01 | 1 | P7-03 | backend foundation | `cd backend && mvn -q -Dtest=ContentServiceTest test` | Yes | green |
+| 07-02-01 | 02 | 1 | P7-05 | backend service | `cd backend && mvn -q -Dtest=NotificationServiceTest test` | Yes | green |
+| 07-02-02 | 02 | 1 | P7-05 | backend controller | `cd backend && mvn -q -Dtest=NotificationControllerTest test` | Yes | green |
+| 07-06-01 | 06 | 2 | P7-03 | backend controller | `cd backend && mvn -q -Dtest=ContentControllerTest test` | Yes | green |
+| 07-06-02 | 06 | 2 | P7-03 | frontend contract compile | `cd frontend && npx tsc --noEmit` | Yes | green |
+| 07-03-01 | 03 | 3 | P7-02, P7-03 | frontend homepage | `cd frontend && npm test -- --run src/tests/homepage-modules.test.tsx` | Yes | green |
+| 07-03-02 | 03 | 3 | P7-01, P7-02 | frontend browse | `cd frontend && npm test -- --run src/tests/browse-category-hover.test.tsx` | Yes | green |
+| 07-04-01 | 04 | 2 | P7-04, P7-05 | frontend page filtering | `cd frontend && npm test -- --run src/tests/notification-management.test.tsx` | Yes | green |
+| 07-07-01 | 07 | 3 | P7-04, P7-05 | frontend dropdown/store sync | `cd frontend && npm test -- --run src/tests/notification-management.test.tsx` | Yes | green |
+| 07-07-02 | 07 | 3 | P7-04 | frontend grouped preferences | `cd frontend && npm test -- --run src/tests/notification-preferences.test.tsx src/tests/notification-management.test.tsx` | Yes | green |
 
 *Status: pending / green / red / flaky*
 
@@ -60,12 +60,15 @@ created: 2026-03-25
 
 ## Wave 0 Requirements
 
-- [ ] `frontend/src/tests/browse-category-hover.test.tsx` - stubs for P7-01 and category preview vs committed filter behavior
-- [ ] `frontend/src/tests/homepage-modules.test.tsx` - stubs for P7-02 and server-driven homepage module routing
-- [ ] `frontend/src/tests/notification-management.test.tsx` - stubs for P7-04 tabs, filters, mark-visible-as-read, and unread sync
-- [ ] `backend/src/test/java/com/tradingplatform/content/controller/ContentControllerTest.java` - stubs for P7-03 homepage module and collection payload ordering
-- [ ] `backend/src/test/java/com/tradingplatform/content/service/ContentServiceTest.java` - stubs for P7-03 collection membership filtering and fallback behavior
-- [ ] `frontend/src/api/contentApi.ts` and `frontend/src/types/content.ts` - content client/type contracts created before homepage and browse UI work
+- [x] `frontend/src/tests/browse-category-hover.test.tsx` - stubs for P7-01 and category preview vs committed filter behavior
+- [x] `frontend/src/tests/homepage-modules.test.tsx` - stubs for P7-02 and server-driven homepage module routing
+- [x] `frontend/src/tests/notification-management.test.tsx` - stubs for P7-04 tabs, filters, mark-visible-as-read, and unread sync
+- [x] `backend/src/test/java/com/tradingplatform/content/controller/ContentControllerTest.java` - stubs for P7-03 homepage module and collection payload ordering
+- [x] `backend/src/test/java/com/tradingplatform/content/service/ContentServiceTest.java` - stubs for P7-03 collection membership filtering and fallback behavior
+
+Existing partial coverage reused by later plans:
+- [x] `backend/src/test/java/com/tradingplatform/notification/controller/NotificationControllerTest.java` - pre-existing notification controller coverage extended by Phase 7 backend work
+- [x] `frontend/src/tests/notification-preferences.test.tsx` - pre-existing preferences coverage reused and expanded in later frontend notification plans
 
 ---
 
@@ -81,11 +84,11 @@ created: 2026-03-25
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all missing references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all missing references
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved 2026-03-26 after targeted automation and manual checkpoint

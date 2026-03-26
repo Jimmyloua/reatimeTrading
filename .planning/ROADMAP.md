@@ -3,7 +3,7 @@
 **Created:** 2026-03-21
 **Core Value:** Safe, transparent peer-to-peer transactions for second-hand digital devices with real-time communication and reputation-based trust.
 **Granularity:** Standard
-**Total v1 Requirements:** 42
+**Total v1 Requirements:** 48
 
 ## Phases
 
@@ -156,6 +156,7 @@ Plans:
 | 4. Transactions and Trust | 8/8 | Complete | 2026-03-22 |
 | 5. Notification detail actions, quick notification settings, and seller chat entry from listings | 4/4 | Complete | 2026-03-24 |
 | 6. Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization | 4/4 | Complete | 2026-03-25 |
+| 7. Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish | 8/8 | Complete | 2026-03-26 |
 
 ## Coverage
 
@@ -169,8 +170,11 @@ Plans:
 | Notifications | NOTF-01 to NOTF-04 (4) | Phase 3 |
 | Transactions | TRAN-01 to TRAN-06 (6) | Phase 4 |
 | Ratings and Reviews | RATE-01 to RATE-04 (4) | Phase 4 |
+| Notification Actions and Seller Chat Entry | NOTF-05 to NOTF-07, CHAT-06 to CHAT-07 (5) | Phase 5 |
+| Chat Reliability and Responsive Messaging | P6-01 to P6-05 (5) | Phase 6 |
+| Discovery Merchandising and Notification Management | P7-01 to P7-05 (5) | Phase 7 |
 
-**Total:** 42 requirements mapped to 4 phases
+**Total:** 48 requirements mapped to 7 phases
 
 ## Dependencies
 
@@ -190,6 +194,9 @@ Phase 4 (Transactions/Trust)
 Phase 2 depends on Phase 1 (users must exist to create listings).
 Phase 3 depends on Phase 1 (users) and Phase 2 (listings provide chat context).
 Phase 4 depends on all previous phases (complete marketplace loop).
+Phase 5 depends on Phase 4 (notification detail actions and seller chat entry build on existing messaging and transaction context).
+Phase 6 depends on Phase 5 (realtime reliability improves the established notifications and messaging flows).
+Phase 7 depends on Phase 6 (discovery merchandising and synchronized notification management build on the existing browse and realtime surfaces).
 
 ---
 
@@ -238,14 +245,14 @@ Plans:
 **Plans:** 8 plans
 
 Plans:
-- [ ] 07-00-PLAN.md - Wave 0 Phase 7 Test Scaffolding (Wave 0) - Add failing frontend/backend tests for browse disclosure, homepage modules, curated content, and filtered notification management
-- [ ] 07-01-PLAN.md - Backend Content Foundation (Wave 1) - Create content schema, seed data, entities, repositories, and foundation filtering logic for ordered collections and homepage modules
-- [ ] 07-02-PLAN.md - Backend Notification Management Filters and Visible Read Actions (Wave 1) - Extend notification APIs with URL-backed filters and mark-visible-as-read behavior
-- [ ] 07-06-PLAN.md - Content API Delivery Contracts (Wave 2) - Add content DTOs, controller endpoints, and frontend content client/type contracts
-- [ ] 07-03-PLAN.md - Frontend Browse Disclosure and Server-Driven Homepage (Wave 3) - Implement category disclosure, collection-aware browse routing, and server-driven homepage modules using the shared content contracts
-- [ ] 07-04-PLAN.md - Frontend Notification Management Page Filters (Wave 2) - Add URL-backed notification filters, page-level visible-read actions, and presentational list wiring
-- [ ] 07-07-PLAN.md - Frontend Notification Dropdown and Preference Sync (Wave 3) - Add dropdown/store synchronization and grouped preference parity
-- [ ] 07-05-PLAN.md - Phase 7 Verification Gate (Wave 4) - Run full automation and block on human verification for interaction-heavy behavior
+- [x] 07-00-PLAN.md - Wave 0 Phase 7 Test Scaffolding (Wave 0) - Add failing frontend/backend tests for browse disclosure, homepage modules, curated content, and filtered notification management
+- [x] 07-01-PLAN.md - Backend Content Foundation (Wave 1) - Create content schema, seed data, entities, repositories, and foundation filtering logic for ordered collections and homepage modules
+- [x] 07-02-PLAN.md - Backend Notification Management Filters and Visible Read Actions (Wave 1) - Extend notification APIs with URL-backed filters and mark-visible-as-read behavior
+- [x] 07-06-PLAN.md - Content API Delivery Contracts (Wave 2) - Add content DTOs, controller endpoints, and frontend content client/type contracts
+- [x] 07-03-PLAN.md - Frontend Browse Disclosure and Server-Driven Homepage (Wave 3) - Implement category disclosure, collection-aware browse routing, and server-driven homepage modules using the shared content contracts
+- [x] 07-04-PLAN.md - Frontend Notification Management Page Filters (Wave 2) - Add URL-backed notification filters, page-level visible-read actions, and presentational list wiring
+- [x] 07-07-PLAN.md - Frontend Notification Dropdown and Preference Sync (Wave 3) - Add dropdown/store synchronization and grouped preference parity
+- [x] 07-05-PLAN.md - Phase 7 Verification Gate (Wave 4) - Run full automation and block on human verification for interaction-heavy behavior
 
 ---
 
@@ -253,3 +260,4 @@ Plans:
 *Phase 1 plans added: 2026-03-21*
 *Phase 3 plans added: 2026-03-22*
 *Phase 4 plans added: 2026-03-22*
+*Phase 7 completed: 2026-03-26*

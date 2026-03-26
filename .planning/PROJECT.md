@@ -12,6 +12,9 @@ Safe, transparent peer-to-peer transactions for second-hand digital devices with
 
 ### Validated
 
+- [x] Accessible browse category disclosures keep hover and keyboard preview separate from committed filters - Validated in Phase 7
+- [x] Homepage modules and curated collections are delivered from backend content records and route into shareable browse URLs - Validated in Phase 7
+- [x] Notification management keeps filters, grouped preferences, and unread counts synchronized across the bell dropdown and `/notifications` - Validated in Phase 7
 - [x] Chat presence reliability, seller-status synchronization across conversations, and responsive messages shell - Validated in Phase 6
 - [x] Actionable notifications with in-app quick settings and deep links - Validated in Phase 5
 - [x] Seller chat entry directly from listing detail - Validated in Phase 5
@@ -46,7 +49,7 @@ Safe, transparent peer-to-peer transactions for second-hand digital devices with
 - **Reference**: Goofish marketplace (https://www.goofish.com) provides UX inspiration for listing and discovery patterns
 - **Market**: Second-hand electronics market is growing, with established players like Swappa, Gazelle, and eBay
 - **Differentiation**: Real-time communication features combined with escrow security and reputation system
-- **Current State**: Phase 6 complete - Redis-backed realtime fan-out, shared seller presence synchronization, duplicate-safe reconnect fallback, and responsive `/messages` navigation are in place
+- **Current State**: Phase 7 complete - accessible browse disclosures, server-driven homepage merchandising, curated collections, and synchronized notification management are in place alongside the Phase 6 realtime messaging reliability improvements
 
 ## Constraints
 
@@ -84,4 +87,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 after Phase 6 completion*
+*Last updated: 2026-03-26 after Phase 7 completion*
