@@ -179,7 +179,23 @@ class NotificationServiceTest {
         when(notificationRepository.findFirstByUserIdAndTypeAndReferenceIdAndReferenceTypeAndReadFalseOrderByCreatedAtDesc(
                 testUserId, NotificationType.NEW_MESSAGE, 100L, "conversation"))
                 .thenReturn(java.util.Optional.of(existing));
-        when(notificationRepository.save(existing)).thenReturn(existing);
+        when(notificationRepository.refreshUnreadNotification(
+                eq(99L), eq(testUserId), anyString(), anyString(), any()))
+                .thenReturn(1);
+        when(notificationRepository.findById(99L)).thenReturn(java.util.Optional.of(
+                Notification.builder()
+                        .id(99L)
+                        .userId(testUserId)
+                        .type(NotificationType.NEW_MESSAGE)
+                        .title("New title")
+                        .content("New content")
+                        .referenceId(100L)
+                        .referenceType("conversation")
+                        .read(false)
+                        .readAt(null)
+                        .createdAt(LocalDateTime.now())
+                        .build()
+        ));
 
         Notification result = notificationService.createNotification(
                 testUserId,

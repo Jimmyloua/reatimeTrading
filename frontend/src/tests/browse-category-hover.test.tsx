@@ -93,6 +93,9 @@ describe('Browse category disclosure contract', () => {
   test('hover or focus preview does not commit categoryId until the category is explicitly selected', async () => {
     renderBrowsePage()
 
+    expect(await screen.findByAltText('Cameras')).toBeInTheDocument()
+    expect(screen.queryByText('Mirrorless')).not.toBeInTheDocument()
+
     const camerasTrigger = await screen.findByRole('button', { name: /cameras/i })
 
     fireEvent.mouseEnter(camerasTrigger)
@@ -101,28 +104,43 @@ describe('Browse category disclosure contract', () => {
     expect(screen.getByTestId('location-search')).toHaveTextContent('?categoryId=9')
     expect(screen.getByTestId('location-search')).not.toHaveTextContent('collection=')
 
-    fireEvent.click(await screen.findByRole('link', { name: /mirrorless/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /browse mirrorless/i }))
 
     await waitFor(() => {
       expect(screen.getByTestId('location-search')).toHaveTextContent('categoryId=2')
     })
   })
 
-  test('keyboard selection commits categoryId on Enter while preview-only movement leaves the current URL unchanged', async () => {
+  test('preview-only hover leaves the URL untouched until the child action is explicitly selected', async () => {
     renderBrowsePage('/listings?categoryId=4&collection=staff-picks')
 
-    const mirrorlessOption = await screen.findByRole('button', { name: /mirrorless/i })
+    const camerasTrigger = await screen.findByRole('button', { name: /cameras/i })
 
-    fireEvent.focus(mirrorlessOption)
-    fireEvent.keyDown(mirrorlessOption, { key: 'ArrowDown' })
+    fireEvent.mouseEnter(camerasTrigger)
 
     expect(screen.getByTestId('location-search')).toHaveTextContent('categoryId=4')
     expect(screen.getByTestId('location-search')).toHaveTextContent('collection=staff-picks')
 
-    fireEvent.keyDown(mirrorlessOption, { key: 'Enter', code: 'Enter' })
+    fireEvent.click(await screen.findByRole('button', { name: /browse mirrorless/i }))
 
     await waitFor(() => {
       expect(screen.getByTestId('location-search')).toHaveTextContent('categoryId=2')
     })
+  })
+
+  test('moving the pointer away restores the image preview state', async () => {
+    renderBrowsePage()
+
+    const camerasTrigger = await screen.findByRole('button', { name: /cameras/i })
+    fireEvent.mouseEnter(camerasTrigger)
+
+    expect(await screen.findByRole('button', { name: /browse mirrorless/i })).toBeInTheDocument()
+
+    fireEvent.mouseLeave(screen.getByTestId('browse-category-disclosure'))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /browse mirrorless/i })).not.toBeInTheDocument()
+    })
+    expect(screen.getByAltText('Cameras')).toBeInTheDocument()
   })
 })

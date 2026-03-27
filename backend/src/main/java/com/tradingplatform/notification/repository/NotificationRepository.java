@@ -131,6 +131,25 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         String referenceType
     );
 
+    @Modifying(clearAutomatically = true)
+    @Query("""
+        UPDATE Notification n
+        SET n.title = :title,
+            n.content = :content,
+            n.read = false,
+            n.readAt = null,
+            n.createdAt = :createdAt
+        WHERE n.id = :id
+          AND n.userId = :userId
+        """)
+    int refreshUnreadNotification(
+        @Param("id") Long id,
+        @Param("userId") Long userId,
+        @Param("title") String title,
+        @Param("content") String content,
+        @Param("createdAt") LocalDateTime createdAt
+    );
+
     /**
      * Delete notifications older than the specified date.
      * Per D-13: Notifications retained for 30 days.

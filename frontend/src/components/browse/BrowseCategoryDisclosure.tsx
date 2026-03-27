@@ -15,12 +15,10 @@ export function BrowseCategoryDisclosure({
     () => [...categories].sort((left, right) => left.displayOrder - right.displayOrder),
     [categories]
   )
-  const [previewedCategoryId, setPreviewedCategoryId] = useState<number | null>(
-    orderedCategories[0]?.id ?? null
-  )
+  const [previewedCategoryId, setPreviewedCategoryId] = useState<number | null>(null)
 
   const previewedCategory =
-    orderedCategories.find((category) => category.id === previewedCategoryId) ?? orderedCategories[0]
+    orderedCategories.find((category) => category.id === previewedCategoryId) ?? null
 
   const previewChildren = [...(previewedCategory?.children ?? [])].sort(
     (left, right) => left.displayOrder - right.displayOrder
@@ -30,6 +28,24 @@ export function BrowseCategoryDisclosure({
     onCommitCategory(categoryId)
     setPreviewedCategoryId(categoryId)
   }
+
+  const previewImageMap = {
+    electronics: 'https://source.unsplash.com/19YCOjHosDk/900x700',
+    'phones-tablets': 'https://images.pexels.com/photos/2520829/pexels-photo-2520829.jpeg?auto=compress&cs=tinysrgb&w=900',
+    'computers-laptops': 'https://images.pexels.com/photos/614710/pexels-photo-614710.jpeg?auto=compress&cs=tinysrgb&w=900',
+    'cameras-photography': 'https://images.pexels.com/photos/34201639/pexels-photo-34201639.jpeg?auto=compress&cs=tinysrgb&w=900',
+    gaming: 'https://images.pexels.com/photos/2520829/pexels-photo-2520829.jpeg?auto=compress&cs=tinysrgb&w=900',
+    networking: 'https://source.unsplash.com/19YCOjHosDk/900x700',
+    'audio-video': 'https://source.unsplash.com/19YCOjHosDk/900x700',
+  } as const
+
+  const previewTiles = orderedCategories.slice(0, 4).map((category) => ({
+    id: category.id,
+    name: category.name,
+    imageUrl:
+      previewImageMap[category.slug as keyof typeof previewImageMap] ??
+      previewImageMap.electronics,
+  }))
 
   return (
     <section className="rounded-[1.75rem] border border-slate-200/70 bg-white/88 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm">
@@ -42,7 +58,16 @@ export function BrowseCategoryDisclosure({
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[240px_1fr]">
+      <div
+        className="mt-5 grid gap-4 lg:grid-cols-[240px_1fr]"
+        data-testid="browse-category-disclosure"
+        onMouseLeave={() => setPreviewedCategoryId(null)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+            setPreviewedCategoryId(null)
+          }
+        }}
+      >
         <div className="space-y-2">
           {orderedCategories.map((category) => (
             <button
@@ -64,47 +89,60 @@ export function BrowseCategoryDisclosure({
           ))}
         </div>
 
-        <div className="rounded-[1.5rem] border border-slate-200/70 bg-slate-50/85 p-5">
-          <h3 className="text-base font-semibold text-slate-900">
-            {previewedCategory?.name ?? 'Categories'}
-          </h3>
-          <p className="mt-2 text-sm text-slate-600">
-            Keyboard focus and hover stay local here until you click a link or press Enter on a category button.
-          </p>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {previewChildren.map((child) => (
-              <div key={child.id} className="rounded-2xl border border-slate-200/70 bg-white p-4">
-                <button
-                  className="w-full text-left text-base font-semibold text-slate-900"
-                  onFocus={() => setPreviewedCategoryId(child.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault()
-                      commitCategory(child.id)
-                    }
-                  }}
-                  type="button"
-                >
-                  {child.name}
-                </button>
-                <p className="mt-2 text-sm text-slate-600">
-                  Commit this category filter only when you explicitly choose it.
-                </p>
-                <div className="mt-4">
-                  <a
-                    className="inline-flex items-center rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
-                    href={`/listings?categoryId=${child.id}`}
-                    onClick={(event) => {
-                      event.preventDefault()
-                      commitCategory(child.id)
-                    }}
-                  >
-                    {child.name}
-                  </a>
+        <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-200/70 bg-slate-50/85 p-5">
+          <div className="grid gap-3 md:grid-cols-2">
+            {previewTiles.map((tile) => (
+              <div
+                key={tile.id}
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70"
+              >
+                <img
+                  src={tile.imageUrl}
+                  alt={tile.name}
+                  className="h-32 w-full object-cover transition duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 text-sm font-semibold text-white">
+                  {tile.name}
                 </div>
               </div>
             ))}
           </div>
+
+          {previewedCategory && (
+            <div className="absolute inset-0 z-10 rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.12)] backdrop-blur-lg">
+              <h3 className="text-base font-semibold text-slate-900">
+                {previewedCategory?.name ?? 'Categories'}
+              </h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Keyboard focus and hover stay local here until you click a link or press Enter on a category button.
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {previewChildren.map((child) => (
+                  <div key={child.id} className="rounded-2xl border border-slate-200/70 bg-white p-4">
+                    <h4 className="text-base font-semibold text-slate-900">
+                      {child.name}
+                    </h4>
+                    <p className="mt-2 text-sm text-slate-600">
+                      Commit this category filter only when you explicitly choose it.
+                    </p>
+                    <div className="mt-4">
+                      <button
+                        className="inline-flex items-center rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+                        onClick={() => {
+                          commitCategory(child.id)
+                        }}
+                        type="button"
+                      >
+                        Browse {child.name}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

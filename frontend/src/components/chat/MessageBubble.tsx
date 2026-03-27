@@ -7,6 +7,12 @@ interface MessageBubbleProps {
 
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isOwn = message.isOwnMessage
+  const timestamp = new Date(message.createdAt)
+  const dateLabel = timestamp.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+  })
+  const timeLabel = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
   return (
     <div className={cn('flex mb-3', isOwn ? 'justify-end' : 'justify-start')}>
@@ -29,7 +35,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           <p className="text-sm leading-6 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{message.content}</p>
         )}
         <div className={cn('text-xs mt-2', isOwn ? 'text-slate-300' : 'text-slate-500')}>
-          {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {dateLabel} · {timeLabel}
         </div>
       </div>
     </div>

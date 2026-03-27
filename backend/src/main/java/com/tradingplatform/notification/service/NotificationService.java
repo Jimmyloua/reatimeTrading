@@ -54,11 +54,19 @@ public class NotificationService {
                 .orElse(null);
 
             if (existingNotification != null) {
-                existingNotification.setTitle(title);
-                existingNotification.setContent(content);
-                existingNotification.setRead(false);
-                existingNotification.setReadAt(null);
-                return notificationRepository.save(existingNotification);
+                LocalDateTime now = LocalDateTime.now();
+                int updated = notificationRepository.refreshUnreadNotification(
+                    existingNotification.getId(),
+                    userId,
+                    title,
+                    content,
+                    now
+                );
+
+                if (updated > 0) {
+                    return notificationRepository.findById(existingNotification.getId())
+                        .orElse(existingNotification);
+                }
             }
         }
 

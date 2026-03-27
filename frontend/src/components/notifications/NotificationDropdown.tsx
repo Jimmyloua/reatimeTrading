@@ -19,7 +19,10 @@ export function NotificationDropdown() {
   const markAsRead = store.markAsRead
   const updatePreference = store.updatePreference
   useNotifications()
-  const recentNotifications = filterNotificationsByPreferences(notifications, preferences).slice(0, 5)
+  const recentNotifications = filterNotificationsByPreferences(
+    notifications.filter((notification) => !notification.read),
+    preferences
+  ).slice(0, 5)
 
   useEffect(() => {
     const hydrateDropdown = async () => {

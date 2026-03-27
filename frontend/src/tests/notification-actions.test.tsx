@@ -44,6 +44,12 @@ describe('Notification action scaffolds', () => {
           createdAt: '2026-03-22T00:00:00Z',
         },
       ],
+      preferences: {
+        newMessageEnabled: true,
+        itemSoldEnabled: true,
+        transactionUpdateEnabled: true,
+      },
+      preferencesLoaded: true,
       unreadCount: 1,
       isLoading: false,
       error: null,
@@ -126,6 +132,12 @@ describe('Notification action scaffolds', () => {
             createdAt: '2026-03-22T00:00:00Z',
           },
         ],
+        preferences: {
+          newMessageEnabled: true,
+          itemSoldEnabled: true,
+          transactionUpdateEnabled: true,
+        },
+        preferencesLoaded: true,
         unreadCount: 1,
         isLoading: false,
         error: null,
@@ -146,7 +158,7 @@ describe('Notification action scaffolds', () => {
     }
   )
 
-  test('mark as read keeps notification content in local state', async () => {
+  test('mark as read removes the notification from the unread dropdown while preserving it in store history', async () => {
     vi.mocked(notificationApi.markAsRead).mockResolvedValue({
       id: 101,
       type: 'NEW_MESSAGE',
@@ -173,5 +185,7 @@ describe('Notification action scaffolds', () => {
       )
       expect(useNotificationStore.getState().notifications[0]?.read).toBe(true)
     })
+
+    expect(screen.queryByText('New message')).not.toBeInTheDocument()
   })
 })
