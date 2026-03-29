@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: active
-last_updated: "2026-03-29T13:30:00.000Z"
+status: unknown
+last_updated: "2026-03-29T08:03:09.311Z"
 progress:
   total_phases: 11
   completed_phases: 7
-  total_plans: 43
-  completed_plans: 43
+  total_plans: 50
+  completed_plans: 44
 ---
 
 # State: Real-Time Trading Platform
@@ -19,14 +19,14 @@ progress:
 
 **Core Value:** Safe, transparent peer-to-peer transactions for second-hand digital devices with real-time communication and reputation-based trust.
 
-**Current Focus:** Phase 08 planned - public-discovery-access-and-profile-surface-integration-repair
+**Current Focus:** Phase 08 — public-discovery-access-and-profile-surface-integration-repair
 
 **Tech Stack:** Spring Boot 3.5.x + JDK 21, React 19, MySQL 8, Redis 7, Kafka 4
 
 ## Current Position
 
-Phase: 08
-Plan: Planned
+Phase: 08 (public-discovery-access-and-profile-surface-integration-repair) — EXECUTING
+Plan: 2 of 3
 
 ### Phase Context
 
@@ -90,6 +90,7 @@ Plan: Planned
 | Phase 07 P05 | 10min | 2 tasks | 2 files |
 | Phase 07 P06 | 12min | 2 tasks | 6 files |
 | Phase 07 P07 | 18min | 2 tasks | 8 files |
+| Phase 08 P01 | 19min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -134,6 +135,8 @@ Plan: Planned
 | Browse category disclosure separates preview state from committed filters | Preserves hover and keyboard exploration without mutating the URL until explicit selection | Plan 07-03 |
 | Homepage merchandising is server-driven through ordered content records | Keeps homepage modules and curated collections editable via backend content seeds and APIs | Plan 07-01 |
 | Notification center state is URL-backed and shared between surfaces | Keeps unread counts, filters, and grouped preferences synchronized between the bell dropdown and full page | Plan 07-04 / 07-07 |
+| Anonymous discovery access uses explicit GET matchers only | Opens browse, content, and public rating reads without exposing listing or rating writes | Plan 08-01 |
+| Public discovery authorization is pinned with MockMvc controller tests | Keeps homepage, browse, category, and public rating routes covered by backend regression tests | Plan 08-01 |
 
 ### Technical Decisions
 
@@ -211,11 +214,12 @@ Plan: Planned
 | 2026-03-26 | Plan 07-07 completed | Notification dropdown/store synchronization and grouped preferences shipped |
 | 2026-03-26 | Plan 07-05 completed | Targeted automation passed and manual verification was approved |
 | 2026-03-26 | Phase 7 COMPLETE | Discovery merchandising and notification management synchronization verified |
+| 2026-03-29 | Plan 08-01 completed | Anonymous discovery and public rating reads aligned with backend security and regression coverage |
 
 ### Next Actions
 
-1. Plan Phase 08 to close the public discovery and profile integration gaps surfaced by the milestone audit
-2. Execute the Phase 08 gap-closure plans, then continue with Phase 09 and Phase 10 before re-auditing the milestone
+1. Execute Plan 08-02 to replace hardcoded profile listing counts with listing-backed aggregates
+2. Continue the Phase 08 gap-closure plans, then proceed to Phase 09 and Phase 10 before re-auditing the milestone
 
 ### Blockers
 

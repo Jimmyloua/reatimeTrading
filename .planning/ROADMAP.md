@@ -163,7 +163,7 @@ Plans:
 | 5. Notification detail actions, quick notification settings, and seller chat entry from listings | 4/4 | Complete | 2026-03-24 |
 | 6. Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization | 4/4 | Complete | 2026-03-25 |
 | 7. Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish | 8/8 | Complete | 2026-03-26 |
-| 8. Public discovery access and profile surface integration repair | 0/3 | Planned | - |
+| 8. Public discovery access and profile surface integration repair | 1/3 | In Progress | - |
 | 9. Transaction rating loop and sold notification closure | 0/3 | Planned | - |
 | 10. Milestone validation and audit hygiene | 0/2 | Planned | - |
 | 11. Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization | 0/1 | Planned | - |
@@ -277,7 +277,7 @@ Plans:
 **Plans:** 3/3 planned
 
 Planned waves:
-- [ ] 08-01-PLAN.md - Public API authorization alignment (Wave 1) - Open the required browse, content, category, public profile, and public rating endpoints to match the frontend's anonymous surfaces
+- [x] 08-01-PLAN.md - Public API authorization alignment (Wave 1) - Open the required browse, content, category, public profile, and public rating endpoints to match the frontend's anonymous surfaces
 - [ ] 08-02-PLAN.md - Profile listing count and public data integration (Wave 2) - Replace hardcoded profile listing counts with listing-backed aggregates and verify public profile truthfulness
 - [ ] 08-03-PLAN.md - Anonymous discovery and profile verification gate (Wave 3) - Add regression coverage for homepage, browse, module-entry, and public profile flows
 

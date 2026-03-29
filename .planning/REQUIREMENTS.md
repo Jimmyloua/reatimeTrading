@@ -34,11 +34,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery and Search
 
-- [ ] **DISC-01**: User can browse items by category
-- [ ] **DISC-02**: User can search items by full-text search (title, description)
-- [ ] **DISC-03**: User can filter items by price range
-- [ ] **DISC-04**: User can filter items by condition
-- [ ] **DISC-05**: User can filter items by location/distance
+- [x] **DISC-01**: User can browse items by category
+- [x] **DISC-02**: User can search items by full-text search (title, description)
+- [x] **DISC-03**: User can filter items by price range
+- [x] **DISC-04**: User can filter items by condition
+- [x] **DISC-05**: User can filter items by location/distance
 - [x] **DISC-06**: User can view item detail page with all listing information
 - [x] **DISC-07**: User can view seller information on item detail page
 
@@ -67,9 +67,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery Merchandising and Notification Management
 
-- [ ] **P7-01**: User can browse categories through an accessible disclosure pattern that supports hover preview without committing a filter until the category is selected
-- [ ] **P7-02**: User can enter browse flows from homepage modules, curated collections, and category tiles with the correct URL-backed search params applied
-- [ ] **P7-03**: User sees active, ordered curated collections and homepage modules delivered from backend content records instead of hardcoded frontend arrays
+- [x] **P7-01**: User can browse categories through an accessible disclosure pattern that supports hover preview without committing a filter until the category is selected
+- [x] **P7-02**: User can enter browse flows from homepage modules, curated collections, and category tiles with the correct URL-backed search params applied
+- [x] **P7-03**: User sees active, ordered curated collections and homepage modules delivered from backend content records instead of hardcoded frontend arrays
 - [x] **P7-04**: User can manage notifications through URL-backed tabs and filters, grouped preferences, and synchronized unread counts across the notifications page and bell dropdown
 - [x] **P7-05**: Notification management APIs support filtered retrieval and mark-visible-as-read behavior while preserving existing read-state and preference contracts
 
@@ -155,11 +155,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIST-06 | Phase 2 | Complete |
 | LIST-07 | Phase 2 | Complete |
 | LIST-08 | Phase 9 | Pending |
-| DISC-01 | Phase 8 | Pending |
-| DISC-02 | Phase 8 | Pending |
-| DISC-03 | Phase 8 | Pending |
-| DISC-04 | Phase 8 | Pending |
-| DISC-05 | Phase 8 | Pending |
+| DISC-01 | Phase 8 | Complete |
+| DISC-02 | Phase 8 | Complete |
+| DISC-03 | Phase 8 | Complete |
+| DISC-04 | Phase 8 | Complete |
+| DISC-05 | Phase 8 | Complete |
 | DISC-06 | Phase 2 | Complete |
 | DISC-07 | Phase 2 | Complete |
 | CHAT-01 | Phase 3 | Complete |
@@ -181,9 +181,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P6-03 | Phase 6 | Complete |
 | P6-04 | Phase 6 | Complete |
 | P6-05 | Phase 6 | Complete |
-| P7-01 | Phase 8 | Pending |
-| P7-02 | Phase 8 | Pending |
-| P7-03 | Phase 8 | Pending |
+| P7-01 | Phase 8 | Complete |
+| P7-02 | Phase 8 | Complete |
+| P7-03 | Phase 8 | Complete |
 | P7-04 | Phase 7 | Complete |
 | P7-05 | Phase 7 | Complete |
 | TRAN-01 | Phase 4 | Complete |
