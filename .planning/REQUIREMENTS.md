@@ -18,8 +18,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **PROF-01**: User can create profile with display name
 - [x] **PROF-02**: User can upload avatar image
-- [x] **PROF-03**: User can view their own profile with listing count and join date
-- [x] **PROF-04**: User can view other users' profiles
+- [ ] **PROF-03**: User can view their own profile with listing count and join date
+- [ ] **PROF-04**: User can view other users' profiles
 
 ### Item Listings
 
@@ -30,15 +30,15 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LIST-05**: User can specify item location (city/region for local pickup)
 - [x] **LIST-06**: User can edit their own listings
 - [x] **LIST-07**: User can delete their own listings
-- [x] **LIST-08**: User can mark items as sold, available, or reserved
+- [ ] **LIST-08**: User can mark items as sold, available, or reserved
 
 ### Discovery and Search
 
-- [x] **DISC-01**: User can browse items by category
-- [x] **DISC-02**: User can search items by full-text search (title, description)
-- [x] **DISC-03**: User can filter items by price range
-- [x] **DISC-04**: User can filter items by condition
-- [x] **DISC-05**: User can filter items by location/distance
+- [ ] **DISC-01**: User can browse items by category
+- [ ] **DISC-02**: User can search items by full-text search (title, description)
+- [ ] **DISC-03**: User can filter items by price range
+- [ ] **DISC-04**: User can filter items by condition
+- [ ] **DISC-05**: User can filter items by location/distance
 - [x] **DISC-06**: User can view item detail page with all listing information
 - [x] **DISC-07**: User can view seller information on item detail page
 
@@ -53,7 +53,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Notifications
 
 - [x] **NOTF-01**: User receives real-time notification when receiving a message
-- [x] **NOTF-02**: User receives notification when item sells
+- [ ] **NOTF-02**: User receives notification when item sells
 - [x] **NOTF-03**: User can view notification history
 - [x] **NOTF-04**: User can mark notifications as read
 
@@ -67,9 +67,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery Merchandising and Notification Management
 
-- [x] **P7-01**: User can browse categories through an accessible disclosure pattern that supports hover preview without committing a filter until the category is selected
-- [x] **P7-02**: User can enter browse flows from homepage modules, curated collections, and category tiles with the correct URL-backed search params applied
-- [x] **P7-03**: User sees active, ordered curated collections and homepage modules delivered from backend content records instead of hardcoded frontend arrays
+- [ ] **P7-01**: User can browse categories through an accessible disclosure pattern that supports hover preview without committing a filter until the category is selected
+- [ ] **P7-02**: User can enter browse flows from homepage modules, curated collections, and category tiles with the correct URL-backed search params applied
+- [ ] **P7-03**: User sees active, ordered curated collections and homepage modules delivered from backend content records instead of hardcoded frontend arrays
 - [x] **P7-04**: User can manage notifications through URL-backed tabs and filters, grouped preferences, and synchronized unread counts across the notifications page and bell dropdown
 - [x] **P7-05**: Notification management APIs support filtered retrieval and mark-visible-as-read behavior while preserving existing read-state and preference contracts
 
@@ -78,16 +78,16 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TRAN-01**: User can mark an item as sold to a specific buyer
 - [x] **TRAN-02**: User can view transaction history (purchases and sales)
 - [x] **TRAN-03**: User can see transaction status (pending, completed, cancelled)
-- [x] **TRAN-04**: Buyer can rate seller after transaction completion
-- [x] **TRAN-05**: Seller can rate buyer after transaction completion
-- [x] **TRAN-06**: User can write review text with rating (optional)
+- [ ] **TRAN-04**: Buyer can rate seller after transaction completion
+- [ ] **TRAN-05**: Seller can rate buyer after transaction completion
+- [ ] **TRAN-06**: User can write review text with rating (optional)
 
 ### Ratings and Reviews
 
-- [x] **RATE-01**: User can leave 1-5 star rating after completed transaction
-- [x] **RATE-02**: User ratings are visible on user profile
-- [x] **RATE-03**: User can see average rating score on profile
-- [x] **RATE-04**: User can see total number of ratings received
+- [ ] **RATE-01**: User can leave 1-5 star rating after completed transaction
+- [ ] **RATE-02**: User ratings are visible on user profile
+- [ ] **RATE-03**: User can see average rating score on profile
+- [ ] **RATE-04**: User can see total number of ratings received
 
 ## v2 Requirements
 
@@ -145,8 +145,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 1 | Complete |
 | PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Complete |
-| PROF-03 | Phase 1 | Complete |
-| PROF-04 | Phase 1 | Complete |
+| PROF-03 | Phase 8 | Pending |
+| PROF-04 | Phase 8 | Pending |
 | LIST-01 | Phase 2 | Complete |
 | LIST-02 | Phase 2 | Complete |
 | LIST-03 | Phase 2 | Complete |
@@ -154,12 +154,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIST-05 | Phase 2 | Complete |
 | LIST-06 | Phase 2 | Complete |
 | LIST-07 | Phase 2 | Complete |
-| LIST-08 | Phase 2 | Complete |
-| DISC-01 | Phase 2 | Complete |
-| DISC-02 | Phase 2 | Complete |
-| DISC-03 | Phase 2 | Complete |
-| DISC-04 | Phase 2 | Complete |
-| DISC-05 | Phase 2 | Complete |
+| LIST-08 | Phase 9 | Pending |
+| DISC-01 | Phase 8 | Pending |
+| DISC-02 | Phase 8 | Pending |
+| DISC-03 | Phase 8 | Pending |
+| DISC-04 | Phase 8 | Pending |
+| DISC-05 | Phase 8 | Pending |
 | DISC-06 | Phase 2 | Complete |
 | DISC-07 | Phase 2 | Complete |
 | CHAT-01 | Phase 3 | Complete |
@@ -170,7 +170,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-06 | Phase 5 | Complete |
 | CHAT-07 | Phase 5 | Complete |
 | NOTF-01 | Phase 3 | Complete |
-| NOTF-02 | Phase 3 | Complete |
+| NOTF-02 | Phase 9 | Pending |
 | NOTF-03 | Phase 3 | Complete |
 | NOTF-04 | Phase 3 | Complete |
 | NOTF-05 | Phase 5 | Complete |
@@ -181,27 +181,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 | P6-03 | Phase 6 | Complete |
 | P6-04 | Phase 6 | Complete |
 | P6-05 | Phase 6 | Complete |
-| P7-01 | Phase 7 | Complete |
-| P7-02 | Phase 7 | Complete |
-| P7-03 | Phase 7 | Complete |
+| P7-01 | Phase 8 | Pending |
+| P7-02 | Phase 8 | Pending |
+| P7-03 | Phase 8 | Pending |
 | P7-04 | Phase 7 | Complete |
 | P7-05 | Phase 7 | Complete |
 | TRAN-01 | Phase 4 | Complete |
 | TRAN-02 | Phase 4 | Complete |
 | TRAN-03 | Phase 4 | Complete |
-| TRAN-04 | Phase 4 | Complete |
-| TRAN-05 | Phase 4 | Complete |
-| TRAN-06 | Phase 4 | Complete |
-| RATE-01 | Phase 4 | Complete |
-| RATE-02 | Phase 4 | Complete |
-| RATE-03 | Phase 4 | Complete |
-| RATE-04 | Phase 4 | Complete |
+| TRAN-04 | Phase 9 | Pending |
+| TRAN-05 | Phase 9 | Pending |
+| TRAN-06 | Phase 9 | Pending |
+| RATE-01 | Phase 9 | Pending |
+| RATE-02 | Phase 9 | Pending |
+| RATE-03 | Phase 9 | Pending |
+| RATE-04 | Phase 9 | Pending |
 
 **Coverage:**
 - v1 requirements: 48 total
+- Checked off: 29
+- Pending gap-closure requirements: 19
 - Mapped to phases: 48
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-21*
-*Last updated: 2026-03-26 after Phase 7 completion*
+*Last updated: 2026-03-29 after milestone gap planning*

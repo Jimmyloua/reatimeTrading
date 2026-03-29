@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-26T03:12:29.177Z"
+status: active
+last_updated: "2026-03-29T13:30:00.000Z"
 progress:
-  total_phases: 7
+  total_phases: 10
   completed_phases: 7
   total_plans: 43
   completed_plans: 43
@@ -13,33 +13,33 @@ progress:
 
 # State: Real-Time Trading Platform
 
-**Last Updated:** 2026-03-26
+**Last Updated:** 2026-03-29
 
 ## Project Reference
 
 **Core Value:** Safe, transparent peer-to-peer transactions for second-hand digital devices with real-time communication and reputation-based trust.
 
-**Current Focus:** Phase 07 complete - browse-category-hover-filtering-product-collections-notification-management-and-homepage-image-modules-inspired-by-goofish
+**Current Focus:** Phase 08 planned - public-discovery-access-and-profile-surface-integration-repair
 
 **Tech Stack:** Spring Boot 3.5.x + JDK 21, React 19, MySQL 8, Redis 7, Kafka 4
 
 ## Current Position
 
-Phase: 07
-Plan: Complete
+Phase: 08
+Plan: Planned
 
 ### Phase Context
 
-**Phase 7 Goal:** Users can enter discovery through accessible category disclosures, server-driven homepage modules, curated collections, and a notification center that keeps filters, preferences, and read actions synchronized.
+**Phase 8 Goal:** Anonymous users can enter discovery through homepage, browse, and public profile surfaces without backend authorization mismatches, and profile listing counts reflect actual marketplace activity.
 
 **Success Criteria:**
 
-1. Browse category navigation previews categories without committing filters until the user explicitly selects one
-2. Homepage modules and curated collections render from backend content records and route to shareable browse URLs
-3. Notification management keeps URL-backed filters, grouped preferences, and unread counts synchronized across the bell dropdown and `/notifications`
-4. Filtered retrieval and mark-visible-as-read behavior preserve existing notification read-state and preference contracts
+1. Anonymous users can load homepage, browse, and public profile surfaces without hitting backend authorization mismatches
+2. Public discovery entry points from categories, modules, and collections resolve successfully into shareable browse URLs
+3. Self and public profiles show truthful listing counts derived from listing data
+4. Public rating and profile surfaces remain accessible and accurate after the authorization changes
 
-**Requirements:** P7-01 to P7-05
+**Requirements:** DISC-01 to DISC-05, P7-01 to P7-03, PROF-03 to PROF-04
 
 ## Performance Metrics
 
@@ -213,14 +213,15 @@ Plan: Complete
 
 ### Next Actions
 
-1. Start the next planned milestone or transition workflow
-2. Use Phase 7 summaries as the reference context for future discovery merchandising and notification UX changes
+1. Plan Phase 08 to close the public discovery and profile integration gaps surfaced by the milestone audit
+2. Execute the Phase 08 gap-closure plans, then continue with Phase 09 and Phase 10 before re-auditing the milestone
 
 ### Blockers
 
-None currently.
+- Milestone audit reopened 19 requirements across public discovery, profile truthfulness, transaction-to-rating completion, and sold notification delivery
 
 ---
 
 *State initialized: 2026-03-21*
 *Phase 7 complete: 2026-03-26*
+*Gap closure phases 8-10 added: 2026-03-29*

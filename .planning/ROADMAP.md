@@ -11,6 +11,12 @@
 - [x] **Phase 2: Core Marketplace (Listings and Discovery)** - Users can list items for sale and discover items to buy through browsing and search
 - [x] **Phase 3: Real-Time Communication** - Users can communicate in real-time about items and receive timely notifications
 - [x] **Phase 4: Transactions and Trust** - Users can complete transactions and build trust through ratings and reviews
+- [x] **Phase 5: Notification detail actions, quick notification settings, and seller chat entry from listings** - Users can open notification context quickly and start seller chats directly from listings
+- [x] **Phase 6: Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization** - Users can trust realtime seller presence and responsive chat behavior across reconnects and multiple nodes
+- [x] **Phase 7: Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish** - Users can enter discovery through server-driven content and synchronized notification management
+- [ ] **Phase 8: Public discovery access and profile surface integration repair** - Restore anonymous discovery flows and truthful profile data across browse, homepage, and public profile surfaces
+- [ ] **Phase 9: Transaction rating loop and sold notification closure** - Close the post-sale trust loop so completed transactions unlock ratings and sold notifications
+- [ ] **Phase 10: Milestone validation and audit hygiene** - Reconcile stale verification and validation artifacts so the milestone can be archived cleanly
 
 ## Phase Details
 
@@ -157,6 +163,9 @@ Plans:
 | 5. Notification detail actions, quick notification settings, and seller chat entry from listings | 4/4 | Complete | 2026-03-24 |
 | 6. Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization | 4/4 | Complete | 2026-03-25 |
 | 7. Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish | 8/8 | Complete | 2026-03-26 |
+| 8. Public discovery access and profile surface integration repair | 0/3 | Planned | - |
+| 9. Transaction rating loop and sold notification closure | 0/3 | Planned | - |
+| 10. Milestone validation and audit hygiene | 0/2 | Planned | - |
 
 ## Coverage
 
@@ -197,6 +206,9 @@ Phase 4 depends on all previous phases (complete marketplace loop).
 Phase 5 depends on Phase 4 (notification detail actions and seller chat entry build on existing messaging and transaction context).
 Phase 6 depends on Phase 5 (realtime reliability improves the established notifications and messaging flows).
 Phase 7 depends on Phase 6 (discovery merchandising and synchronized notification management build on the existing browse and realtime surfaces).
+Phase 8 depends on Phase 7 (it closes the public discovery and profile integration gaps surfaced after the discovery/content milestone work shipped).
+Phase 9 depends on Phase 8 (it closes the post-sale transaction, rating, and sold-notification loops after public browse/profile surfaces are repaired).
+Phase 10 depends on Phase 9 (it cleans up the remaining validation and audit metadata once the functional gap phases are complete).
 
 ---
 
@@ -254,6 +266,44 @@ Plans:
 - [x] 07-07-PLAN.md - Frontend Notification Dropdown and Preference Sync (Wave 3) - Add dropdown/store synchronization and grouped preference parity
 - [x] 07-05-PLAN.md - Phase 7 Verification Gate (Wave 4) - Run full automation and block on human verification for interaction-heavy behavior
 
+### Phase 8: Public discovery access and profile surface integration repair
+
+**Goal:** Anonymous users can enter discovery through homepage, browse, and public profile surfaces without backend authorization mismatches, and profile listing counts reflect actual marketplace activity.
+**Requirements**: DISC-01, DISC-02, DISC-03, DISC-04, DISC-05, P7-01, P7-02, P7-03, PROF-03, PROF-04
+**Gap Closure:** Closes milestone audit findings for anonymous discovery 401s, public profile mismatches, and hardcoded profile listing counts.
+**Depends on:** Phase 7
+**Plans:** 0/3 planned
+
+Planned waves:
+- [ ] 08-01-PLAN.md - Public API authorization alignment (Wave 1) - Open the required browse, content, category, public profile, and public rating endpoints to match the frontend's anonymous surfaces
+- [ ] 08-02-PLAN.md - Profile listing count and public data integration (Wave 2) - Replace hardcoded profile listing counts with listing-backed aggregates and verify public profile truthfulness
+- [ ] 08-03-PLAN.md - Anonymous discovery and profile verification gate (Wave 3) - Add regression coverage for homepage, browse, module-entry, and public profile flows
+
+### Phase 9: Transaction rating loop and sold notification closure
+
+**Goal:** Completed transactions reliably unlock the two-sided rating flow, sold listing transitions produce the expected notifications, and profile reputation surfaces reflect real transaction outcomes.
+**Requirements**: LIST-08, NOTF-02, TRAN-04, TRAN-05, TRAN-06, RATE-01, RATE-02, RATE-03, RATE-04
+**Gap Closure:** Closes milestone audit findings for unreachable rating eligibility, stubbed rating CTA wiring, and orphaned item-sold notifications.
+**Depends on:** Phase 8
+**Plans:** 0/3 planned
+
+Planned waves:
+- [ ] 09-01-PLAN.md - Transaction completion and rating eligibility backend (Wave 1) - Repair status transitions so standard completed transactions can be rated and reputation aggregates remain correct
+- [ ] 09-02-PLAN.md - Rating CTA and sold notification integration (Wave 2) - Wire the frontend review action and emit sold notifications from listing status changes
+- [ ] 09-03-PLAN.md - Trust loop verification gate (Wave 3) - Add regression coverage for completed transaction, review submission, profile rating visibility, and item-sold notification delivery
+
+### Phase 10: Milestone validation and audit hygiene
+
+**Goal:** The milestone's planning artifacts, validation records, and manual verification status are internally consistent so milestone archival reflects the real shipped state.
+**Requirements**: None (process and audit closure)
+**Gap Closure:** Closes the stale Phase 06 verification status, Phase 06 validation draft state, and remaining milestone validation debt before archival.
+**Depends on:** Phase 9
+**Plans:** 0/2 planned
+
+Planned waves:
+- [ ] 10-01-PLAN.md - Phase 06 verification and validation reconciliation (Wave 1) - Update stale human-verification and Nyquist metadata to reflect the approved shipped state
+- [ ] 10-02-PLAN.md - Milestone re-audit and archival readiness gate (Wave 2) - Re-run milestone audit, confirm closure, and prepare clean milestone completion
+
 ---
 
 *Roadmap created: 2026-03-21*
@@ -261,3 +311,4 @@ Plans:
 *Phase 3 plans added: 2026-03-22*
 *Phase 4 plans added: 2026-03-22*
 *Phase 7 completed: 2026-03-26*
+*Gap closure phases 8-10 added: 2026-03-29*
