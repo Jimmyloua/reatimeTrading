@@ -5,7 +5,7 @@ milestone_name: milestone
 status: active
 last_updated: "2026-03-29T13:30:00.000Z"
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 7
   total_plans: 43
   completed_plans: 43
@@ -154,6 +154,7 @@ Plan: Planned
 - Phase 5 added: Notification detail actions, quick notification settings, and seller chat entry from listings
 - Phase 6 added: Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization
 - Phase 7 added: Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish
+- Phase 11 added: Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization
 
 ## Session Continuity
 
@@ -225,3 +226,4 @@ Plan: Planned
 *State initialized: 2026-03-21*
 *Phase 7 complete: 2026-03-26*
 *Gap closure phases 8-10 added: 2026-03-29*
+*Phase 11 added: 2026-03-29*

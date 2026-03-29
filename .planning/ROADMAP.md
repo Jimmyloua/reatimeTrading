@@ -166,6 +166,7 @@ Plans:
 | 8. Public discovery access and profile surface integration repair | 0/3 | Planned | - |
 | 9. Transaction rating loop and sold notification closure | 0/3 | Planned | - |
 | 10. Milestone validation and audit hygiene | 0/2 | Planned | - |
+| 11. Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization | 0/1 | Planned | - |
 
 ## Coverage
 
@@ -209,6 +210,7 @@ Phase 7 depends on Phase 6 (discovery merchandising and synchronized notificatio
 Phase 8 depends on Phase 7 (it closes the public discovery and profile integration gaps surfaced after the discovery/content milestone work shipped).
 Phase 9 depends on Phase 8 (it closes the post-sale transaction, rating, and sold-notification loops after public browse/profile surfaces are repaired).
 Phase 10 depends on Phase 9 (it cleans up the remaining validation and audit metadata once the functional gap phases are complete).
+Phase 11 depends on Phase 10 (it upgrades the chat delivery architecture after the current milestone gaps and archival blockers are resolved).
 
 ---
 
@@ -304,6 +306,16 @@ Planned waves:
 - [ ] 10-01-PLAN.md - Phase 06 verification and validation reconciliation (Wave 1) - Update stale human-verification and Nyquist metadata to reflect the approved shipped state
 - [ ] 10-02-PLAN.md - Milestone re-audit and archival readiness gate (Wave 2) - Re-run milestone audit, confirm closure, and prepare clean milestone completion
 
+### Phase 11: Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 10
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 11 to break down)
+
 ---
 
 *Roadmap created: 2026-03-21*
@@ -312,3 +324,4 @@ Planned waves:
 *Phase 4 plans added: 2026-03-22*
 *Phase 7 completed: 2026-03-26*
 *Gap closure phases 8-10 added: 2026-03-29*
+*Phase 11 added: 2026-03-29*
