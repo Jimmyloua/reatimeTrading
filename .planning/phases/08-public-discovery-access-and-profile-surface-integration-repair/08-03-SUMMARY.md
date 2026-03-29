@@ -49,8 +49,8 @@ completed: 2026-03-29
 
 Each task was committed atomically:
 
-1. **Task 1: Refresh the anonymous discovery regression gate and record the exact verification commands** - `pending` (test)
-2. **Task 2: Confirm the repaired anonymous discovery and public profile flow in a logged-out browser** - `pending` (docs)
+1. **Task 1: Refresh the anonymous discovery regression gate and record the exact verification commands** - `9617ba7b` (test)
+2. **Task 2: Confirm the repaired anonymous discovery and public profile flow in a logged-out browser** - `9617ba7b` (docs)
 
 ## Files Created/Modified
 - `frontend/src/tests/browse-category-hover.test.tsx` - URL assertions for explicit child-category selection in both clean and collection-backed browse states
