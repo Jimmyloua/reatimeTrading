@@ -109,6 +109,7 @@ describe('Browse category disclosure contract', () => {
     await waitFor(() => {
       expect(screen.getByTestId('location-search')).toHaveTextContent('categoryId=2')
     })
+    expect(screen.getByTestId('location-search')).not.toHaveTextContent('collection=')
   })
 
   test('preview-only hover leaves the URL untouched until the child action is explicitly selected', async () => {
@@ -126,6 +127,7 @@ describe('Browse category disclosure contract', () => {
     await waitFor(() => {
       expect(screen.getByTestId('location-search')).toHaveTextContent('categoryId=2')
     })
+    expect(screen.getByTestId('location-search')).toHaveTextContent('collection=staff-picks')
   })
 
   test('moving the pointer away restores the image preview state', async () => {
