@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface CuratedCollectionRepository extends JpaRepository<CuratedCollection, Long> {
 
-    @EntityGraph(attributePaths = {"items", "items.listing", "items.listing.images", "items.listing.category"})
+    @EntityGraph(attributePaths = {"items", "items.listing", "items.listing.category"})
     List<CuratedCollection> findAllByActiveTrueOrderByDisplayOrderAsc();
 
-    @EntityGraph(attributePaths = {"items", "items.listing", "items.listing.images", "items.listing.category"})
+    @EntityGraph(attributePaths = {"items", "items.listing", "items.listing.category"})
     Optional<CuratedCollection> findBySlugAndActiveTrue(String slug);
 }
