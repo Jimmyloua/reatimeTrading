@@ -274,7 +274,7 @@ Plans:
 **Requirements**: DISC-01, DISC-02, DISC-03, DISC-04, DISC-05, P7-01, P7-02, P7-03, PROF-03, PROF-04
 **Gap Closure:** Closes milestone audit findings for anonymous discovery 401s, public profile mismatches, and hardcoded profile listing counts.
 **Depends on:** Phase 7
-**Plans:** 0/3 planned
+**Plans:** 3/3 planned
 
 Planned waves:
 - [ ] 08-01-PLAN.md - Public API authorization alignment (Wave 1) - Open the required browse, content, category, public profile, and public rating endpoints to match the frontend's anonymous surfaces
@@ -309,7 +309,8 @@ Planned waves:
 ### Phase 11: Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization
 
 **Goal:** Chat delivery remains persistence-first under heavy concurrency by moving durable message fan-out to Kafka, unifying REST and WebSocket sends behind one persisted command path, and replacing frontend full-refresh send/reconnect flows with targeted reconciliation.
-**Requirements**: CHAT-01, CHAT-02, CHAT-03, CHAT-04, CHAT-05, CHAT-06, CHAT-07, P6-01, P6-02, P6-03, P6-04, P6-05
+**Requirements**: CHAT-01, CHAT-02, CHAT-03, CHAT-04, CHAT-05, CHAT-06, CHAT-07, P6-01, P6-02, P6-03, P6-04
+**Architecture Note**: Phase 11 supersedes the Phase 6 Redis-backed message fan-out approach for durable chat delivery. Redis remains required for presence and typing, while Kafka becomes the durable ordered message-delivery transport.
 **Depends on:** Phase 10
 **Plans:** 4 plans
 
