@@ -1,6 +1,7 @@
 package com.tradingplatform.config;
 
 import com.tradingplatform.security.JwtAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -54,9 +55,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/{id:[0-9]+}").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/listings/{id:[0-9]+}").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/listings/user/{id:[0-9]+}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id:[0-9]+}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/categories").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/{id:[0-9]+}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/user/{id:[0-9]+}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ratings/users/**").permitAll()
                         .requestMatchers("/api/users/me").authenticated()
                         .anyRequest().authenticated()
                 )
