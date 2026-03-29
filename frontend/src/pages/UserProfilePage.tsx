@@ -26,6 +26,19 @@ function formatDate(dateString: string): string {
   })
 }
 
+function buildPublicHandle(
+  displayName: string | null | undefined,
+  userId: number
+): string {
+  const slug = displayName
+    ?.trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return slug ? `@${slug}` : `@user-${userId}`
+}
+
 export default function UserProfilePage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -95,6 +108,7 @@ export default function UserProfilePage() {
   }
 
   const displayDisplayName = profile.displayName || 'New User'
+  const publicHandle = buildPublicHandle(profile.displayName, profile.id)
 
   return (
     <div className="mx-auto max-w-2xl py-8">
@@ -155,11 +169,7 @@ export default function UserProfilePage() {
               <h2 className="text-xl font-semibold text-foreground">
                 {displayDisplayName}
               </h2>
-              {profile.displayName && (
-                <p className="text-sm text-muted-foreground">
-                  @{profile.email?.split('@')[0]}
-                </p>
-              )}
+              <p className="text-sm text-muted-foreground">{publicHandle}</p>
             </div>
 
             {/* Join Date */}
@@ -185,3 +195,5 @@ export default function UserProfilePage() {
     </div>
   )
 }
+
+export { buildPublicHandle }
