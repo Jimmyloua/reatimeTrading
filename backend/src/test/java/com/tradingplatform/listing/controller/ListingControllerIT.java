@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,6 +55,9 @@ class ListingControllerIT {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private RedisMessageListenerContainer redisMessageListenerContainer;
 
     private String testUserToken;
     private String otherUserToken;
@@ -94,6 +99,67 @@ class ListingControllerIT {
                 .displayOrder(1)
                 .build();
         testCategory = categoryRepository.save(testCategory);
+    }
+
+    @Test
+    @DisplayName("GET /api/listings allows anonymous users to browse listings")
+    void testSearchListingsAllowsAnonymousUsers() throws Exception {
+        CreateListingRequest request = CreateListingRequest.builder()
+                .title("Anonymous Browse Listing")
+                .description("Visible to logged-out users")
+                .price(new BigDecimal("300.00"))
+                .categoryId(testCategory.getId())
+                .condition(Condition.GOOD)
+                .city("Shanghai")
+                .build();
+
+        mockMvc.perform(post("/api/listings")
+                        .header("Authorization", "Bearer " + testUserToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/listings")
+                        .param("page", "0")
+                        .param("size", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].title").value("Anonymous Browse Listing"));
+    }
+
+    @Test
+    @DisplayName("GET /api/listings/categories allows anonymous users")
+    void testGetCategoryTreeAllowsAnonymousUsers() throws Exception {
+        mockMvc.perform(get("/api/listings/categories"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].name").value("Electronics"));
+    }
+
+    @Test
+    @DisplayName("GET /api/listings/categories/{id} allows anonymous users")
+    void testGetCategoryByIdAllowsAnonymousUsers() throws Exception {
+        mockMvc.perform(get("/api/listings/categories/" + testCategory.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testCategory.getId()))
+                .andExpect(jsonPath("$.slug").value("electronics-test"));
+    }
+
+    @Test
+    @DisplayName("POST /api/listings requires authentication")
+    void testCreateListingRequiresAuthentication() throws Exception {
+        CreateListingRequest request = CreateListingRequest.builder()
+                .title("Blocked Listing")
+                .description("Should stay protected")
+                .price(new BigDecimal("100.00"))
+                .categoryId(testCategory.getId())
+                .condition(Condition.GOOD)
+                .build();
+
+        mockMvc.perform(post("/api/listings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -161,6 +227,68 @@ class ListingControllerIT {
                 .andExpect(jsonPath("$.title").value("Test Phone"))
                 .andExpect(jsonPath("$.description").value("Test description"))
                 .andExpect(jsonPath("$.seller.displayName").value("New User"));
+    }
+
+    @Test
+    @DisplayName("GET /api/listings allows anonymous users to browse listings")
+    void testSearchListingsEndpointAllowsAnonymousAccess() throws Exception {
+        createListing("Anonymous Browse Listing", testUserToken);
+
+        mockMvc.perform(get("/api/listings"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].title").value("Anonymous Browse Listing"));
+    }
+
+    @Test
+    @DisplayName("GET /api/listings/categories allows anonymous users to read category tree")
+    void testGetCategoryTreeAllowsAnonymousAccess() throws Exception {
+        mockMvc.perform(get("/api/listings/categories"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(testCategory.getId()))
+                .andExpect(jsonPath("$[0].name").value("Electronics"));
+    }
+
+    @Test
+    @DisplayName("GET /api/listings/categories/{id} allows anonymous users to read category details")
+    void testGetCategoryByIdAllowsAnonymousAccess() throws Exception {
+        mockMvc.perform(get("/api/listings/categories/{id}", testCategory.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testCategory.getId()))
+                .andExpect(jsonPath("$.slug").value("electronics-test"));
+    }
+
+    @Test
+    @DisplayName("POST /api/listings without authentication returns 401")
+    void testCreateListingWithoutAuthenticationReturnsUnauthorized() throws Exception {
+        CreateListingRequest request = CreateListingRequest.builder()
+                .title("Unauthorized Listing")
+                .description("Should fail")
+                .price(new BigDecimal("199.99"))
+                .categoryId(testCategory.getId())
+                .condition(Condition.GOOD)
+                .build();
+
+        mockMvc.perform(post("/api/listings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("PATCH /api/listings/{id}/status without authentication returns 401")
+    void testUpdateStatusWithoutAuthenticationReturnsUnauthorized() throws Exception {
+        Long listingId = createListing("Protected Status Listing", testUserToken);
+
+        UpdateStatusRequest request = UpdateStatusRequest.builder()
+                .status(ListingStatus.SOLD)
+                .build();
+
+        mockMvc.perform(patch("/api/listings/{id}/status", listingId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -337,5 +465,27 @@ class ListingControllerIT {
     void testGetListingNotFound() throws Exception {
         mockMvc.perform(get("/api/listings/999999"))
                 .andExpect(status().isNotFound());
+    }
+
+    private Long createListing(String title, String token) throws Exception {
+        CreateListingRequest request = CreateListingRequest.builder()
+                .title(title)
+                .description("Visible to logged-out users")
+                .price(new BigDecimal("300.00"))
+                .categoryId(testCategory.getId())
+                .condition(Condition.GOOD)
+                .city("Shanghai")
+                .build();
+
+        MvcResult createResult = mockMvc.perform(post("/api/listings")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper.readTree(createResult.getResponse().getContentAsString())
+                .get("id")
+                .asLong();
     }
 }
