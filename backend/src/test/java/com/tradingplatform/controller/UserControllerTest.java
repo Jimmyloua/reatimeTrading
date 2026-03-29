@@ -3,6 +3,12 @@ package com.tradingplatform.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradingplatform.auth.dto.LoginRequest;
 import com.tradingplatform.auth.dto.RegisterRequest;
+import com.tradingplatform.listing.entity.Category;
+import com.tradingplatform.listing.entity.Listing;
+import com.tradingplatform.listing.enums.Condition;
+import com.tradingplatform.listing.enums.ListingStatus;
+import com.tradingplatform.listing.repository.CategoryRepository;
+import com.tradingplatform.listing.repository.ListingRepository;
 import com.tradingplatform.user.User;
 import com.tradingplatform.user.UserRepository;
 import com.tradingplatform.user.dto.UpdateProfileRequest;
@@ -12,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,7 +31,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.task.scheduling.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
@@ -39,14 +47,26 @@ class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ListingRepository listingRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private RedisMessageListenerContainer redisMessageListenerContainer;
 
     private String accessToken;
     private User testUser;
+    private Category testCategory;
 
     @BeforeEach
     void setUp() throws Exception {
         userRepository.deleteAll();
+        listingRepository.deleteAll();
+        categoryRepository.deleteAll();
 
         // Register a test user
         RegisterRequest registerRequest = new RegisterRequest("profile@example.com", "password123");
@@ -59,11 +79,19 @@ class UserControllerTest {
         String response = result.getResponse().getContentAsString();
         accessToken = objectMapper.readTree(response).get("accessToken").asText();
         testUser = userRepository.findByEmail("profile@example.com").orElseThrow();
+        testCategory = categoryRepository.save(Category.builder()
+                .name("Phones")
+                .slug("phones")
+                .description("Phone listings")
+                .displayOrder(1)
+                .build());
     }
 
     @Test
     @DisplayName("GET /api/users/me returns current user profile")
     void getProfile_authenticated_returnsProfile() throws Exception {
+        createListing("Profile Listing");
+
         mockMvc.perform(get("/api/users/me")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
@@ -72,7 +100,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.displayName").value("New User")) // D-08: fallback
                 .andExpect(jsonPath("$.avatarUrl").isEmpty())
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.listingCount").value(0))
+                .andExpect(jsonPath("$.listingCount").value(1))
                 .andExpect(jsonPath("$.isOwnProfile").value(true));
     }
 
@@ -123,6 +151,8 @@ class UserControllerTest {
     @Test
     @DisplayName("GET /api/users/{id} returns public profile for existing user")
     void getPublicProfile_existingUser_returnsProfile() throws Exception {
+        createListing("Public Listing");
+
         mockMvc.perform(get("/api/users/{id}", testUser.getId())
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
@@ -130,7 +160,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.displayName").value("New User"))
                 .andExpect(jsonPath("$.avatarUrl").isEmpty())
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.listingCount").value(0))
+                .andExpect(jsonPath("$.listingCount").value(1))
                 .andExpect(jsonPath("$.isOwnProfile").value(true));
     }
 
@@ -145,9 +175,12 @@ class UserControllerTest {
     @Test
     @DisplayName("GET /api/users/{id} can be accessed without authentication")
     void getPublicProfile_unauthenticated_returnsProfile() throws Exception {
+        createListing("Anonymous Listing");
+
         mockMvc.perform(get("/api/users/{id}", testUser.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testUser.getId()))
+                .andExpect(jsonPath("$.listingCount").value(1))
                 .andExpect(jsonPath("$.isOwnProfile").value(false));
     }
 
@@ -183,5 +216,37 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(otherUser.getId()))
                 .andExpect(jsonPath("$.displayName").value("Other User"))
                 .andExpect(jsonPath("$.isOwnProfile").value(false));
+    }
+
+    @Test
+    @DisplayName("GET /api/users profiles count only non-deleted listings")
+    void getProfiles_listingCountExcludesSoftDeletedListings() throws Exception {
+        createListing("Visible Listing");
+        Listing deletedListing = createListing("Deleted Listing");
+        deletedListing.setDeleted(true);
+        listingRepository.save(deletedListing);
+
+        mockMvc.perform(get("/api/users/me")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listingCount").value(1));
+
+        mockMvc.perform(get("/api/users/{id}", testUser.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listingCount").value(1));
+    }
+
+    private Listing createListing(String title) {
+        return listingRepository.save(Listing.builder()
+                .title(title)
+                .description("Listing for profile counts")
+                .price(java.math.BigDecimal.valueOf(199.99))
+                .condition(Condition.GOOD)
+                .status(ListingStatus.AVAILABLE)
+                .category(testCategory)
+                .userId(testUser.getId())
+                .city("Shanghai")
+                .deleted(false)
+                .build());
     }
 }

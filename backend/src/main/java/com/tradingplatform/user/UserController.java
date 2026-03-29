@@ -2,6 +2,7 @@ package com.tradingplatform.user;
 
 import com.tradingplatform.exception.ApiException;
 import com.tradingplatform.exception.ErrorCode;
+import com.tradingplatform.listing.repository.ListingRepository;
 import com.tradingplatform.security.UserPrincipal;
 import com.tradingplatform.user.dto.UpdateProfileRequest;
 import com.tradingplatform.user.dto.UserProfileResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final ListingRepository listingRepository;
 
     /**
      * Get the current authenticated user's profile.
@@ -84,6 +86,7 @@ public class UserController {
         String avatarUrl = user.getAvatarPath() != null
                 ? "/uploads/avatars/" + user.getAvatarPath()
                 : null;
+        long listingCount = listingRepository.countByUserIdAndDeletedFalse(user.getId());
 
         return UserProfileResponse.builder()
                 .id(user.getId())
@@ -91,7 +94,7 @@ public class UserController {
                 .displayName(user.getDisplayNameOrFallback()) // D-08: "New User" fallback
                 .avatarUrl(avatarUrl)
                 .createdAt(user.getCreatedAt())
-                .listingCount(0L) // Will be joined in Phase 2
+                .listingCount(listingCount)
                 .ownProfile(isOwnProfile)
                 .build();
     }

@@ -37,6 +37,11 @@ public interface ListingRepository extends JpaRepository<Listing, Long>, JpaSpec
     Page<Listing> findByUserIdAndDeletedFalse(Long userId, Pageable pageable);
 
     /**
+     * Count all non-deleted listings for a specific user.
+     */
+    long countByUserIdAndDeletedFalse(Long userId);
+
+    /**
      * Find all listings in a specific category.
      */
     List<Listing> findByCategoryId(Long categoryId);
