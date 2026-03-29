@@ -308,13 +308,16 @@ Planned waves:
 
 ### Phase 11: Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Chat delivery remains persistence-first under heavy concurrency by moving durable message fan-out to Kafka, unifying REST and WebSocket sends behind one persisted command path, and replacing frontend full-refresh send/reconnect flows with targeted reconciliation.
+**Requirements**: CHAT-01, CHAT-02, CHAT-03, CHAT-04, CHAT-05, CHAT-06, CHAT-07, P6-01, P6-02, P6-03, P6-04, P6-05
 **Depends on:** Phase 10
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 11 to break down)
+- [ ] 11-01-PLAN.md - Durable send foundation and persisted acknowledgment contract (Wave 1) - Add transactional outbox persistence, shared backend send service, and truthful `PERSISTED` sender ACK semantics
+- [ ] 11-02-PLAN.md - Kafka relay and async delivery consumer pipeline (Wave 2) - Publish outbox rows to Kafka keyed by `conversationId` and move recipient push plus delivery-state updates to async consumers
+- [ ] 11-03-PLAN.md - Frontend optimistic reconciliation and reconnect catch-up (Wave 3) - Replace ACK-triggered full refreshes with local reconciliation and `afterMessageId` delta recovery
+- [ ] 11-04-PLAN.md - Delivery lifecycle verification gate (Wave 4) - Prove `PERSISTED` to `DELIVERED` behavior, reconnect catch-up, and Redis presence/typing regression safety
 
 ---
 
@@ -325,3 +328,4 @@ Plans:
 *Phase 7 completed: 2026-03-26*
 *Gap closure phases 8-10 added: 2026-03-29*
 *Phase 11 added: 2026-03-29*
+*Phase 11 planned: 2026-03-29*
