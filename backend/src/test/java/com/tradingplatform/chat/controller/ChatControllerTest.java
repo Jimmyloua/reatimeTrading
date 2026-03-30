@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
 import com.tradingplatform.chat.service.ChatMessageCommandService;
+import com.tradingplatform.chat.service.ChatQueryService;
 import com.tradingplatform.chat.service.ChatService;
 import com.tradingplatform.security.JwtTokenProvider;
 import com.tradingplatform.security.UserPrincipal;
@@ -51,6 +52,9 @@ class ChatControllerTest {
 
     @MockBean
     private ChatMessageCommandService chatMessageCommandService;
+
+    @MockBean
+    private ChatQueryService chatQueryService;
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
@@ -157,6 +161,33 @@ class ChatControllerTest {
 
         // Verify messages are marked as read
         verify(chatService).markMessagesAsRead(1L, 1L);
+    }
+
+    @Test
+    @DisplayName("Should return only delta messages after afterMessageId cursor")
+    void testGetMessagesAfterMessageId() throws Exception {
+        MessageResponse message = MessageResponse.builder()
+            .id(101L)
+            .conversationId(1L)
+            .senderId(2L)
+            .senderName("Seller")
+            .content("Catch-up message")
+            .status(MessageStatus.DELIVERED)
+            .isOwnMessage(false)
+            .createdAt(LocalDateTime.now())
+            .build();
+
+        when(chatQueryService.getMessagesAfter(1L, 1L, 100L)).thenReturn(List.of(message));
+        doNothing().when(chatService).markMessagesAsRead(1L, 1L);
+
+        mockMvc.perform(get("/api/conversations/1/messages")
+                .with(authentication(testAuth))
+                .param("afterMessageId", "100"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].id").value(101))
+            .andExpect(jsonPath("$.content[0].content").value("Catch-up message"));
+
+        verify(chatQueryService).getMessagesAfter(1L, 1L, 100L);
     }
 
     @Test

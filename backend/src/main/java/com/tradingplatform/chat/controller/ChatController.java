@@ -2,6 +2,7 @@ package com.tradingplatform.chat.controller;
 
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.service.ChatMessageCommandService;
+import com.tradingplatform.chat.service.ChatQueryService;
 import com.tradingplatform.chat.service.ChatService;
 import com.tradingplatform.security.UserPrincipal;
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * REST Controller for chat operations.
@@ -25,6 +28,7 @@ public class ChatController {
 
     private final ChatService chatService;
     private final ChatMessageCommandService chatMessageCommandService;
+    private final ChatQueryService chatQueryService;
 
     /**
      * Creates a new conversation or returns existing one.
@@ -90,13 +94,17 @@ public class ChatController {
     public ResponseEntity<Page<MessageResponse>> getMessages(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(required = false) Long afterMessageId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        // Mark messages as read when viewing
         chatService.markMessagesAsRead(id, principal.getId());
 
+        if (afterMessageId != null) {
+            List<MessageResponse> messages = chatQueryService.getMessagesAfter(id, principal.getId(), afterMessageId);
+            return ResponseEntity.ok(new PageImpl<>(messages, Pageable.unpaged(), messages.size()));
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(chatService.getMessages(id, principal.getId(), pageable));
     }
 
