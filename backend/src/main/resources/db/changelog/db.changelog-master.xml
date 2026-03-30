@@ -14,5 +14,7 @@
     <include file="009-create-notification-preferences.xml" relativeToChangelogFile="true"/>
     <include file="010-create-content-tables.xml" relativeToChangelogFile="true"/>
     <include file="011-seed-homepage-content.xml" relativeToChangelogFile="true"/>
+    <include file="012-add-transaction-completed-at.xml" relativeToChangelogFile="true"/>
+    <include file="013-create-chat-message-outbox.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

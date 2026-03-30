@@ -146,7 +146,7 @@ class MessageRepositoryTest {
                 .conversationId(testConversation.getId())
                 .senderId(buyerId)
                 .content("First message")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
         messageRepository.save(msg1);
 
@@ -157,7 +157,7 @@ class MessageRepositoryTest {
                 .conversationId(testConversation.getId())
                 .senderId(sellerId)
                 .content("Second message")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
         messageRepository.save(msg2);
 
@@ -179,14 +179,14 @@ class MessageRepositoryTest {
                 .conversationId(testConversation.getId())
                 .senderId(buyerId) // Sent by buyer
                 .content("From buyer")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
 
         ChatMessage msg2 = ChatMessage.builder()
                 .conversationId(testConversation.getId())
                 .senderId(sellerId) // Sent by seller
                 .content("From seller - unread")
-                .status(MessageStatus.SENT) // Not read
+                .status(MessageStatus.PERSISTED) // Not read
                 .build();
 
         ChatMessage msg3 = ChatMessage.builder()
@@ -216,14 +216,14 @@ class MessageRepositoryTest {
                 .conversationId(testConversation.getId())
                 .senderId(sellerId)
                 .content("Unread message 1")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
 
         ChatMessage msg2 = ChatMessage.builder()
                 .conversationId(testConversation.getId())
                 .senderId(sellerId)
                 .content("Unread message 2")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
 
         messageRepository.save(msg1);
@@ -272,7 +272,7 @@ class MessageRepositoryTest {
                 .senderId(buyerId)
                 .content("Check this image!")
                 .imageUrl("/uploads/chat/img123.jpg")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
 
         // Act

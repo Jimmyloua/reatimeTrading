@@ -8,7 +8,7 @@ public enum MessageStatus {
     /**
      * Message has been saved to the database.
      */
-    SENT,
+    PERSISTED,
 
     /**
      * Message has been received by the recipient's device.

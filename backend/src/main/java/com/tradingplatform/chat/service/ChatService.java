@@ -33,6 +33,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ChatMapper chatMapper;
     private final PresenceService presenceService;
+    private final ChatMessageCommandService chatMessageCommandService;
 
     /**
      * Creates a new conversation or returns existing one for the listing/buyer combination.
@@ -68,62 +69,21 @@ public class ChatService {
 
         // Send initial message if provided
         if (request.getInitialMessage() != null && !request.getInitialMessage().isBlank()) {
-            sendMessage(conversation.getId(), buyerId, request.getInitialMessage(), null);
+            chatMessageCommandService.persistMessage(
+                new ChatMessageCommandService.SendChatMessageCommand(
+                    conversation.getId(),
+                    buyerId,
+                    request.getInitialMessage(),
+                    null,
+                    null
+                )
+            );
         }
 
         log.info("Created/fetched conversation {} for listing {} buyer {}",
             conversation.getId(), request.getListingId(), buyerId);
 
         return enrichConversationResponse(conversation, buyerId);
-    }
-
-    /**
-     * Sends a message in a conversation.
-     * CRITICAL: Persists to database FIRST (per ROADMAP note) before any delivery.
-     *
-     * @param conversationId the conversation ID
-     * @param senderId the sender's user ID
-     * @param content the message content
-     * @param imageUrl optional image URL
-     * @return the message response
-     */
-    @Transactional
-    public MessageResponse sendMessage(Long conversationId, Long senderId, String content, String imageUrl) {
-        Conversation conversation = conversationRepository.findById(conversationId)
-            .orElseThrow(() -> new ApiException(ErrorCode.CONVERSATION_NOT_FOUND));
-
-        // Verify sender is a participant
-        if (!conversation.getBuyerId().equals(senderId) && !conversation.getSellerId().equals(senderId)) {
-            throw new ApiException(ErrorCode.NOT_CONVERSATION_PARTICIPANT);
-        }
-
-        // CRITICAL: Persist to database FIRST (per ROADMAP critical note)
-        ChatMessage message = ChatMessage.builder()
-            .conversationId(conversationId)
-            .senderId(senderId)
-            .content(content)
-            .imageUrl(imageUrl)
-            .status(MessageStatus.SENT)
-            .build();
-
-        message = messageRepository.save(message);
-        log.debug("Message {} persisted to database", message.getId());
-
-        // Update conversation metadata
-        conversation.setLastMessageAt(LocalDateTime.now());
-        conversation.setLastMessagePreview(truncate(content, 100));
-
-        // Increment unread count for other participant
-        if (senderId.equals(conversation.getBuyerId())) {
-            conversation.setSellerUnreadCount(conversation.getSellerUnreadCount() + 1);
-        } else {
-            conversation.setBuyerUnreadCount(conversation.getBuyerUnreadCount() + 1);
-        }
-        conversationRepository.save(conversation);
-
-        log.info("Message {} sent in conversation {}", message.getId(), conversationId);
-
-        return enrichMessageResponse(message, senderId);
     }
 
     /**
@@ -243,24 +203,4 @@ public class ChatService {
         return response;
     }
 
-    /**
-     * Gets the ID of the other participant in a conversation.
-     *
-     * @param conversationId the conversation ID
-     * @param currentUserId the current user's ID
-     * @return the other participant's ID, or null if not found
-     */
-    public Long getOtherParticipantId(Long conversationId, Long currentUserId) {
-        return conversationRepository.findById(conversationId)
-            .map(c -> c.getOtherParticipantId(currentUserId))
-            .orElse(null);
-    }
-
-    /**
-     * Truncates a string to a maximum length.
-     */
-    private String truncate(String s, int maxLen) {
-        if (s == null) return null;
-        return s.length() <= maxLen ? s : s.substring(0, maxLen);
-    }
 }

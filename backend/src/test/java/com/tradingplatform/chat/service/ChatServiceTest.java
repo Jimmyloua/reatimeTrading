@@ -44,6 +44,12 @@ class ChatServiceTest {
     @Mock
     private ChatMapper chatMapper;
 
+    @Mock
+    private PresenceService presenceService;
+
+    @Mock
+    private ChatMessageCommandService chatMessageCommandService;
+
     @InjectMocks
     private ChatService chatService;
 
@@ -87,7 +93,7 @@ class ChatServiceTest {
                 .conversationId(1L)
                 .senderId(1L)
                 .content("Hello!")
-                .status(MessageStatus.SENT)
+                .status(MessageStatus.PERSISTED)
                 .build();
     }
 
@@ -142,6 +148,31 @@ class ChatServiceTest {
     }
 
     @Test
+    @DisplayName("Should route initial message through chat message command service")
+    void testCreateConversation_initialMessageUsesCommandService() {
+        CreateConversationRequest request = new CreateConversationRequest(100L, "Hello!");
+
+        when(listingRepository.findByIdAndDeletedFalse(100L)).thenReturn(Optional.of(testListing));
+        when(conversationRepository.findByListingIdAndBuyerId(100L, 1L)).thenReturn(Optional.empty());
+        when(conversationRepository.save(any(Conversation.class))).thenAnswer(inv -> {
+            Conversation conversation = inv.getArgument(0);
+            conversation.setId(1L);
+            return conversation;
+        });
+        when(listingRepository.findById(100L)).thenReturn(Optional.of(testListing));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(seller));
+        when(chatMapper.toConversationResponse(any(), eq(1L))).thenReturn(
+            ConversationResponse.builder().id(1L).listingId(100L).build()
+        );
+
+        chatService.createConversation(1L, request);
+
+        verify(chatMessageCommandService).persistMessage(
+            new ChatMessageCommandService.SendChatMessageCommand(1L, 1L, "Hello!", null, null)
+        );
+    }
+
+    @Test
     @DisplayName("Should throw error when user chats with themselves")
     void testCreateConversation_self() {
         // Arrange
@@ -155,44 +186,6 @@ class ChatServiceTest {
             () -> chatService.createConversation(1L, request));
 
         assertEquals(ErrorCode.CANNOT_CHAT_WITH_SELF, exception.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("Should persist message to database before returning")
-    void testSendMessage_persistedFirst() {
-        // Arrange
-        when(conversationRepository.findById(1L)).thenReturn(Optional.of(testConversation));
-        when(messageRepository.save(any(ChatMessage.class))).thenAnswer(inv -> {
-            ChatMessage m = inv.getArgument(0);
-            m.setId(1L);
-            return m;
-        });
-        when(conversationRepository.save(any(Conversation.class))).thenReturn(testConversation);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(buyer));
-        when(chatMapper.toMessageResponse(any(), eq(1L))).thenReturn(
-            MessageResponse.builder().id(1L).content("Hello!").build()
-        );
-
-        // Act
-        MessageResponse result = chatService.sendMessage(1L, 1L, "Hello!", null);
-
-        // Assert
-        assertNotNull(result);
-        verify(messageRepository).save(any(ChatMessage.class)); // CRITICAL: saved first
-        verify(conversationRepository).save(any(Conversation.class)); // Metadata updated
-    }
-
-    @Test
-    @DisplayName("Should throw error when non-participant sends message")
-    void testSendMessage_notParticipant() {
-        // Arrange
-        when(conversationRepository.findById(1L)).thenReturn(Optional.of(testConversation));
-
-        // Act & Assert
-        ApiException exception = assertThrows(ApiException.class,
-            () -> chatService.sendMessage(1L, 3L, "Hello!", null));
-
-        assertEquals(ErrorCode.NOT_CONVERSATION_PARTICIPANT, exception.getErrorCode());
     }
 
     @Test

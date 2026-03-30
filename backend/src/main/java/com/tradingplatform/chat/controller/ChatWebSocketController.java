@@ -3,7 +3,7 @@ package com.tradingplatform.chat.controller;
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
 import com.tradingplatform.chat.redis.RedisChatEventPublisher;
-import com.tradingplatform.chat.service.ChatService;
+import com.tradingplatform.chat.service.ChatMessageCommandService;
 import com.tradingplatform.chat.service.PresenceService;
 import com.tradingplatform.notification.service.NotificationPushService;
 import com.tradingplatform.security.UserPrincipal;
@@ -34,7 +34,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class ChatWebSocketController {
 
-    private final ChatService chatService;
+    private final ChatMessageCommandService chatMessageCommandService;
     private final PresenceService presenceService;
     private final NotificationPushService notificationPushService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -59,30 +59,21 @@ public class ChatWebSocketController {
         }
 
         // CRITICAL: Persist to database FIRST (per ROADMAP critical note)
-        MessageResponse message = chatService.sendMessage(
-            request.getConversationId(),
-            senderId,
-            request.getContent(),
-            request.getImageUrl()
+        ChatMessageCommandService.PersistedChatMessage persistedChatMessage = chatMessageCommandService.persistMessage(
+            new ChatMessageCommandService.SendChatMessageCommand(
+                request.getConversationId(),
+                senderId,
+                request.getContent(),
+                request.getImageUrl(),
+                request.getClientMessageId()
+            )
         );
-
-        // Deliver to recipient via WebSocket
-        Long recipientId = chatService.getOtherParticipantId(request.getConversationId(), senderId);
-        if (recipientId != null) {
-            redisChatEventPublisher.publishMessageDelivery(recipientId, request.getConversationId(), message);
-
-            // Push notification to recipient
-            notificationPushService.pushMessageNotification(recipientId, message);
-        }
 
         // Send ACK back to sender
         messagingTemplate.convertAndSendToUser(
             senderId.toString(),
             "/queue/message-ack",
-            MessageAck.builder()
-                .messageId(message.getId())
-                .status(MessageStatus.DELIVERED)
-                .build()
+            persistedChatMessage.ack()
         );
     }
 

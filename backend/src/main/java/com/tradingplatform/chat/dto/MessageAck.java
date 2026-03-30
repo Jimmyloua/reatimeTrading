@@ -3,6 +3,8 @@ package com.tradingplatform.chat.dto;
 import com.tradingplatform.chat.entity.MessageStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * Response DTO for message acknowledgment.
  * Confirms message was persisted and delivered.
@@ -12,7 +14,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MessageAck {
+    private String clientMessageId;
     private Long messageId;
+    private Long conversationId;
     private MessageStatus status;
-    private String tempId;  // Client's temporary ID for correlation
+    private LocalDateTime createdAt;
 }

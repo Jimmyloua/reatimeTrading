@@ -31,6 +31,11 @@ public class SendMessageRequest {
     private String imageUrl;
 
     /**
+     * Client-side correlation ID for optimistic reconciliation.
+     */
+    private String clientMessageId;
+
+    /**
      * Checks if the message has any content (text or image).
      *
      * @return true if content or imageUrl is provided

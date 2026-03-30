@@ -3,13 +3,16 @@ package com.tradingplatform.chat.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradingplatform.chat.dto.MessageAck;
+import com.tradingplatform.chat.dto.MessageResponse;
 import com.tradingplatform.chat.entity.ChatMessage;
 import com.tradingplatform.chat.entity.ChatMessageOutbox;
 import com.tradingplatform.chat.entity.Conversation;
 import com.tradingplatform.chat.entity.MessageStatus;
+import com.tradingplatform.chat.mapper.ChatMapper;
 import com.tradingplatform.chat.repository.ChatMessageOutboxRepository;
 import com.tradingplatform.chat.repository.ConversationRepository;
 import com.tradingplatform.chat.repository.MessageRepository;
+import com.tradingplatform.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,12 @@ class ChatMessageCommandServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private ChatMapper chatMapper;
+
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private ChatMessageCommandService chatMessageCommandService;
 
@@ -73,6 +82,16 @@ class ChatMessageCommandServiceTest {
         });
         when(chatMessageOutboxRepository.save(any(ChatMessageOutbox.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(objectMapper.writeValueAsString(any())).thenReturn("{\"messageId\":99}");
+        when(chatMapper.toMessageResponse(any(ChatMessage.class), any(Long.class))).thenReturn(
+            MessageResponse.builder()
+                .id(99L)
+                .conversationId(10L)
+                .senderId(1L)
+                .content("hello")
+                .status(MessageStatus.PERSISTED)
+                .createdAt(createdAt)
+                .build()
+        );
 
         ChatMessageCommandService.PersistedChatMessage result = chatMessageCommandService.persistMessage(
             new ChatMessageCommandService.SendChatMessageCommand(10L, 1L, "hello", null, "client-123")

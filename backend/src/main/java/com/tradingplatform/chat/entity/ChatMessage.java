@@ -62,7 +62,7 @@ public class ChatMessage {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     @Builder.Default
-    private MessageStatus status = MessageStatus.SENT;
+    private MessageStatus status = MessageStatus.PERSISTED;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

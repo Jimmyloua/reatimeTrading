@@ -22,6 +22,8 @@ public class WebSocketMessageRequest {
 
     private String imageUrl;
 
+    private String clientMessageId;
+
     public boolean hasContent() {
         return (content != null && !content.isBlank()) || imageUrl != null;
     }
