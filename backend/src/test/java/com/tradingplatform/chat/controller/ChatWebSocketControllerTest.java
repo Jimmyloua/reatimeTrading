@@ -3,7 +3,7 @@ package com.tradingplatform.chat.controller;
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
 import com.tradingplatform.chat.redis.RedisChatEventPublisher;
-import com.tradingplatform.chat.service.ChatService;
+import com.tradingplatform.chat.service.ChatMessageCommandService;
 import com.tradingplatform.chat.service.PresenceService;
 import com.tradingplatform.notification.service.NotificationPushService;
 import com.tradingplatform.security.UserPrincipal;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class ChatWebSocketControllerTest {
 
     @Mock
-    private ChatService chatService;
+    private ChatMessageCommandService chatMessageCommandService;
 
     @Mock
     private PresenceService presenceService;
@@ -71,52 +71,77 @@ class ChatWebSocketControllerTest {
             .conversationId(100L)
             .senderId(1L)
             .content("Hello")
-            .status(MessageStatus.SENT)
+            .status(MessageStatus.PERSISTED)
+            .createdAt(java.time.LocalDateTime.of(2026, 3, 30, 12, 0))
+            .build();
+        MessageAck ack = MessageAck.builder()
+            .clientMessageId("client-123")
+            .messageId(1L)
+            .conversationId(100L)
+            .status(MessageStatus.PERSISTED)
+            .createdAt(messageResponse.getCreatedAt())
             .build();
 
-        when(chatService.sendMessage(100L, 1L, "Hello", null)).thenReturn(messageResponse);
-        when(chatService.getOtherParticipantId(100L, 1L)).thenReturn(2L);
+        when(chatMessageCommandService.persistMessage(any(ChatMessageCommandService.SendChatMessageCommand.class)))
+            .thenReturn(new ChatMessageCommandService.PersistedChatMessage(messageResponse, ack, 2L));
 
         // Act
         controller.sendMessage(request, principal);
 
-        // Assert - verify persistence happened first (this is the critical ROADMAP requirement)
-        verify(chatService).sendMessage(100L, 1L, "Hello", null);
-        verify(chatService).getOtherParticipantId(100L, 1L);
-
-        // Verify recipient fan-out is published for Redis-backed delivery
-        verify(redisChatEventPublisher).publishMessageDelivery(eq(2L), eq(100L), any(MessageResponse.class));
-
-        // Verify ACK sent to sender
-        verify(messagingTemplate).convertAndSendToUser(eq("1"), eq("/queue/message-ack"), any(MessageAck.class));
-
-        // Verify notification pushed
-        verify(notificationPushService).pushMessageNotification(eq(2L), any(MessageResponse.class));
+        verify(chatMessageCommandService).persistMessage(any(ChatMessageCommandService.SendChatMessageCommand.class));
+        verify(messagingTemplate).convertAndSendToUser(
+            eq("1"),
+            eq("/queue/message-ack"),
+            argThat((MessageAck messageAck) ->
+                "client-123".equals(messageAck.getClientMessageId())
+                    && Long.valueOf(1L).equals(messageAck.getMessageId())
+                    && Long.valueOf(100L).equals(messageAck.getConversationId())
+                    && MessageStatus.PERSISTED == messageAck.getStatus()
+                    && messageResponse.getCreatedAt().equals(messageAck.getCreatedAt())
+            )
+        );
+        verify(redisChatEventPublisher, never()).publishMessageDelivery(anyLong(), anyLong(), any(MessageResponse.class));
+        verify(notificationPushService, never()).pushMessageNotification(anyLong(), any(MessageResponse.class));
     }
 
     @Test
-    @DisplayName("Test 2: sendMessage publishes recipient delivery for Redis fan-out")
-    void testSendMessagePublishesRecipientDelivery() {
+    @DisplayName("Test 2: sendMessage does not claim recipient delivery in persisted ack path")
+    void testSendMessageDoesNotClaimRecipientDelivery() {
         // Arrange
         WebSocketMessageRequest request = new WebSocketMessageRequest();
         request.setConversationId(100L);
         request.setContent("Test message");
+        request.setClientMessageId("client-456");
 
         MessageResponse messageResponse = MessageResponse.builder()
             .id(1L)
             .conversationId(100L)
             .senderId(1L)
             .content("Test message")
+            .status(MessageStatus.PERSISTED)
+            .createdAt(java.time.LocalDateTime.of(2026, 3, 30, 13, 0))
+            .build();
+        MessageAck ack = MessageAck.builder()
+            .clientMessageId("client-456")
+            .messageId(1L)
+            .conversationId(100L)
+            .status(MessageStatus.PERSISTED)
+            .createdAt(messageResponse.getCreatedAt())
             .build();
 
-        when(chatService.sendMessage(anyLong(), anyLong(), anyString(), isNull())).thenReturn(messageResponse);
-        when(chatService.getOtherParticipantId(100L, 1L)).thenReturn(2L);
+        when(chatMessageCommandService.persistMessage(any(ChatMessageCommandService.SendChatMessageCommand.class)))
+            .thenReturn(new ChatMessageCommandService.PersistedChatMessage(messageResponse, ack, 2L));
 
         // Act
         controller.sendMessage(request, principal);
 
         // Assert
-        verify(redisChatEventPublisher).publishMessageDelivery(eq(2L), eq(100L), any(MessageResponse.class));
+        verify(messagingTemplate).convertAndSendToUser(
+            eq("1"),
+            eq("/queue/message-ack"),
+            argThat((MessageAck messageAck) -> MessageStatus.PERSISTED == messageAck.getStatus())
+        );
+        verify(redisChatEventPublisher, never()).publishMessageDelivery(anyLong(), anyLong(), any(MessageResponse.class));
         verify(messagingTemplate, never()).convertAndSendToUser(eq("2"), eq("/queue/messages"), any(MessageResponse.class));
     }
 
@@ -214,6 +239,6 @@ class ChatWebSocketControllerTest {
         controller.sendMessage(request, principal);
 
         // Assert
-        verify(chatService, never()).sendMessage(anyLong(), anyLong(), anyString(), any());
+        verify(chatMessageCommandService, never()).persistMessage(any(ChatMessageCommandService.SendChatMessageCommand.class));
     }
 }
