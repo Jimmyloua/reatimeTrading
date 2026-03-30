@@ -5,9 +5,18 @@ export interface Message {
   senderName: string
   content: string
   imageUrl: string | null
-  status: 'SENT' | 'DELIVERED' | 'READ'
+  status: 'SENT' | 'PERSISTED' | 'DELIVERED' | 'READ'
   createdAt: string
   isOwnMessage: boolean
+  clientMessageId?: string
+}
+
+export interface MessageAck {
+  clientMessageId: string | null
+  messageId: number
+  conversationId: number
+  status: 'PERSISTED' | 'DELIVERED' | 'READ'
+  createdAt: string
 }
 
 export interface Conversation {

@@ -3,7 +3,7 @@ import { chatApi } from '@/api/chatApi'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useWebSocket } from './useWebSocket'
-import type { Message, TypingIndicator } from '@/types/chat'
+import type { Message, MessageAck, TypingIndicator } from '@/types/chat'
 
 const TYPING_DEBOUNCE_MS = 3000
 
@@ -12,51 +12,49 @@ export function useChat(conversationId: number | null) {
   const currentUser = useAuthStore((state) => state.user)
   const {
     addMessage,
+    appendMessages,
     clearUnread,
+    getLatestPersistedMessageId,
     hasSeenMessage,
     incrementUnread,
     markMessageSeen,
-    setConversations,
+    reconcileMessageAck,
     setMessages,
     setTyping,
     syncConversationPreview,
-    upsertConversation,
   } = useChatStore()
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const previousConnectionStateRef = useRef(connectionState)
   const optimisticMessageIdRef = useRef(-1)
+  const clientMessageSequenceRef = useRef(0)
 
   const refreshActiveConversation = useCallback(async () => {
     if (!conversationId) {
       return
     }
 
-    const [latestConversation, latestMessages] = await Promise.all([
-      chatApi.getConversation(conversationId),
-      chatApi.getMessages(conversationId),
-    ])
-
-    upsertConversation(latestConversation)
+    const latestMessages = await chatApi.getMessages(conversationId)
     setMessages(latestMessages.content.reverse())
     clearUnread(conversationId)
-  }, [clearUnread, conversationId, setMessages, upsertConversation])
+  }, [clearUnread, conversationId, setMessages])
 
-  const rehydrateConversationState = useCallback(async () => {
+  const catchUpConversation = useCallback(async () => {
     if (!conversationId) {
       return
     }
 
-    const [latestConversation, latestMessages, latestConversations] = await Promise.all([
-      chatApi.getConversation(conversationId),
-      chatApi.getMessages(conversationId),
-      chatApi.getConversations(),
-    ])
+    const afterMessageId = getLatestPersistedMessageId(conversationId) ?? undefined
+    const latestMessages = await chatApi.getMessages(conversationId, 0, 50, afterMessageId)
 
-    setConversations(latestConversations.content)
-    upsertConversation(latestConversation)
-    setMessages(latestMessages.content.reverse())
+    if (afterMessageId == null) {
+      setMessages(latestMessages.content.reverse())
+    } else {
+      appendMessages(latestMessages.content)
+      latestMessages.content.forEach((message) => syncConversationPreview(message))
+    }
+
     clearUnread(conversationId)
-  }, [clearUnread, conversationId, setConversations, setMessages, upsertConversation])
+  }, [appendMessages, clearUnread, conversationId, getLatestPersistedMessageId, setMessages, syncConversationPreview])
 
   // Subscribe to message updates for both active and inactive conversations.
   useEffect(() => {
@@ -116,14 +114,21 @@ export function useChat(conversationId: number | null) {
   useEffect(() => {
     if (!conversationId || connectionState !== 'connected') return
 
-    const ackSub = subscribe('/user/queue/message-ack', () => {
-      void refreshActiveConversation()
+    const ackSub = subscribe('/user/queue/message-ack', (message) => {
+      const ack: MessageAck = JSON.parse(message.body)
+      const reconciledMessage = reconcileMessageAck(ack)
+      if (!reconciledMessage) {
+        return
+      }
+
+      clearUnread(ack.conversationId)
+      syncConversationPreview(reconciledMessage)
     })
 
     return () => {
       ackSub?.unsubscribe()
     }
-  }, [connectionState, conversationId, refreshActiveConversation, subscribe])
+  }, [clearUnread, connectionState, conversationId, reconcileMessageAck, subscribe, syncConversationPreview])
 
   useEffect(() => {
     if (!conversationId || connectionState === 'connected') {
@@ -145,54 +150,56 @@ export function useChat(conversationId: number | null) {
       previousConnectionStateRef.current !== 'connected' &&
       connectionState === 'connected'
     ) {
-      void rehydrateConversationState()
+      void catchUpConversation()
     }
 
     previousConnectionStateRef.current = connectionState
-  }, [connectionState, conversationId, rehydrateConversationState])
+  }, [catchUpConversation, connectionState, conversationId])
+
+  const createClientMessageId = useCallback(() => {
+    clientMessageSequenceRef.current += 1
+    return `client-${Date.now()}-${clientMessageSequenceRef.current}`
+  }, [])
 
   const sendMessage = useCallback(async (content: string, imageUrl?: string) => {
     if (!conversationId) return
 
+    const clientMessageId = createClientMessageId()
+    const optimisticMessage: Message = {
+      id: optimisticMessageIdRef.current,
+      conversationId,
+      senderId: currentUser?.id ?? 0,
+      senderName: currentUser?.displayName ?? currentUser?.email ?? 'You',
+      content,
+      imageUrl: imageUrl ?? null,
+      status: 'SENT',
+      createdAt: new Date().toISOString(),
+      isOwnMessage: true,
+      clientMessageId,
+    }
+
+    optimisticMessageIdRef.current -= 1
+    addMessage(optimisticMessage)
+    clearUnread(conversationId)
+    syncConversationPreview(optimisticMessage)
+
     if (connectionState === 'connected') {
-      const optimisticMessage: Message = {
-        id: optimisticMessageIdRef.current,
-        conversationId,
-        senderId: currentUser?.id ?? 0,
-        senderName: currentUser?.displayName ?? currentUser?.email ?? 'You',
-        content,
-        imageUrl: imageUrl ?? null,
-        status: 'SENT',
-        createdAt: new Date().toISOString(),
-        isOwnMessage: true,
-      }
-
-      optimisticMessageIdRef.current -= 1
-      addMessage(optimisticMessage)
-      clearUnread(conversationId)
-      syncConversationPreview(optimisticMessage)
-
       publish(
         '/app/chat.sendMessage',
-        JSON.stringify({ conversationId, content, imageUrl })
+        JSON.stringify({ conversationId, content, imageUrl, clientMessageId })
       )
       return
     }
 
-    const message = await chatApi.sendMessage(conversationId, { content, imageUrl })
-    addMessage(message)
-    clearUnread(conversationId)
-    syncConversationPreview(message)
-
-    const [latestConversation, latestConversations] = await Promise.all([
-      chatApi.getConversation(conversationId),
-      chatApi.getConversations(),
-    ])
-
-    setConversations(latestConversations.content)
-    upsertConversation(latestConversation)
+    const ack = await chatApi.sendMessage(conversationId, { content, imageUrl, clientMessageId })
+    const reconciledMessage = reconcileMessageAck(ack)
+    if (reconciledMessage) {
+      clearUnread(conversationId)
+      syncConversationPreview(reconciledMessage)
+    }
   }, [
     addMessage,
+    createClientMessageId,
     clearUnread,
     connectionState,
     conversationId,
@@ -200,9 +207,8 @@ export function useChat(conversationId: number | null) {
     currentUser?.email,
     currentUser?.id,
     publish,
-    setConversations,
+    reconcileMessageAck,
     syncConversationPreview,
-    upsertConversation,
   ])
 
   const emitTyping = useCallback(() => {

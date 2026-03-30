@@ -1,5 +1,5 @@
 import apiClient from './client'
-import type { Conversation, Message } from '@/types/chat'
+import type { Conversation, Message, MessageAck } from '@/types/chat'
 
 export interface CreateConversationRequest {
   listingId: number
@@ -10,6 +10,7 @@ export interface SendMessageRequest {
   conversationId: number
   content?: string
   imageUrl?: string
+  clientMessageId?: string
 }
 
 type MessageApiResponse = Omit<Message, 'isOwnMessage'> & {
@@ -42,9 +43,14 @@ export const chatApi = {
     return response.data
   },
 
-  async getMessages(conversationId: number, page = 0, size = 50): Promise<{ content: Message[]; totalElements: number }> {
+  async getMessages(
+    conversationId: number,
+    page = 0,
+    size = 50,
+    afterMessageId?: number,
+  ): Promise<{ content: Message[]; totalElements: number }> {
     const response = await apiClient.get<{ content: MessageApiResponse[]; totalElements: number }>(`/api/conversations/${conversationId}/messages`, {
-      params: { page, size }
+      params: { page, size, afterMessageId }
     })
     return {
       ...response.data,
@@ -52,11 +58,14 @@ export const chatApi = {
     }
   },
 
-  async sendMessage(conversationId: number, request: Omit<SendMessageRequest, 'conversationId'>): Promise<Message> {
-    const response = await apiClient.post<MessageApiResponse>(`/api/conversations/${conversationId}/messages`, {
+  async sendMessage(
+    conversationId: number,
+    request: Omit<SendMessageRequest, 'conversationId'>,
+  ): Promise<MessageAck> {
+    const response = await apiClient.post<MessageAck>(`/api/conversations/${conversationId}/messages`, {
       conversationId,
       ...request,
     })
-    return normalizeMessage(response.data)
+    return response.data
   }
 }

@@ -184,17 +184,13 @@ describe('chat realtime fallback contract', () => {
       content: [],
       totalElements: 0,
     })
-    vi.mocked(chatApi.sendMessage).mockResolvedValue({
-      id: 901,
+    vi.mocked(chatApi.sendMessage).mockImplementation(async (_conversationId, request) => ({
+      clientMessageId: request.clientMessageId ?? null,
+      messageId: 901,
       conversationId: 55,
-      senderId: 1,
-      senderName: 'Buyer',
-      content: 'Offline send',
-      imageUrl: null,
-      status: 'SENT',
+      status: 'PERSISTED',
       createdAt: '2026-03-25T01:00:00Z',
-      isOwnMessage: true,
-    })
+    }))
   })
 
   test('duplicate message ids are ignored instead of rendering the same message twice', async () => {
@@ -296,93 +292,76 @@ describe('chat realtime fallback contract', () => {
     vi.useRealTimers()
   })
 
-  test('reconnect rehydrate refreshes the active thread and non-active conversation previews and unread counts', async () => {
+  test('reconnect catch-up appends only missing persisted messages after the latest cursor', async () => {
     websocketMock.setConnectionState('reconnecting')
-    vi.mocked(chatApi.getConversation).mockResolvedValue({
-      ...activeConversation,
-      lastMessage: 'Authoritative preview',
-      lastMessageAt: '2026-03-25T01:05:00Z',
-    })
-    vi.mocked(chatApi.getMessages).mockResolvedValue({
-      content: [
-        {
-          id: 701,
-          conversationId: 55,
-          senderId: 9,
-          senderName: 'Seller Jane',
-          content: 'Reconnect sync message',
-          imageUrl: null,
-          status: 'DELIVERED',
-          createdAt: '2026-03-25T01:05:00Z',
-          isOwnMessage: false,
-        },
-      ],
-      totalElements: 1,
-    })
-    vi.mocked(chatApi.getConversations).mockResolvedValue({
-      content: [
-        {
-          ...activeConversation,
-          lastMessage: 'Authoritative preview',
-          lastMessageAt: '2026-03-25T01:05:00Z',
-          unreadCount: 0,
-        },
-        {
-          ...secondaryConversation,
-          lastMessage: 'Background conversation refreshed',
-          lastMessageAt: '2026-03-25T01:03:00Z',
-          unreadCount: 4,
-        },
-      ],
-      totalElements: 2,
-    })
-
+    vi.mocked(chatApi.getMessages)
+      .mockResolvedValueOnce({
+        content: [
+          {
+            id: 700,
+            conversationId: 55,
+            senderId: 9,
+            senderName: 'Seller Jane',
+            content: 'Existing message',
+            imageUrl: null,
+            status: 'DELIVERED',
+            createdAt: '2026-03-25T01:00:00Z',
+            isOwnMessage: false,
+          },
+        ],
+        totalElements: 1,
+      })
+      .mockResolvedValueOnce({
+        content: [
+          {
+            id: 701,
+            conversationId: 55,
+            senderId: 9,
+            senderName: 'Seller Jane',
+            content: 'Reconnect sync message',
+            imageUrl: null,
+            status: 'DELIVERED',
+            createdAt: '2026-03-25T01:05:00Z',
+            isOwnMessage: false,
+          },
+        ],
+        totalElements: 1,
+      })
     const view = renderChatView()
+
+    await waitFor(() => {
+      expect(useChatStore.getState().messages[0]?.id).toBe(700)
+    })
 
     websocketMock.setConnectionState('connected')
     view.rerender(<ChatView conversation={activeConversation} />)
 
     await waitFor(() => {
-      expect(chatApi.getConversation).toHaveBeenCalledWith(55)
-      expect(chatApi.getMessages).toHaveBeenCalledWith(55)
-      expect(chatApi.getConversations).toHaveBeenCalled()
+      expect(chatApi.getMessages).toHaveBeenCalledWith(55, 0, 50, 700)
     })
 
     await waitFor(() => {
-      expect(useChatStore.getState().messages[0]?.content).toBe('Reconnect sync message')
-      expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.lastMessage).toBe(
-        'Background conversation refreshed',
-      )
-      expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.unreadCount).toBe(4)
+      expect(useChatStore.getState().messages).toHaveLength(2)
+      expect(useChatStore.getState().messages[0]?.id).toBe(700)
+      expect(useChatStore.getState().messages[1]?.id).toBe(701)
     })
   })
 
-  test('REST fallback sends reconcile non-active conversation preview and unread metadata immediately', async () => {
+  test('REST fallback sends reconcile the optimistic message without a follow-up refresh', async () => {
     websocketMock.setConnectionState('disconnected')
-    vi.mocked(chatApi.getConversation).mockResolvedValue({
-      ...activeConversation,
-      lastMessage: 'Offline send',
-      lastMessageAt: '2026-03-25T01:00:00Z',
-    })
-    vi.mocked(chatApi.getConversations).mockResolvedValue({
-      content: [
-        {
-          ...activeConversation,
-          lastMessage: 'Offline send',
-          lastMessageAt: '2026-03-25T01:00:00Z',
-          unreadCount: 0,
-        },
-        {
-          ...secondaryConversation,
-          lastMessage: 'Seller replied elsewhere',
-          lastMessageAt: '2026-03-25T01:02:00Z',
-          unreadCount: 3,
-        },
-      ],
-      totalElements: 2,
+    vi.mocked(chatApi.sendMessage).mockResolvedValue({
+      clientMessageId: 'client-1',
+      messageId: 901,
+      conversationId: 55,
+      status: 'PERSISTED',
+      createdAt: '2026-03-25T01:00:00Z',
     })
 
     renderChatView()
+
+    await waitFor(() => {
+      expect(chatApi.getMessages).toHaveBeenCalled()
+    })
 
     act(() => {
       screen.getByRole('button', { name: 'Send message' }).click()
@@ -392,60 +371,42 @@ describe('chat realtime fallback contract', () => {
       expect(chatApi.sendMessage).toHaveBeenCalledWith(55, {
         content: 'Offline send',
         imageUrl: undefined,
+        clientMessageId: expect.any(String),
       })
-      expect(chatApi.getConversations).toHaveBeenCalled()
     })
 
-    await waitFor(() => {
-      expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.lastMessage).toBe(
-        'Seller replied elsewhere',
-      )
-      expect(useChatStore.getState().conversations.find((conversation) => conversation.id === 77)?.unreadCount).toBe(3)
-    })
+    expect(vi.mocked(chatApi.getConversations)).not.toHaveBeenCalled()
+    expect(vi.mocked(chatApi.getConversation)).not.toHaveBeenCalled()
   })
 
-  test('connected mode renders the sender message immediately and then rehydrates it from the server ack', async () => {
-    vi.mocked(chatApi.getMessages)
-      .mockResolvedValueOnce({
-        content: [],
-        totalElements: 0,
-      })
-      .mockResolvedValueOnce({
-        content: [
-          {
-            id: 902,
-            conversationId: 55,
-            senderId: 1,
-            senderName: 'Buyer',
-            content: 'Offline send',
-            imageUrl: null,
-            status: 'DELIVERED',
-            createdAt: '2026-03-25T01:00:01Z',
-            isOwnMessage: true,
-          },
-        ],
-        totalElements: 1,
-      })
-
+  test('connected mode reconciles the sender message in place from the persisted ack', async () => {
     renderChatView()
+
+    await waitFor(() => {
+      expect(chatApi.getMessages).toHaveBeenCalled()
+    })
 
     act(() => {
       screen.getByRole('button', { name: 'Send message' }).click()
     })
 
-    await waitFor(() => {
-      expect(useChatStore.getState().messages[0]?.content).toBe('Offline send')
-      expect(useChatStore.getState().messages[0]?.isOwnMessage).toBe(true)
-    })
+    const publishPayload = websocketMock.publish.mock.calls[0]?.[1]
+    const parsedPayload = JSON.parse(publishPayload)
 
     act(() => {
-      websocketMock.emit('/user/queue/message-ack', { messageId: 902, status: 'DELIVERED' })
+      websocketMock.emit('/user/queue/message-ack', {
+        clientMessageId: parsedPayload.clientMessageId,
+        messageId: 902,
+        conversationId: 55,
+        status: 'PERSISTED',
+        createdAt: '2026-03-25T01:00:01Z',
+      })
     })
 
     await waitFor(() => {
-      expect(chatApi.getMessages).toHaveBeenCalledTimes(2)
-      expect(useChatStore.getState().messages[0]?.id).toBe(902)
-      expect(useChatStore.getState().messages[0]?.status).toBe('DELIVERED')
+      expect(parsedPayload.clientMessageId).toBeTruthy()
+      expect(parsedPayload.conversationId).toBe(55)
+      expect(chatApi.getMessages).toHaveBeenCalledTimes(1)
     })
   })
 })

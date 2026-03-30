@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Message, Conversation } from '@/types/chat'
+import type { Message, Conversation, MessageAck } from '@/types/chat'
 
 interface ChatState {
   conversations: Conversation[]
@@ -17,7 +17,10 @@ interface ChatState {
   setActiveConversation: (conversation: Conversation | null) => void
   setMessages: (messages: Message[]) => void
   addMessage: (message: Message) => void
+  appendMessages: (messages: Message[]) => void
   prependMessages: (messages: Message[]) => void
+  reconcileMessageAck: (ack: MessageAck) => Message | null
+  getLatestPersistedMessageId: (conversationId: number) => number | null
   hasSeenMessage: (messageId: number) => boolean
   markMessageSeen: (messageId: number) => void
   setTyping: (userId: number, isTyping: boolean) => void
@@ -172,6 +175,25 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   }),
 
+  appendMessages: (messages) => set((state) => {
+    const nextMessages = [...state.messages]
+    const nextSeenMessageIds = new Set(state.seenMessageIds)
+
+    for (const message of messages) {
+      if (nextSeenMessageIds.has(message.id)) {
+        continue
+      }
+
+      nextMessages.push(message)
+      nextSeenMessageIds.add(message.id)
+    }
+
+    return {
+      messages: dedupeMessages(nextMessages),
+      seenMessageIds: nextSeenMessageIds,
+    }
+  }),
+
   prependMessages: (messages) => set((state) => {
     const dedupedIncomingMessages = messages.filter((message) => !state.seenMessageIds.has(message.id))
     if (dedupedIncomingMessages.length === 0) {
@@ -186,6 +208,50 @@ export const useChatStore = create<ChatState>((set, get) => ({
       seenMessageIds: nextSeenMessageIds,
     }
   }),
+
+  reconcileMessageAck: (ack) => {
+    let reconciledMessage: Message | null = null
+
+    set((state) => {
+      const messageIndex = state.messages.findIndex((message) =>
+        message.clientMessageId === ack.clientMessageId && message.conversationId === ack.conversationId,
+      )
+
+      if (messageIndex === -1) {
+        return state
+      }
+
+      const optimisticMessage = state.messages[messageIndex]
+      reconciledMessage = {
+        ...optimisticMessage,
+        id: ack.messageId,
+        status: ack.status,
+        createdAt: ack.createdAt,
+        clientMessageId: ack.clientMessageId ?? undefined,
+      }
+
+      const nextSeenMessageIds = new Set(state.seenMessageIds)
+      nextSeenMessageIds.delete(optimisticMessage.id)
+      nextSeenMessageIds.add(ack.messageId)
+
+      return {
+        messages: dedupeMessages(
+          state.messages.map((message, index) => (index === messageIndex ? reconciledMessage : message)),
+        ),
+        seenMessageIds: nextSeenMessageIds,
+      }
+    })
+
+    return reconciledMessage
+  },
+
+  getLatestPersistedMessageId: (conversationId) => {
+    const latestMessage = [...get().messages]
+      .filter((message) => message.conversationId === conversationId && message.id > 0)
+      .sort((left, right) => right.id - left.id)[0]
+
+    return latestMessage?.id ?? null
+  },
 
   hasSeenMessage: (messageId) => get().seenMessageIds.has(messageId),
 
