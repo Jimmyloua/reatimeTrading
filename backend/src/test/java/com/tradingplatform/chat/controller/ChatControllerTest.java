@@ -3,7 +3,9 @@ package com.tradingplatform.chat.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradingplatform.chat.dto.*;
 import com.tradingplatform.chat.entity.MessageStatus;
+import com.tradingplatform.chat.kafka.ChatDeliveryConsumer;
 import com.tradingplatform.chat.service.ChatMessageCommandService;
+import com.tradingplatform.chat.service.PresenceSessionMaintenance;
 import com.tradingplatform.chat.service.ChatQueryService;
 import com.tradingplatform.chat.service.ChatService;
 import com.tradingplatform.security.JwtTokenProvider;
@@ -64,6 +66,12 @@ class ChatControllerTest {
 
     @MockBean
     private RedisMessageListenerContainer redisMessageListenerContainer;
+
+    @MockBean
+    private PresenceSessionMaintenance presenceSessionMaintenance;
+
+    @MockBean
+    private ChatDeliveryConsumer chatDeliveryConsumer;
 
     private UserPrincipal testPrincipal;
     private UsernamePasswordAuthenticationToken testAuth;
