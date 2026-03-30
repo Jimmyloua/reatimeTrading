@@ -57,8 +57,8 @@ completed: 2026-03-30
 
 Each task was committed atomically:
 
-1. **Task 1: Run focused backend and frontend verification for the new delivery lifecycle and preserved chat entry points** - `PENDING` (docs)
-2. **Task 2: Confirm browser UX parity and preserved seller/presence/layout behaviors** - `PENDING` (docs)
+1. **Task 1: Run focused backend and frontend verification for the new delivery lifecycle and preserved chat entry points** - `c244b463` (docs)
+2. **Task 2: Confirm browser UX parity and preserved seller/presence/layout behaviors** - `c244b463` (docs)
 
 ## Files Created/Modified
 - `.planning/phases/11-kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization/11-VERIFICATION.md` - records exact commands, outcomes, and requirement coverage
@@ -91,3 +91,4 @@ None - no external service configuration required.
 
 - FOUND: `.planning/phases/11-kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization/11-VERIFICATION.md`
 - FOUND: `.planning/phases/11-kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization/11-04-SUMMARY.md`
+- FOUND: `c244b463`
