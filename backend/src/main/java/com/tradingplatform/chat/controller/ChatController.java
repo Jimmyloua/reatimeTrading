@@ -1,15 +1,14 @@
 package com.tradingplatform.chat.controller;
 
 import com.tradingplatform.chat.dto.*;
+import com.tradingplatform.chat.service.ChatMessageCommandService;
 import com.tradingplatform.chat.service.ChatService;
-import com.tradingplatform.notification.service.NotificationPushService;
 import com.tradingplatform.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class ChatController {
 
     private final ChatService chatService;
-    private final NotificationPushService notificationPushService;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatMessageCommandService chatMessageCommandService;
 
     /**
      * Creates a new conversation or returns existing one.
@@ -108,33 +106,25 @@ public class ChatController {
      *
      * @param request the send message request
      * @param principal the authenticated user
-     * @return the created message response
+     * @return the persisted acknowledgment
      */
     @PostMapping("/{id}/messages")
-    public ResponseEntity<MessageResponse> sendMessage(
+    public ResponseEntity<MessageAck> sendMessage(
             @PathVariable Long id,
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody SendMessageRequest request) {
         log.debug("Sending message in conversation {} by user {}", id, principal.getId());
 
-        MessageResponse response = chatService.sendMessage(
-            id,
-            principal.getId(),
-            request.getContent(),
-            request.getImageUrl()
+        ChatMessageCommandService.PersistedChatMessage response = chatMessageCommandService.persistMessage(
+            new ChatMessageCommandService.SendChatMessageCommand(
+                id,
+                principal.getId(),
+                request.getContent(),
+                request.getImageUrl(),
+                request.getClientMessageId()
+            )
         );
-
-        Long recipientId = chatService.getOtherParticipantId(id, principal.getId());
-        if (recipientId != null) {
-            messagingTemplate.convertAndSendToUser(
-                recipientId.toString(),
-                "/queue/messages",
-                response
-            );
-            notificationPushService.pushMessageNotification(recipientId, response);
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response.ack());
     }
 
     /**

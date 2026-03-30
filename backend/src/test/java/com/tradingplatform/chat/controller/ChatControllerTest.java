@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
@@ -56,6 +57,9 @@ class ChatControllerTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private RedisMessageListenerContainer redisMessageListenerContainer;
 
     private UserPrincipal testPrincipal;
     private UsernamePasswordAuthenticationToken testAuth;
@@ -132,7 +136,7 @@ class ChatControllerTest {
             .senderId(1L)
             .senderName("Buyer")
             .content("Hello!")
-            .status(MessageStatus.SENT)
+            .status(MessageStatus.PERSISTED)
             .isOwnMessage(true)
             .createdAt(LocalDateTime.now())
             .build();
