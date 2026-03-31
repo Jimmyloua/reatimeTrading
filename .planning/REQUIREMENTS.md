@@ -18,8 +18,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **PROF-01**: User can create profile with display name
 - [x] **PROF-02**: User can upload avatar image
-- [ ] **PROF-03**: User can view their own profile with listing count and join date
-- [ ] **PROF-04**: User can view other users' profiles
+- [x] **PROF-03**: User can view their own profile with listing count and join date
+- [x] **PROF-04**: User can view other users' profiles
 
 ### Item Listings
 
@@ -145,8 +145,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 1 | Complete |
 | PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Complete |
-| PROF-03 | Phase 8 | Pending |
-| PROF-04 | Phase 8 | Pending |
+| PROF-03 | Phase 8 | Complete |
+| PROF-04 | Phase 8 | Complete |
 | LIST-01 | Phase 2 | Complete |
 | LIST-02 | Phase 2 | Complete |
 | LIST-03 | Phase 2 | Complete |
@@ -199,11 +199,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1 requirements: 48 total
-- Checked off: 29
-- Pending gap-closure requirements: 19
+- Checked off: 43
+- Pending gap-closure requirements: 7
 - Mapped to phases: 48
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-21*
-*Last updated: 2026-03-29 after milestone gap planning*
+*Last updated: 2026-03-30 after Phase 8 closure and Phase 9 execution bookkeeping*

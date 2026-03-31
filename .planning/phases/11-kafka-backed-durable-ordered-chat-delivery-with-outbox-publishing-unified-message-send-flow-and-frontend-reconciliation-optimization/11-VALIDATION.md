@@ -1,8 +1,8 @@
 ---
 phase: 11
 slug: kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization
-status: draft
-nyquist_compliant: false
+status: ready
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-03-29
 ---
@@ -19,18 +19,18 @@ created: 2026-03-29
 |----------|-------|
 | **Framework** | Spring Boot Test + JUnit 5, Vitest |
 | **Config file** | `backend/src/test/resources/application-test.yml`, `frontend/vitest.config.ts` |
-| **Quick run command** | `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest,ChatOutboxRelayTest,ChatDeliveryConsumerTest test` and `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx src/tests/chat-reconnect-catchup.test.tsx` |
+| **Quick run command** | `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest test`, `cd backend && mvn -q -Dtest=ChatOutboxRelayTest test`, `cd backend && mvn -q -Dtest=ChatDeliveryConsumerTest test`, `cd backend && mvn -q -Dtest=ChatControllerTest,ChatWebSocketControllerTest test`, `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx`, `cd frontend && npm test -- --run src/tests/chat-reconnect-catchup.test.tsx`, and `cd frontend && npm test -- --run src/tests/chat-realtime-fallback.test.tsx` |
 | **Full suite command** | `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest,ChatOutboxRelayTest,ChatDeliveryConsumerTest,ChatControllerTest,ChatWebSocketControllerTest test` and `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx src/tests/chat-reconnect-catchup.test.tsx src/tests/chat-realtime-fallback.test.tsx` |
-| **Estimated runtime** | ~60 seconds |
+| **Estimated runtime** | quick checks: 10-25 seconds each, full suite: ~45-60 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest,ChatOutboxRelayTest,ChatDeliveryConsumerTest test` or `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx src/tests/chat-reconnect-catchup.test.tsx` depending on the touched layer
+- **After every task commit:** Run one targeted smoke command for the touched area: `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest test`, `cd backend && mvn -q -Dtest=ChatOutboxRelayTest test`, `cd backend && mvn -q -Dtest=ChatDeliveryConsumerTest test`, `cd backend && mvn -q -Dtest=ChatControllerTest,ChatWebSocketControllerTest test`, `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx`, `cd frontend && npm test -- --run src/tests/chat-reconnect-catchup.test.tsx`, or `cd frontend && npm test -- --run src/tests/chat-realtime-fallback.test.tsx`
 - **After every plan wave:** Run the full suite command
 - **Before `$gsd-verify-work`:** Full suite must be green
-- **Max feedback latency:** 60 seconds
+- **Max feedback latency:** 30 seconds for task-level smoke checks, 60 seconds for the wave-level full suite
 
 ---
 
@@ -38,11 +38,15 @@ created: 2026-03-29
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 11-01-01 | 01 | 1 | durable persistence + unified send | backend unit/integration | `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest,ChatOutboxRelayTest test` | no | pending |
-| 11-02-01 | 02 | 2 | ordered async delivery | backend integration | `cd backend && mvn -q -Dtest=ChatDeliveryConsumerTest,ChatWebSocketControllerTest test` | no | pending |
+| 11-01-01 | 01 | 1 | durable persistence + outbox foundation | backend unit | `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest test` | no | pending |
+| 11-01-02 | 01 | 1 | shared persisted ack contract | backend controller | `cd backend && mvn -q -Dtest=ChatWebSocketControllerTest test` | no | pending |
+| 11-02-01 | 02 | 2 | ordered outbox relay publication | backend integration | `cd backend && mvn -q -Dtest=ChatOutboxRelayTest test` | no | pending |
+| 11-02-02 | 02 | 2 | async recipient delivery lifecycle | backend integration | `cd backend && mvn -q -Dtest=ChatDeliveryConsumerTest test` | no | pending |
+| 11-02-03 | 02 | 2 | reconnect delta API | backend controller/query | `cd backend && mvn -q -Dtest=ChatControllerTest test` | no | pending |
 | 11-03-01 | 03 | 3 | optimistic ack reconciliation | frontend hook/store | `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx` | no | pending |
 | 11-03-02 | 03 | 3 | reconnect cursor catch-up | frontend hook/store | `cd frontend && npm test -- --run src/tests/chat-reconnect-catchup.test.tsx` | no | pending |
 | 11-04-01 | 04 | 4 | end-to-end delivery parity | backend + frontend regression | `cd backend && mvn -q -Dtest=ChatMessageCommandServiceTest,ChatOutboxRelayTest,ChatDeliveryConsumerTest,ChatControllerTest,ChatWebSocketControllerTest test` and `cd frontend && npm test -- --run src/tests/chat-message-ack-reconciliation.test.tsx src/tests/chat-reconnect-catchup.test.tsx src/tests/chat-realtime-fallback.test.tsx` | no | pending |
+| 11-04-02 | 04 | 4 | verification report completeness | documentation smoke | `powershell -Command \"if (Select-String -Path '.planning/phases/11-kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization/11-VERIFICATION.md' -Pattern 'sender ack shows PERSISTED before recipient delivery is confirmed','reconnect catch-up appends only missing messages','typing and presence still use Redis paths','CHAT-01','CHAT-02','CHAT-03','CHAT-04','CHAT-05','CHAT-06','CHAT-07','P6-01','P6-02','P6-03','P6-04' -Quiet) { exit 0 } else { exit 1 }\"` | no | pending |
 
 ---
 
@@ -72,7 +76,7 @@ created: 2026-03-29
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
 - [ ] Wave 0 covers all MISSING references
 - [ ] No watch-mode flags
-- [ ] Feedback latency < 60s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] Feedback latency < 60s
+- [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending

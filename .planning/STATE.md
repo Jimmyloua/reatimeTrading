@@ -3,52 +3,52 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-29T08:03:09.311Z"
+last_updated: "2026-03-30T15:23:04.435Z"
 progress:
   total_phases: 11
-  completed_phases: 7
-  total_plans: 50
-  completed_plans: 44
+  completed_phases: 10
+  total_plans: 55
+  completed_plans: 52
 ---
 
 # State: Real-Time Trading Platform
 
-**Last Updated:** 2026-03-29
+**Last Updated:** 2026-03-30
 
 ## Project Reference
 
 **Core Value:** Safe, transparent peer-to-peer transactions for second-hand digital devices with real-time communication and reputation-based trust.
 
-**Current Focus:** Phase 08 — public-discovery-access-and-profile-surface-integration-repair
+**Current Focus:** Phase 11 — kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization
 
 **Tech Stack:** Spring Boot 3.5.x + JDK 21, React 19, MySQL 8, Redis 7, Kafka 4
 
 ## Current Position
 
-Phase: 08 (public-discovery-access-and-profile-surface-integration-repair) — EXECUTING
-Plan: 2 of 3
+Phase: 11 (kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization) — EXECUTING
+Plan: 2 of 4
 
 ### Phase Context
 
-**Phase 8 Goal:** Anonymous users can enter discovery through homepage, browse, and public profile surfaces without backend authorization mismatches, and profile listing counts reflect actual marketplace activity.
+**Phase 10 Goal:** The milestone's planning artifacts, validation records, and manual verification status are internally consistent so milestone archival reflects the real shipped state.
 
 **Success Criteria:**
 
-1. Anonymous users can load homepage, browse, and public profile surfaces without hitting backend authorization mismatches
-2. Public discovery entry points from categories, modules, and collections resolve successfully into shareable browse URLs
-3. Self and public profiles show truthful listing counts derived from listing data
-4. Public rating and profile surfaces remain accessible and accurate after the authorization changes
+1. Phase 06 verification and validation artifacts no longer contradict the approved shipped evidence
+2. The milestone audit reflects the current Phase 08 and Phase 09 state instead of stale pre-closure findings
+3. Any remaining archival blocker is explicit, truthful, and consistent across audit and tracker artifacts
+4. Milestone archival is not overstated while Phase 09 human verification remains pending
 
-**Requirements:** DISC-01 to DISC-05, P7-01 to P7-03, PROF-03 to PROF-04
+**Requirements:** None (process and audit closure)
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Total Phases | 7 |
-| Phases Complete | 7 |
+| Total Phases | 11 |
+| Phases Complete | 8 |
 | Total Requirements (v1) | 48 |
-| Requirements Complete | 48 |
+| Requirements Complete | 43 |
 | Current Streak | 26 |
 | Phase 01 P01 | 15 minutes | 3 tasks | 9 files |
 | Phase 01 P02 | 22min | 3 tasks | 18 files |
@@ -91,6 +91,11 @@ Plan: 2 of 3
 | Phase 07 P06 | 12min | 2 tasks | 6 files |
 | Phase 07 P07 | 18min | 2 tasks | 8 files |
 | Phase 08 P01 | 19min | 2 tasks | 4 files |
+| Phase 08 P02 | 18min | 2 tasks | 5 files |
+| Phase 08 P03 | 16min | 2 tasks | 2 files |
+| Phase 10 P01 | inline | 2 tasks | 3 files |
+| Phase 10 P02 | inline | 2 tasks | 4 files |
+| Phase 11 P01 | 9 min | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -137,6 +142,8 @@ Plan: 2 of 3
 | Notification center state is URL-backed and shared between surfaces | Keeps unread counts, filters, and grouped preferences synchronized between the bell dropdown and full page | Plan 07-04 / 07-07 |
 | Anonymous discovery access uses explicit GET matchers only | Opens browse, content, and public rating reads without exposing listing or rating writes | Plan 08-01 |
 | Public discovery authorization is pinned with MockMvc controller tests | Keeps homepage, browse, category, and public rating routes covered by backend regression tests | Plan 08-01 |
+| Transaction completion is finalized from the buyer receipt boundary | Keeps the trust-loop repair inside the existing transaction action instead of adding another completion step | Plan 09-01 |
+| Sold notifications continue through NotificationPushService | Preserves preference handling and notification routing consistency when listing status changes to SOLD | Plan 09-02 |
 
 ### Technical Decisions
 
@@ -215,19 +222,31 @@ Plan: 2 of 3
 | 2026-03-26 | Plan 07-05 completed | Targeted automation passed and manual verification was approved |
 | 2026-03-26 | Phase 7 COMPLETE | Discovery merchandising and notification management synchronization verified |
 | 2026-03-29 | Plan 08-01 completed | Anonymous discovery and public rating reads aligned with backend security and regression coverage |
+| 2026-03-29 | Plan 08-02 completed | Profile listing counts and anonymous public profile trust surfaces now use truthful data |
+| 2026-03-29 | Plan 08-03 completed | Discovery/profile verification gate passed and logged-out approval was recorded |
+| 2026-03-29 | Phase 8 COMPLETE | Anonymous discovery entry and public profile surfaces are repaired and verified |
+| 2026-03-30 | Plan 09-01 completed | Confirmed transactions now finalize into a persisted completed state and unlock truthful rating eligibility |
+| 2026-03-30 | Plan 09-02 completed | Review CTA wiring, rating query refresh, and sold-notification emission shipped |
+| 2026-03-30 | Plan 09-03 completed | Focused backend and frontend trust-loop regression bundles passed |
+| 2026-03-30 | Phase 9 automation complete | Verification is green in automation and human browser checks were persisted to 09-HUMAN-UAT.md |
+| 2026-03-30 | Plan 10-01 completed | Phase 06 verification and validation metadata were reconciled with the approved human evidence |
+| 2026-03-30 | Plan 10-02 completed | Milestone audit was refreshed and archival truth now explicitly depends on Phase 09 human verification |
 
 ### Next Actions
 
-1. Execute Plan 08-02 to replace hardcoded profile listing counts with listing-backed aggregates
-2. Continue the Phase 08 gap-closure plans, then proceed to Phase 09 and Phase 10 before re-auditing the milestone
+1. Run the Phase 09 human verification checklist from `.planning/phases/09-transaction-rating-loop-and-sold-notification-closure/09-HUMAN-UAT.md`
+2. After approval, update the milestone audit verdict and then proceed to milestone completion
 
 ### Blockers
 
-- Milestone audit reopened 19 requirements across public discovery, profile truthfulness, transaction-to-rating completion, and sold notification delivery
+- Phase 09 still needs manual browser confirmation for the review CTA flow, public profile trust refresh, and realtime `ITEM_SOLD` notification visibility
 
 ---
 
 *State initialized: 2026-03-21*
 *Phase 7 complete: 2026-03-26*
 *Gap closure phases 8-10 added: 2026-03-29*
+*Phase 8 complete: 2026-03-29*
+*Phase 9 execution recorded: 2026-03-30*
+*Phase 10 execution recorded: 2026-03-30*
 *Phase 11 added: 2026-03-29*

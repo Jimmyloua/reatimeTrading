@@ -14,7 +14,7 @@
 - [x] **Phase 5: Notification detail actions, quick notification settings, and seller chat entry from listings** - Users can open notification context quickly and start seller chats directly from listings
 - [x] **Phase 6: Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization** - Users can trust realtime seller presence and responsive chat behavior across reconnects and multiple nodes
 - [x] **Phase 7: Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish** - Users can enter discovery through server-driven content and synchronized notification management
-- [ ] **Phase 8: Public discovery access and profile surface integration repair** - Restore anonymous discovery flows and truthful profile data across browse, homepage, and public profile surfaces
+- [x] **Phase 8: Public discovery access and profile surface integration repair** - Restore anonymous discovery flows and truthful profile data across browse, homepage, and public profile surfaces
 - [ ] **Phase 9: Transaction rating loop and sold notification closure** - Close the post-sale trust loop so completed transactions unlock ratings and sold notifications
 - [ ] **Phase 10: Milestone validation and audit hygiene** - Reconcile stale verification and validation artifacts so the milestone can be archived cleanly
 
@@ -163,10 +163,10 @@ Plans:
 | 5. Notification detail actions, quick notification settings, and seller chat entry from listings | 4/4 | Complete | 2026-03-24 |
 | 6. Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization | 4/4 | Complete | 2026-03-25 |
 | 7. Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish | 8/8 | Complete | 2026-03-26 |
-| 8. Public discovery access and profile surface integration repair | 1/3 | In Progress | - |
-| 9. Transaction rating loop and sold notification closure | 0/3 | Planned | - |
-| 10. Milestone validation and audit hygiene | 0/2 | Planned | - |
-| 11. Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization | 0/1 | Planned | - |
+| 8. Public discovery access and profile surface integration repair | 3/3 | Complete | 2026-03-29 |
+| 9. Transaction rating loop and sold notification closure | 3/3 | In Progress | - |
+| 10. Milestone validation and audit hygiene | 2/2 | In Progress | - |
+| 11. Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization | 2/4 | In Progress|  |
 
 ## Coverage
 
@@ -274,12 +274,12 @@ Plans:
 **Requirements**: DISC-01, DISC-02, DISC-03, DISC-04, DISC-05, P7-01, P7-02, P7-03, PROF-03, PROF-04
 **Gap Closure:** Closes milestone audit findings for anonymous discovery 401s, public profile mismatches, and hardcoded profile listing counts.
 **Depends on:** Phase 7
-**Plans:** 3/3 planned
+**Plans:** 3/3 executed
 
-Planned waves:
+Executed waves:
 - [x] 08-01-PLAN.md - Public API authorization alignment (Wave 1) - Open the required browse, content, category, public profile, and public rating endpoints to match the frontend's anonymous surfaces
-- [ ] 08-02-PLAN.md - Profile listing count and public data integration (Wave 2) - Replace hardcoded profile listing counts with listing-backed aggregates and verify public profile truthfulness
-- [ ] 08-03-PLAN.md - Anonymous discovery and profile verification gate (Wave 3) - Add regression coverage for homepage, browse, module-entry, and public profile flows
+- [x] 08-02-PLAN.md - Profile listing count and public data integration (Wave 2) - Replace hardcoded profile listing counts with listing-backed aggregates and verify public profile truthfulness
+- [x] 08-03-PLAN.md - Anonymous discovery and profile verification gate (Wave 3) - Add regression coverage for homepage, browse, module-entry, and public profile flows
 
 ### Phase 9: Transaction rating loop and sold notification closure
 
@@ -287,12 +287,12 @@ Planned waves:
 **Requirements**: LIST-08, NOTF-02, TRAN-04, TRAN-05, TRAN-06, RATE-01, RATE-02, RATE-03, RATE-04
 **Gap Closure:** Closes milestone audit findings for unreachable rating eligibility, stubbed rating CTA wiring, and orphaned item-sold notifications.
 **Depends on:** Phase 8
-**Plans:** 0/3 planned
+**Plans:** 3/3 executed, human verification pending
 
-Planned waves:
-- [ ] 09-01-PLAN.md - Transaction completion and rating eligibility backend (Wave 1) - Repair status transitions so standard completed transactions can be rated and reputation aggregates remain correct
-- [ ] 09-02-PLAN.md - Rating CTA and sold notification integration (Wave 2) - Wire the frontend review action and emit sold notifications from listing status changes
-- [ ] 09-03-PLAN.md - Trust loop verification gate (Wave 3) - Add regression coverage for completed transaction, review submission, profile rating visibility, and item-sold notification delivery
+Executed waves:
+- [x] 09-01-PLAN.md - Transaction completion and rating eligibility backend (Wave 1) - Repair status transitions so standard completed transactions can be rated and reputation aggregates remain correct
+- [x] 09-02-PLAN.md - Rating CTA and sold notification integration (Wave 2) - Wire the frontend review action and emit sold notifications from listing status changes
+- [x] 09-03-PLAN.md - Trust loop verification gate (Wave 3) - Add regression coverage for completed transaction, review submission, profile rating visibility, and item-sold notification delivery
 
 ### Phase 10: Milestone validation and audit hygiene
 
@@ -300,11 +300,11 @@ Planned waves:
 **Requirements**: None (process and audit closure)
 **Gap Closure:** Closes the stale Phase 06 verification status, Phase 06 validation draft state, and remaining milestone validation debt before archival.
 **Depends on:** Phase 9
-**Plans:** 0/2 planned
+**Plans:** 2/2 executed, archival blocker review pending
 
-Planned waves:
-- [ ] 10-01-PLAN.md - Phase 06 verification and validation reconciliation (Wave 1) - Update stale human-verification and Nyquist metadata to reflect the approved shipped state
-- [ ] 10-02-PLAN.md - Milestone re-audit and archival readiness gate (Wave 2) - Re-run milestone audit, confirm closure, and prepare clean milestone completion
+Executed waves:
+- [x] 10-01-PLAN.md - Phase 06 verification and validation reconciliation (Wave 1) - Update stale human-verification and Nyquist metadata to reflect the approved shipped state
+- [x] 10-02-PLAN.md - Milestone re-audit and archival readiness gate (Wave 2) - Re-run milestone audit, confirm closure, and prepare clean milestone completion
 
 ### Phase 11: Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization
 
@@ -312,11 +312,11 @@ Planned waves:
 **Requirements**: CHAT-01, CHAT-02, CHAT-03, CHAT-04, CHAT-05, CHAT-06, CHAT-07, P6-01, P6-02, P6-03, P6-04
 **Architecture Note**: Phase 11 supersedes the Phase 6 Redis-backed message fan-out approach for durable chat delivery. Redis remains required for presence and typing, while Kafka becomes the durable ordered message-delivery transport.
 **Depends on:** Phase 10
-**Plans:** 4 plans
+**Plans:** 2/4 plans executed
 
 Plans:
-- [ ] 11-01-PLAN.md - Durable send foundation and persisted acknowledgment contract (Wave 1) - Add transactional outbox persistence, shared backend send service, and truthful `PERSISTED` sender ACK semantics
-- [ ] 11-02-PLAN.md - Kafka relay and async delivery consumer pipeline (Wave 2) - Publish outbox rows to Kafka keyed by `conversationId` and move recipient push plus delivery-state updates to async consumers
+- [x] 11-01-PLAN.md - Durable send foundation and persisted acknowledgment contract (Wave 1) - Add transactional outbox persistence, shared backend send service, and truthful `PERSISTED` sender ACK semantics
+- [x] 11-02-PLAN.md - Kafka relay and async delivery consumer pipeline (Wave 2) - Publish outbox rows to Kafka keyed by `conversationId` and move recipient push plus delivery-state updates to async consumers
 - [ ] 11-03-PLAN.md - Frontend optimistic reconciliation and reconnect catch-up (Wave 3) - Replace ACK-triggered full refreshes with local reconciliation and `afterMessageId` delta recovery
 - [ ] 11-04-PLAN.md - Delivery lifecycle verification gate (Wave 4) - Prove `PERSISTED` to `DELIVERED` behavior, reconnect catch-up, and Redis presence/typing regression safety
 
