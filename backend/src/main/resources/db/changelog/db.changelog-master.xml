@@ -16,5 +16,6 @@
     <include file="011-seed-homepage-content.xml" relativeToChangelogFile="true"/>
     <include file="012-add-transaction-completed-at.xml" relativeToChangelogFile="true"/>
     <include file="013-create-chat-message-outbox.xml" relativeToChangelogFile="true"/>
+    <include file="014-update-chat-message-status-default.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

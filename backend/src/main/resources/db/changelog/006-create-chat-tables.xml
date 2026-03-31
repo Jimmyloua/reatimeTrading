@@ -58,7 +58,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="image_url" type="VARCHAR(500)"/>
-            <column name="status" type="VARCHAR(20)" defaultValue="PERSISTED">
+            <column name="status" type="VARCHAR(20)" defaultValue="SENT">
                 <constraints nullable="false"/>
             </column>
             <column name="created_at" type="TIMESTAMP">
