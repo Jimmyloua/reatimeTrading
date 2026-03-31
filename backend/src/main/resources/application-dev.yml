@@ -6,10 +6,20 @@ spring:
     name: trading-platform
 
   datasource:
-    url: jdbc:mysql://localhost:3306/trading_platform_dev?createDatabaseIfNotExist=true
-    username: root
-    password: la19991104
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/trading_platform_dev?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:la19991104}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: trading-platform-dev-hikari
+      maximum-pool-size: ${MYSQL_MAX_POOL_SIZE:20}
+      minimum-idle: ${MYSQL_MIN_IDLE:5}
+      connection-timeout: ${MYSQL_CONNECTION_TIMEOUT_MS:30000}
+      validation-timeout: ${MYSQL_VALIDATION_TIMEOUT_MS:5000}
+      idle-timeout: ${MYSQL_IDLE_TIMEOUT_MS:600000}
+      max-lifetime: ${MYSQL_MAX_LIFETIME_MS:1800000}
+      keepalive-time: ${MYSQL_KEEPALIVE_TIME_MS:300000}
+      auto-commit: false
 
   jpa:
     properties:
@@ -24,11 +34,42 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: ${KAFKA_CHAT_DELIVERY_GROUP_ID:chat-delivery}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.tradingplatform.chat.kafka,com.tradingplatform.chat.entity
+        spring.json.value.default.type: com.tradingplatform.chat.kafka.ChatDeliveryEvent
+        spring.json.use.type.headers: false
+    listener:
+      type: single
+    admin:
+      auto-create: true
+      properties:
+        bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
   data:
     redis:
-      host: localhost
-      port: 6379
-      password:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:la19991104}
+      connect-timeout: ${REDIS_CONNECT_TIMEOUT_MS:5000ms}
+      timeout: ${REDIS_TIMEOUT_MS:5000ms}
+      lettuce:
+        pool:
+          max-active: ${REDIS_MAX_ACTIVE:16}
+          max-idle: ${REDIS_MAX_IDLE:8}
+          min-idle: ${REDIS_MIN_IDLE:2}
+          max-wait: ${REDIS_MAX_WAIT_MS:5000ms}
 
   threads:
     virtual:
@@ -38,3 +79,10 @@ logging:
   level:
     com.tradingplatform: DEBUG
     org.springframework.security: DEBUG
+
+chat:
+  delivery:
+    group-id: ${KAFKA_CHAT_DELIVERY_GROUP_ID:chat-delivery}
+    topic:
+      partitions: ${KAFKA_CHAT_DELIVERY_TOPIC_PARTITIONS:1}
+      replication-factor: ${KAFKA_CHAT_DELIVERY_TOPIC_REPLICATION_FACTOR:1}
