@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Set;
 
@@ -42,27 +43,26 @@ public class AvatarService {
      * Implements D-12: Replaces existing avatar
      */
     public String storeAvatar(MultipartFile file, Long userId) {
+        return storeAvatar(AvatarUpload.fromMultipartFile(file), userId);
+    }
+
+    public String storeAvatar(AvatarUpload file, Long userId) {
         validateFile(file);
 
-        String filename = generateFilename(userId, file.getContentType());
+        String filename = generateFilename(userId, file.contentType());
 
-        // Delete old avatar if exists (D-12)
         if (storageService.exists(filename)) {
             storageService.delete(filename);
         }
 
         try {
-            // Read original image
-            BufferedImage original = ImageIO.read(file.getInputStream());
+            BufferedImage original = ImageIO.read(new ByteArrayInputStream(file.bytes()));
             if (original == null) {
                 throw new ApiException(ErrorCode.INVALID_AVATAR, "Invalid image file");
             }
 
-            // Generate thumbnail
             BufferedImage thumbnail = createThumbnail(original);
-
-            // Store the thumbnail
-            String format = getFormat(file.getContentType());
+            String format = getFormat(file.contentType());
             storageService.store(filename, thumbnail, format);
 
             log.info("Stored avatar for user {}: {}", userId, filename);
@@ -79,16 +79,20 @@ public class AvatarService {
      * Implements D-11: Content type validation
      */
     public void validateFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
+        validateFile(AvatarUpload.fromMultipartFile(file));
+    }
+
+    public void validateFile(AvatarUpload file) {
+        if (file == null || file.size() == 0 || file.bytes().length == 0) {
             throw new ApiException(ErrorCode.INVALID_AVATAR, "File is empty");
         }
 
-        if (file.getSize() > maxFileSize) {
+        if (file.size() > maxFileSize) {
             throw new ApiException(ErrorCode.INVALID_AVATAR,
                     "File exceeds maximum size of 5 MB");
         }
 
-        String contentType = file.getContentType();
+        String contentType = file.contentType();
         if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
             throw new ApiException(ErrorCode.INVALID_AVATAR,
                     "Only JPEG, PNG, and WebP images are allowed");
@@ -145,5 +149,19 @@ public class AvatarService {
             case "image/webp" -> "webp";
             default -> "jpg";
         };
+    }
+
+    public record AvatarUpload(byte[] bytes, long size, String contentType) {
+
+        public static AvatarUpload fromMultipartFile(MultipartFile file) {
+            if (file == null) {
+                return new AvatarUpload(new byte[0], 0, null);
+            }
+            try {
+                return new AvatarUpload(file.getBytes(), file.getSize(), file.getContentType());
+            } catch (IOException exception) {
+                throw new ApiException(ErrorCode.AVATAR_UPLOAD_FAILED, "Failed to read avatar upload");
+            }
+        }
     }
 }

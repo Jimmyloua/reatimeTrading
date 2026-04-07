@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +92,25 @@ public class ListingImageService {
 
         log.info("Uploaded {} images for listing {} by user {}", files.size(), listingId, userId);
         return savedImages;
+    }
+
+    public Mono<List<ListingImage>> uploadImagesReactive(
+            Long listingId,
+            List<MultipartFile> files,
+            Integer primaryIndex,
+            Long userId
+    ) {
+        return Mono.fromCallable(() -> prepareUploadContext(listingId, files, userId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMapMany(context -> Flux.range(0, context.files().size())
+                        .concatMap(index -> storeAndPersistImage(context, index, primaryIndex)))
+                .collectList()
+                .doOnSuccess(savedImages -> log.info(
+                        "Uploaded {} images for listing {} by user {}",
+                        savedImages.size(),
+                        listingId,
+                        userId
+                ));
     }
 
     /**
@@ -197,5 +219,61 @@ public class ListingImageService {
             case "image/webp" -> "webp";
             default -> "jpg";
         };
+    }
+
+    private UploadContext prepareUploadContext(Long listingId, List<MultipartFile> files, Long userId) {
+        Listing listing = listingRepository.findByIdAndDeletedFalse(listingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.LISTING_NOT_FOUND));
+
+        if (!listing.getUserId().equals(userId)) {
+            throw new ApiException(ErrorCode.LISTING_ACCESS_DENIED);
+        }
+
+        long currentCount = listingImageRepository.countByListingId(listingId);
+        if (currentCount + files.size() > maxImages) {
+            throw new ApiException(
+                    ErrorCode.IMAGE_LIMIT_EXCEEDED,
+                    "Maximum " + maxImages + " images allowed per listing. Current: "
+                            + currentCount + ", attempting to add: " + files.size()
+            );
+        }
+
+        for (MultipartFile file : files) {
+            validateFile(file);
+        }
+
+        return new UploadContext(listing, files, (int) currentCount);
+    }
+
+    private Mono<ListingImage> storeAndPersistImage(UploadContext context, int index, Integer primaryIndex) {
+        MultipartFile file = context.files().get(index);
+        String format = getFormat(file.getContentType());
+        int displayOrder = context.startOrder() + index;
+
+        return listingStorageService.storeReactive(file, context.listing().getId(), displayOrder, format)
+                .flatMap(filename -> Mono.fromCallable(() -> saveListingImage(
+                        context.listing(),
+                        filename,
+                        isPrimary(primaryIndex, index, context.startOrder()),
+                        displayOrder
+                )).subscribeOn(Schedulers.boundedElastic()));
+    }
+
+    private ListingImage saveListingImage(Listing listing, String filename, boolean isPrimary, int displayOrder) {
+        ListingImage image = ListingImage.builder()
+                .listing(listing)
+                .imagePath(filename)
+                .isPrimary(isPrimary)
+                .displayOrder(displayOrder)
+                .build();
+        return listingImageRepository.save(image);
+    }
+
+    private boolean isPrimary(Integer primaryIndex, int index, int currentCount) {
+        return (primaryIndex != null && primaryIndex == index)
+                || (primaryIndex == null && index == 0 && currentCount == 0);
+    }
+
+    private record UploadContext(Listing listing, List<MultipartFile> files, int startOrder) {
     }
 }

@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -71,6 +73,11 @@ public class ListingStorageService {
         }
     }
 
+    public Mono<String> storeReactive(MultipartFile file, Long listingId, int order, String format) {
+        return Mono.fromCallable(() -> store(file, listingId, order, format))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
     /**
      * Deletes an image file.
      */
@@ -82,6 +89,12 @@ public class ListingStorageService {
         } catch (IOException e) {
             log.warn("Failed to delete listing image: {}", filename, e);
         }
+    }
+
+    public Mono<Void> deleteReactive(String filename) {
+        return Mono.fromRunnable(() -> delete(filename))
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
     }
 
     /**

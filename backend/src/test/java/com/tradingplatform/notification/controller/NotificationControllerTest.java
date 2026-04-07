@@ -16,19 +16,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Transactional
 class NotificationControllerTest {
     private static final String REDIS_EXECUTABLE =
             System.getProperty("redis.server.executable",
@@ -85,7 +89,7 @@ class NotificationControllerTest {
 
         // Register a test user
         RegisterRequest registerRequest = new RegisterRequest("notif@example.com", "password123");
-        MvcResult result = mockMvc.perform(post("/api/auth/register")
+        MvcResult result = performResolved(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isOk())
@@ -100,8 +104,13 @@ class NotificationControllerTest {
     @DisplayName("GET /api/notifications returns notifications for authenticated user (NOTF-03)")
     void getNotifications_authenticated_returnsNotifications() throws Exception {
         // Arrange
-        createTestNotification(testUserId, NotificationType.NEW_MESSAGE, "Test Notification 1");
-        createTestNotification(testUserId, NotificationType.ITEM_SOLD, "Test Notification 2");
+        Notification older = createTestNotification(testUserId, NotificationType.NEW_MESSAGE, "Test Notification 1");
+        older.setCreatedAt(LocalDateTime.of(2026, 4, 1, 9, 0));
+        notificationRepository.save(older);
+
+        Notification newer = createTestNotification(testUserId, NotificationType.ITEM_SOLD, "Test Notification 2");
+        newer.setCreatedAt(LocalDateTime.of(2026, 4, 1, 9, 5));
+        notificationRepository.save(newer);
 
         // Act & Assert
         mockMvc.perform(get("/api/notifications")
@@ -352,6 +361,23 @@ class NotificationControllerTest {
                 .read(false)
                 .build();
         return notificationRepository.save(notification);
+    }
+
+    private ResultActions performResolved(RequestBuilder requestBuilder) throws Exception {
+        ResultActions resultActions = mockMvc.perform(requestBuilder);
+        MvcResult mvcResult = resultActions.andReturn();
+        if (!mvcResult.getRequest().isAsyncStarted()) {
+            return resultActions;
+        }
+        if (mvcResult.getRequest().getUserPrincipal() instanceof Authentication authenticationToken) {
+            try {
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                return mockMvc.perform(asyncDispatch(mvcResult));
+            } finally {
+                SecurityContextHolder.clearContext();
+            }
+        }
+        return mockMvc.perform(asyncDispatch(mvcResult));
     }
 
     @AfterAll

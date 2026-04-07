@@ -6,16 +6,15 @@ import com.tradingplatform.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -25,35 +24,30 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/users/me")
 @RequiredArgsConstructor
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-public class AvatarController {
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+public class AvatarLegacyController {
 
     private final AvatarService avatarService;
     private final UserRepository userRepository;
 
-    /**
-     * Uploads an avatar image for the current user.
-     * Implements PROF-02: User can upload avatar image.
-     * Implements D-09: Avatar stored on local filesystem.
-     * Implements D-10: Max 5 MB file size.
-     * Implements D-11: JPEG, PNG, WebP only.
-     * Implements D-12: Replaces existing avatar.
-     */
     @PostMapping("/avatar")
     @PreAuthorize("isAuthenticated()")
     public Mono<ResponseEntity<Map<String, String>>> uploadAvatar(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestPart("file") Mono<FilePart> filePart) {
-        return filePart
-                .flatMap(this::toAvatarUpload)
-                .flatMap(upload -> Mono.fromCallable(() -> uploadAvatarBlocking(principal, upload)))
+            @RequestParam("file") MultipartFile file
+    ) {
+        return Mono.fromCallable(() -> uploadAvatarBlocking(principal, file))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    private ResponseEntity<Map<String, String>> uploadAvatarBlocking(
-            UserPrincipal principal,
-            AvatarService.AvatarUpload file
-    ) {
+    @DeleteMapping("/avatar")
+    @PreAuthorize("isAuthenticated()")
+    public Mono<ResponseEntity<Void>> deleteAvatar(@AuthenticationPrincipal UserPrincipal principal) {
+        return Mono.fromCallable(() -> deleteAvatarBlocking(principal))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private ResponseEntity<Map<String, String>> uploadAvatarBlocking(UserPrincipal principal, MultipartFile file) {
         String filename = avatarService.storeAvatar(file, principal.getId());
 
         User user = userRepository.findById(principal.getId())
@@ -63,18 +57,7 @@ public class AvatarController {
 
         String avatarUrl = "/uploads/avatars/" + filename;
         log.info("Avatar uploaded for user {}: {}", principal.getId(), avatarUrl);
-
         return ResponseEntity.ok(Map.of("avatarUrl", avatarUrl));
-    }
-
-    /**
-     * Deletes the avatar for the current user.
-     */
-    @DeleteMapping("/avatar")
-    @PreAuthorize("isAuthenticated()")
-    public Mono<ResponseEntity<Void>> deleteAvatar(@AuthenticationPrincipal UserPrincipal principal) {
-        return Mono.fromCallable(() -> deleteAvatarBlocking(principal))
-                .subscribeOn(Schedulers.boundedElastic());
     }
 
     private ResponseEntity<Void> deleteAvatarBlocking(UserPrincipal principal) {
@@ -89,21 +72,5 @@ public class AvatarController {
         }
 
         return ResponseEntity.noContent().build();
-    }
-
-    private Mono<AvatarService.AvatarUpload> toAvatarUpload(FilePart filePart) {
-        return DataBufferUtils.join(filePart.content())
-                .map(dataBuffer -> {
-                    byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                    dataBuffer.read(bytes);
-                    DataBufferUtils.release(dataBuffer);
-                    return new AvatarService.AvatarUpload(
-                            bytes,
-                            bytes.length,
-                            filePart.headers().getContentType() != null
-                                    ? filePart.headers().getContentType().toString()
-                                    : null
-                    );
-                });
     }
 }

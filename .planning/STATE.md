@@ -3,43 +3,43 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T15:23:04.435Z"
+last_updated: "2026-04-07T13:22:25.433Z"
 progress:
-  total_phases: 11
-  completed_phases: 10
-  total_plans: 55
-  completed_plans: 52
+  total_phases: 12
+  completed_phases: 11
+  total_plans: 62
+  completed_plans: 57
 ---
 
 # State: Real-Time Trading Platform
 
-**Last Updated:** 2026-03-30
+**Last Updated:** 2026-04-03
 
 ## Project Reference
 
 **Core Value:** Safe, transparent peer-to-peer transactions for second-hand digital devices with real-time communication and reputation-based trust.
 
-**Current Focus:** Phase 11 — kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization
+**Current Focus:** Phase 12 — refactor-the-project-using-spring-webflux-while-keeping-all-existing-functionality-available-after-refactoring
 
 **Tech Stack:** Spring Boot 3.5.x + JDK 21, React 19, MySQL 8, Redis 7, Kafka 4
 
 ## Current Position
 
-Phase: 11 (kafka-backed-durable-ordered-chat-delivery-with-outbox-publishing-unified-message-send-flow-and-frontend-reconciliation-optimization) — EXECUTING
-Plan: 2 of 4
+Phase: 12 (refactor-the-project-using-spring-webflux-while-keeping-all-existing-functionality-available-after-refactoring) — EXECUTING
+Plan: 1 of 7
 
 ### Phase Context
 
-**Phase 10 Goal:** The milestone's planning artifacts, validation records, and manual verification status are internally consistent so milestone archival reflects the real shipped state.
+**Phase 12 Goal:** The backend runs on Spring WebFlux with reactive security, reactive persistence, and WebFlux-compatible realtime transport while preserving the platform's shipped user-facing behavior across auth, listings, content, chat, notifications, uploads, and transactions.
 
 **Success Criteria:**
 
-1. Phase 06 verification and validation artifacts no longer contradict the approved shipped evidence
-2. The milestone audit reflects the current Phase 08 and Phase 09 state instead of stale pre-closure findings
-3. Any remaining archival blocker is explicit, truthful, and consistent across audit and tracker artifacts
-4. Milestone archival is not overstated while Phase 09 human verification remains pending
+1. Auth, profile, listing, content, upload, chat, notification, and transaction flows keep their current user-visible behavior after the backend runtime becomes WebFlux-based
+2. Reactive security, persistence, and realtime transport replace servlet-only production paths without losing parity coverage
+3. Public browse/read routes and authenticated write routes preserve the current contract and authorization semantics
+4. Remaining runtime cutover risks stay explicit and are covered by migration-specific verification
 
-**Requirements:** None (process and audit closure)
+**Requirements:** P12-01 to P12-06
 
 ## Performance Metrics
 
@@ -165,6 +165,7 @@ Plan: 2 of 4
 - Phase 6 added: Chat presence reliability, multi-conversation seller status sync, responsive message layout, and Redis-backed realtime optimization
 - Phase 7 added: Browse category hover filtering, product collections, notification management, and homepage image modules inspired by Goofish
 - Phase 11 added: Kafka-backed durable ordered chat delivery with outbox publishing, unified message send flow, and frontend reconciliation optimization
+- Phase 12 added: Refactor the project using Spring WebFlux while keeping all existing functionality available after refactoring
 
 ## Session Continuity
 
@@ -231,14 +232,18 @@ Plan: 2 of 4
 | 2026-03-30 | Phase 9 automation complete | Verification is green in automation and human browser checks were persisted to 09-HUMAN-UAT.md |
 | 2026-03-30 | Plan 10-01 completed | Phase 06 verification and validation metadata were reconciled with the approved human evidence |
 | 2026-03-30 | Plan 10-02 completed | Milestone audit was refreshed and archival truth now explicitly depends on Phase 09 human verification |
+| 2026-04-02 | Phase 12 planned | WebFlux migration context, research, validation strategy, and six execution plans were created |
+| 2026-04-03 | Plan 12-01 completed | WebFlux, R2DBC, reactive security, and the reactive repository seam were scaffolded and verified with targeted migration tests |
 
 ### Next Actions
 
-1. Run the Phase 09 human verification checklist from `.planning/phases/09-transaction-rating-loop-and-sold-notification-closure/09-HUMAN-UAT.md`
-2. After approval, update the milestone audit verdict and then proceed to milestone completion
+1. Execute Plan `12-05` truthfully by removing the active servlet/JPA/STOMP runtime path instead of relying on the current dual-stack boot baseline
+2. Strengthen `WebFluxApplicationBootTest` and the phase verification gate so they fail unless the application is actually running as a reactive web app
+3. Keep the outstanding Phase 09 human verification blocker explicit before any milestone archival work resumes
 
 ### Blockers
 
+- Phase 12 is still blocked on the final runtime cutover: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, servlet STOMP config, and `OncePerRequestFilter` remain on the active path, so the current boot test does not yet prove a true WebFlux runtime
 - Phase 09 still needs manual browser confirmation for the review CTA flow, public profile trust refresh, and realtime `ITEM_SOLD` notification visibility
 
 ---
@@ -250,3 +255,6 @@ Plan: 2 of 4
 *Phase 9 execution recorded: 2026-03-30*
 *Phase 10 execution recorded: 2026-03-30*
 *Phase 11 added: 2026-03-29*
+*Phase 12 added: 2026-04-02*
+*Phase 12 planned: 2026-04-02*
+*Plan 12-01 completed: 2026-04-03*
